@@ -67,17 +67,80 @@
 		<div class="content">
 			<div class="card">
 				<div class="row">
-					<div class="col-md-2">
+					<div class="col-md-6">
 						<span>
 							<h3><i class="fa fa-tasks" aria-hidden="true"></i> Task </h2>
 						</span>
 					</div>
-					<div class="col-md-2">
+					<!--<div class="col-md-2">
 						<span>
 							<button id="assignButton" class="btns" onclick="taskAssignPopup()">Assign Tasks</button>
 						</span>
 					</div>
 					<div class="col-md-2">
+						<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+							<div class="dropdown">
+								<select id="userList" type="button" class="btns dropdown-toggle userList"
+									onchange="fetchTasks();">
+									<option class="dropdown-item form-control" value="" multiple>Select Employee
+									</option>
+								</select>
+							</div>
+						</div>
+					</div>-->
+
+					<!--<div class="col-md-6">
+						<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+							<div class="dropdown">
+								<select id="taskType" type="button" class="btns dropdown-toggle"
+									onchange="fetchTasks();">
+									<option class="dropdown-item form-control" value="active"> Active Task</option>
+									<option class="dropdown-item form-control" value="completed">
+										Completed Task
+									</option>
+									<option class="dropdown-item form-control" value="all">
+										All Task
+									</option>
+								</select>
+
+							</div>
+						</div>
+					</div>-->
+					<div class="col-md-6">
+						<span class="directions">
+
+							<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+								<div class="dropdown">
+									<button id="btnGroupDrop1" type="button" class="btns dropdown-toggle">
+										<i class="fa fa-plus-square" aria-hidden="true"></i> Add Task
+									</button>
+									<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+										<button class="dropdown-item" onclick="addTask()"><i class="fa fa-plus-square"
+												aria-hidden="true"></i> Add Task</button>
+										<button class="dropdown-item" onclick="bulckUpload()"><i class="fa fa-upload"
+												aria-hidden="true"></i> Bulk Upload Task</a>
+									</div>
+								</div>
+							</div>
+						</span>
+					</div>
+				</div>
+			</div>
+			
+			
+			<div class="card" style="margin-top: 20px;">
+				<div class="row">
+					<div class="col-md-3">
+						<span>
+							<h4><i class="fa fa-sliders" aria-hidden="true"></i></i> Tools </h4>
+						</span>
+					</div>
+					<div class="col-md-3">
+						<span>
+							<button id="assignButton" class="btns" onclick="taskAssignPopup()"> Assign Tasks</button>
+						</span>
+					</div>
+					<div class="col-md-3">
 						<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
 							<div class="dropdown">
 								<select id="userList" type="button" class="btns dropdown-toggle userList"
@@ -106,7 +169,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-md-3">
+					<!--<div class="col-md-3">
 						<span class="directions">
 
 							<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
@@ -123,7 +186,7 @@
 								</div>
 							</div>
 						</span>
-					</div>
+					</div>-->
 				</div>
 			</div>
 
