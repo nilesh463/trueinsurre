@@ -1,0 +1,353 @@
+@charset "ISO-8859-1";
+
+.empBtn {
+	border: 1px solid #141619;
+	width: 100%;
+}
+
+.empBtn:hover {
+	color: oldlace;
+	background-color: #2c3e50;
+}
+
+.directions {
+	float: right;
+}
+
+
+.modal {
+	position: fixed;
+	z-index: 1;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%; 
+	overflow: hidden; 
+	background-color: rgba(0, 0, 0, 0.4); 
+	display: flex; 
+	justify-content: center;
+	align-items: center;
+}
+
+.modal-content {
+	background-color: #fefefe;
+	padding: 20px;
+	border: 1px solid #888;
+	width: 50%; 
+	max-height: 80%; 
+	overflow-y: auto; 
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+	border-radius: 8px; 
+	margin-left: 27%;
+}
+
+.header {
+	background-color: #2c3e50;
+	color: white;
+	padding: 7px;
+
+}
+
+.cardBackground {
+	background-color: aliceblue;
+	margin-top: 100px;
+}
+
+.formPadding {
+	padding: 5px;
+}
+
+.table-container {
+	margin: 20px 0;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.card {
+	padding: 5px;
+}
+
+th,
+td {
+	padding: 10px;
+	text-align: center;
+	border: 1px solid #ddd;
+}
+
+th {
+	background-color: #2c3e50;
+	color: white;
+}
+
+tr:hover {
+	background-color: #ddd;
+	color: #2c3e50;
+	border: 1px solid #2c3e50;
+}
+
+.pagination {
+	display: flex;
+	justify-content: right;
+	margin: 20px 0;
+}
+
+.pagination button {
+	padding: 10px 15px;
+	margin: 0 5px;
+	border: none;
+	background-color: #2c3e50;
+	border: 1px solid #2c3e50;
+	color: white;
+	cursor: pointer;
+	border-radius: 4px;
+}
+
+.pagination button:hover {
+	background-color: white;
+	color: #2c3e50;
+}
+
+#entriesPerPage {
+  padding: 5px;
+  margin-right: 10px;
+}
+
+.tableBtn {
+	border: none;
+}
+
+.tableBtn:hover {
+	color: oldlace;
+	background-color: #2c3e50;
+}
+
+.tableFilter{
+    background-color: #2c3e50;
+    border: transparent;
+    color: white;
+}
+
+.table-search{
+	margin-top: 10px;
+    margin-bottom: 10px;
+    outline-offset: 1px;
+}
+
+/*.table-container {
+    width: 100%;
+    border: 1px solid #ccc;
+    overflow-x: auto;  Enables horizontal scroll 
+}
+*/
+.table-container {
+    max-width: 100%;
+    overflow-x: auto;  /* Enables horizontal scroll */
+    overflow-y: hidden; /* Disables vertical scroll */
+    height: auto;
+}
+
+
+
+.direction-left{
+	float: left;
+	margin-top: 6px;
+}
+
+/*Header buttons Add Task*/
+.btns {
+	padding: 10px 20px;
+	font-size: 16px;
+	cursor: pointer;
+	border: 1px solid #ccc;
+	background-color: #f8f9fa;
+	color: #333;
+	outline: none;
+	transition: background-color 0.3s;
+}
+
+.btns:hover {
+	background-color: #e2e6ea;
+}
+
+.btn-group {
+	display: inline-flex;
+	align-items: center;
+}
+
+.btn-group .btns {
+	margin: 0;
+	border-radius: 0;
+}
+
+.btn-group .btns:first-child {
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+}
+
+.btn-group .btns:last-child {
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+
+.dropdown {
+	position: relative;
+}
+
+.dropdown-toggle {
+	display: inline-block;
+	background-color: #f8f9fa;
+}
+
+.dropdown-menu {
+	display: none;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	background-color: #fff;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+	z-index: 1000;
+	min-width: 150px;
+}
+
+.dropdown-menu a {
+	display: block;
+	padding: 10px;
+	color: #333;
+	text-decoration: none;
+}
+
+.dropdown-menu a:hover {
+	background-color: #e2e6ea;
+}
+
+.dropdown:hover .dropdown-menu {
+	display: block;
+}
+
+
+
+/*Delete Popup css */
+.empDelOverlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+}
+
+.empDelPopupContent {
+	background: white;
+	padding: 20px;
+	border-radius: 5px;
+	text-align: center;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	width: 300px;
+}
+
+.empDelPopupButtons {
+	margin-top: 20px;
+}
+
+.empDelBtn {
+	padding: 10px 20px;
+	margin: 0 10px;
+	border: none;
+	background-color: white;
+	color: #007bff;
+	border: 1px solid #007bff;
+	border-radius: 3px;
+	cursor: pointer;
+}
+
+.empDelBtn:hover {
+	background-color: #007bff;
+	color: white;
+	
+}
+
+.empDelBtnRemove{
+	padding: 10px 20px;
+	margin: 0 10px;
+	border: none;
+	background-color: white;
+	color: rgb(255, 0, 0);
+	border: 1px solid red;
+	border-radius: 3px;
+	cursor: pointer;
+}
+
+.empDelBtnRemove:hover{
+	
+	background-color: rgb(255, 60, 60);
+	color: white;
+	
+}
+
+.empDelBtn:hover {
+	background-color: #0056b3;
+}
+
+/*Upload Task Css*/
+.uploadBtn{
+	padding: 10px 20px;
+	margin: 0 10px;
+	border: none;
+	background-color: white;
+	color: green;
+	border: 1px solid green;
+	border-radius: 3px;
+	cursor: pointer;
+}
+
+.uploadBtn:hover{
+	
+	background-color: green;
+	color: white;
+}
+
+.empUploadPopupContent {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 360px;
+}
+
+.assignTo {
+	width: 305px;
+}
+
+.userList {
+	width: 197px;
+}
+
+.dropdown-checkbox-list {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        max-height: 200px;
+        overflow-y: auto;
+        padding: 10px;
+        width: 250px;
+    }
+
+    .checkbox-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+
+    .checkbox-item label {
+        margin-left: 8px;
+        cursor: pointer;
+    }

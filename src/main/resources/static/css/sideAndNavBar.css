@@ -1,0 +1,148 @@
+@charset "ISO-8859-1";
+
+body {
+	font-family: Arial, sans-serif;
+	display: flex;
+	height: 100vh;
+	overflow: hidden;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+.sidebar {
+	width: 60px;
+	background-color: #2c3e50;
+	color: white;
+	transition: width 0.3s;
+	display: flex;
+	flex-direction: column;
+}
+
+.sidebar:hover,
+.sidebar.open {
+	width: 200px;
+}
+
+.sidebar .toggle-btn {
+	background-color: #34495e;
+	border: none;
+	color: white;
+	padding: 19px;
+	text-align: center;
+	cursor: pointer;
+}
+
+.sidebar ul {
+	list-style-type: none;
+	padding: 0px 10px;
+}
+
+.sidebar ul li {
+	margin: 15px 0;
+	text-align: left;
+	white-space: nowrap;
+}
+
+.sidebar ul li a {
+	text-decoration: none;
+	color: white;
+	padding: 10px;
+	display: block;
+	transition: background-color 0.3s;
+}
+
+.sidebar ul li a:hover {
+	background-color: #34495e;
+}
+
+.main {
+	flex: 1;
+	/* Ensures the main area takes up all remaining width */
+	display: flex;
+	flex-direction: column;
+}
+
+/* Navbar styles */
+.navbar {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px 20px;
+	background-color: #f8f9fa;
+	border-bottom: 1px solid #ddd;
+}
+
+.logo img {
+	height: 26px;
+	width: auto;
+}
+
+/* User Dropdown styles */
+.user-dropdown {
+	position: relative;
+	display: inline-block;
+	cursor: pointer;
+}
+
+.username {
+	font-size: 16px;
+	font-weight: bold;
+	color: #333;
+	margin-right: 10px;
+}
+
+.dropdown-menu {
+	position: absolute;
+	top: 30px;
+	right: 0;
+	display: none;
+	/* Hidden by default */
+	background-color: white;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+	border-radius: 4px;
+	z-index: 1000;
+	overflow: hidden;
+	min-width: 150px;
+}
+
+.dropdown-item {
+	display: block;
+	padding: 10px 15px;
+	text-decoration: none;
+	color: #333;
+	font-size: 14px;
+	border-bottom: 1px solid #eee;
+}
+
+.dropdown-item:last-child {
+	border-bottom: none;
+}
+
+.dropdown-item:hover {
+	background-color: #f0f0f0;
+	color: #007bff;
+}
+
+/* Show dropdown menu when open */
+.user-dropdown.open .dropdown-menu {
+	display: block;
+}
+
+
+
+.content {
+	flex: 1;
+	background-color: #f4f4f4;
+	padding: 20px;
+	overflow: auto;
+	/* Adds scrolling for the content if it overflows */
+}
+
+.side-logo {
+	width: 15%;
+	margin-top: 7px;
+}
+.sideSpace{
+	margin-right: 21px;
+}

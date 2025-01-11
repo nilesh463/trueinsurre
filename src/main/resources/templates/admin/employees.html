@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<link rel="icon" type="image/png" href="/images/fabicon.png">
+	<title>Trueinsurre</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;1,200&display=swap" rel="stylesheet">
+
+	<link rel="stylesheet" type="text/css" href="/css/sideAndNavBar.css" />
+	<link rel="stylesheet" type="text/css" href="/css/admin/employees.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	<script src="/js/sidebar.js"></script>
+	<script src="/js/admin/employee.js"></script>
+</head>
+
+<body>
+
+	<div class="sidebar" id="sidebar">
+		<button class="toggle-btn" onclick="toggleSidebar()">&#9776;</button>
+		<ul>
+			<li><a href="/admin-dashboard/" id="link-dashboard">&nbsp;<i class="fa fa-tachometer sideSpace"
+						aria-hidden="true"></i> Dashboard</a></li>
+			<li><a href="#" id="link-tracking">&nbsp;<i class="fa fa-tasks sideSpace" aria-hidden="true"></i>Task</a>
+			</li>
+			<li><a href="#" id="link-orders">&nbsp;<i class="fa fa-users sideSpace" aria-hidden="true"></i>Employee</a>
+			</li>
+		</ul>
+	</div>
+
+	<div class="main">
+		<div class="navbar">
+			<div class="logo">
+				<img src="/images/logo.png" alt="invoicemint" title="invoicemint" class="side-logo">
+			</div>
+			<div class="user-dropdown">
+				<span class="username" id="username"><i class="fa fa-user-circle" aria-hidden="true"></i>&nbsp; <span
+						th:text="${user.name}"></span></span>
+				<div class="dropdown-menu" id="dropdown-menu">
+					<a href="#" class="dropdown-item"><i class="fa fa-cog" aria-hidden="true"></i>&nbsp; Settings</a>
+					<a href="/logout" class="dropdown-item"><i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;
+						Logout</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="content">
+			<div class="card">
+				<div class="row">
+					<div class="col-md-6">
+						<span><h3><i class="fa fa-users" aria-hidden="true"></i> Employees </h2></span>
+					</div>
+					<div class="col-md-6">
+						<span class="directions">
+							<button class="btn empBtn" onclick="addEmployee()"><i class="fa fa-plus-square"
+									aria-hidden="true"></i> New Employee</button>
+						</span>
+					</div>
+				</div>
+
+				<!--Add New Employee-->
+				<div class="row">
+					<div class="col-md-12">
+						<div id="employeeModal" class="modal" style="display: none;">
+							<div class="modal-content cardBackground">
+								<div class="card">
+									<h4 class="header"><i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp; <span id="empTitle">New
+										Employee</span> </h2>
+										<form id="employeeForm" class="formPadding">
+
+											<div class="row">
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="firstName">First Name</label>
+														<input class="form-control" id="firstName" name="firstName"
+															type="text" value="" placeholder="Enter First Name"
+															required>
+													</div>
+												</div>
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="lastName">Last Name</label>
+														<input class="form-control" id="lastName" name="lastName"
+															type="text" value="" placeholder="Enter Last Name" required>
+													</div>
+												</div>
+											</div>
+
+											<div class="row">
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="phone">Phone</label>
+														<input class="form-control" id="phone" name="phone" type="text"
+															value="" placeholder="Enter Phone Number" required>
+													</div>
+												</div>
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="email">Email</label>
+														<input class="form-control" id="email" name="email" type="text"
+															value="" placeholder="Enter Email" required>
+													</div>
+												</div>
+											</div>
+
+											<div class="row">
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="password">Password</label>
+														<input class="form-control" id="password" name="password"
+															type="password" value="" placeholder="Enter Password"
+															required>
+													</div>
+												</div>
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="country">Country</label>
+														<select class="form-control" id="country" name="country"
+															type="text" value="" placeholder="Last Name" required>
+															<option>Select Country</option>
+															<option value="India">India</option>
+														</select>
+													</div>
+												</div>
+											</div>
+
+											<div class="row">
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="countryCallingCode">Country
+															Calling Code</label>
+														<input class="form-control" id="countryCallingCode"
+															name="countryCallingCode" type="text" value="91"
+															placeholder="Country Calling Code" required>
+													</div>
+												</div>
+
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="aadharNumber">Adhar
+															Number</label>
+														<input class="form-control" id="aadharNumber"
+															name="aadharNumber" type="text" value=""
+															placeholder="Adhar Number" required>
+
+														<input id="id" name="id" type="hidden" value="">
+													</div>
+												</div>
+											</div>
+
+											<div class="row">
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="empNo">Employee Id</label>
+														<input class="form-control" id="empNo" name="empNo" type="text"
+															value="N/A" placeholder="Employee Id">
+													</div>
+												</div>
+											</div>
+
+											<div class="row">
+												<div class="col-md-12 ">
+													<div class="directions">
+														<button class="btn btn-outline-danger"
+															onclick="closeEmployeePopup()">Cancel</button> &nbsp;
+														<button type="button" class="btn btn-outline-success"
+															onclick="submitForm()">Save</button></span>
+													</div>
+												</div>
+											</div>
+										</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<!-- Employee Delete Popup Start-->
+			<div class="row">
+				<div class="col-md-12">
+					<div id="empDelPopup" class="empDelOverlay" style="display: none;">
+						<div class="empDelPopupContent">
+							<p id="empDelMessage"></p>
+							<div class="empDelPopupButtons">
+								<button id="empDelYes" class="empDelBtnRemove">Remove</button>
+								<button id="empDelNo" class="empDelBtn">Cancel</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--Employee Delete End-->
+
+			<div class="card" style="margin-top: 20px;">
+				<!--Employee List view-->
+				<div class="row">
+					<div class="col-md-12">
+						<div class="table-container">
+							<table>
+								<thead>
+									<tr>
+										<th>Employees <i class="fa fa-users" aria-hidden="true"></i> </th>
+										<th>Email <i class="fa fa-envelope" aria-hidden="true"></i></th>
+										<th>Phone No <i class="fa fa-phone-square" aria-hidden="true"></i></th>
+										<th>Employee Id <i class="fa fa-id-card" aria-hidden="true"></i></th>
+										<th>Country <i class="fa fa-globe" aria-hidden="true"></i></th>
+										<th>Aadhar Number <i class="fa fa-id-card" aria-hidden="true"></i></th>
+										<th>Action <i class="fa fa-pencil-square" aria-hidden="true"></i></th>
+									</tr>
+								</thead>
+								<tbody id="userTableBody">
+
+								</tbody>
+							</table>
+						</div>
+						<div class="pagination" id="paginationButtons">
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>
