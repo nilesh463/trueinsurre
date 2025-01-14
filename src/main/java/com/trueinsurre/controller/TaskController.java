@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.trueinsurre.dto.CsvValidateResponce;
 import com.trueinsurre.dto.Responce;
+import com.trueinsurre.dto.StatusDto;
 import com.trueinsurre.dto.TaskAssignRequest;
 import com.trueinsurre.dto.TaskDto;
 import com.trueinsurre.service.TaskService;
@@ -56,6 +57,102 @@ public class TaskController {
 			@RequestParam(defaultValue = "10") int size) {
 
 		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeleted(false, false, false,
+				page, size);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("tasks", taskPage.getContent());
+		response.put("currentPage", taskPage.getNumber());
+		response.put("totalPages", taskPage.getTotalPages());
+		response.put("totalElements", taskPage.getTotalElements());
+
+		return ResponseEntity.ok(response);
+	}
+	
+	@GetMapping("/by-status/{message}")
+	public ResponseEntity<Map<String, Object>> getAllTasksByStatus(@PathVariable String message,@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size) {
+
+		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndStatus(false, false, false, message,
+				page, size);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("tasks", taskPage.getContent());
+		response.put("currentPage", taskPage.getNumber());
+		response.put("totalPages", taskPage.getTotalPages());
+		response.put("totalElements", taskPage.getTotalElements());
+
+		return ResponseEntity.ok(response);
+	}
+	
+	@GetMapping("/by-disposition/{message}")
+	public ResponseEntity<Map<String, Object>> getAllTasksByDisposition(@PathVariable String message,@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size) {
+
+		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndDisposition(false, false, false, message,
+				page, size);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("tasks", taskPage.getContent());
+		response.put("currentPage", taskPage.getNumber());
+		response.put("totalPages", taskPage.getTotalPages());
+		response.put("totalElements", taskPage.getTotalElements());
+
+		return ResponseEntity.ok(response);
+	}
+	
+	@GetMapping("/by-status-disposition/{disposition}/{status}")
+	public ResponseEntity<Map<String, Object>> getAllTasksByAtatusAndDisposition(@PathVariable String disposition, @PathVariable String status,@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size) {
+
+		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndDispositionAndStatus(false, false, false, disposition, status,
+				page, size);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("tasks", taskPage.getContent());
+		response.put("currentPage", taskPage.getNumber());
+		response.put("totalPages", taskPage.getTotalPages());
+		response.put("totalElements", taskPage.getTotalElements());
+
+		return ResponseEntity.ok(response);
+	}
+	
+	@GetMapping("/by-status/{userId}/{message}")
+	public ResponseEntity<Map<String, Object>> getAllTasksByUserAndStatus(@PathVariable Long userId, @PathVariable String message,@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size) {
+
+		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndStatus(false, false, false, message,
+				page, size);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("tasks", taskPage.getContent());
+		response.put("currentPage", taskPage.getNumber());
+		response.put("totalPages", taskPage.getTotalPages());
+		response.put("totalElements", taskPage.getTotalElements());
+
+		return ResponseEntity.ok(response);
+	}
+	
+	@GetMapping("/by-disposition/{userId}/{message}")
+	public ResponseEntity<Map<String, Object>> getAllTasksByUserAndDisposition(@PathVariable Long userId, @PathVariable String message,@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size) {
+
+		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndDisposition(false, false, false, message,
+				page, size);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("tasks", taskPage.getContent());
+		response.put("currentPage", taskPage.getNumber());
+		response.put("totalPages", taskPage.getTotalPages());
+		response.put("totalElements", taskPage.getTotalElements());
+
+		return ResponseEntity.ok(response);
+	}
+	
+	@GetMapping("/by-status-disposition/{userId}/{disposition}/{status}")
+	public ResponseEntity<Map<String, Object>> getAllTasksByUserAndAtatusAndDisposition(@PathVariable Long userId, @PathVariable String disposition, @PathVariable String status,@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size) {
+
+		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndDispositionAndStatus(false, false, false, disposition, status,
 				page, size);
 
 		Map<String, Object> response = new HashMap<>();
@@ -161,13 +258,25 @@ public class TaskController {
 	}
 	
 	@PostMapping("/add")
-	public ResponseEntity<Responce> addNewTask(@RequestBody TaskDto taskDto){
+	public ResponseEntity<Responce> addNewTask(@RequestBody TaskDto taskDto) throws ParseException{
 		Responce response = new Responce();
 		taskService.addTask(taskDto);
 		response.setStatus(200L);
 		response.setMessage("New added.");
 		return ResponseEntity.ok(response);
+	} 
+	
+	
+	@PostMapping("/status")
+	public ResponseEntity<Responce> updateStatus(@RequestBody StatusDto statusDto){
+		
+		return ResponseEntity.ok(taskService.statusUpdate(statusDto));
 	}
 	
+	@GetMapping("/edit/{id}")
+	public ResponseEntity<TaskDto> edit(@PathVariable Long taskId){
+		
+		return ResponseEntity.ok(taskService.getEdit(taskId));
+	}
 	
 }

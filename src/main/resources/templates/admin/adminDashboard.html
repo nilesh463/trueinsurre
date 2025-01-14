@@ -126,21 +126,21 @@
 					</div>
 				</div>
 			</div>
-			
-			
+
+
 			<div class="card" style="margin-top: 20px;">
-				<div class="row">
-					<div class="col-md-3">
+				<div class="row" style="margin-top: 10px;">
+					<div class="col-md-2">
 						<span>
-							<h4><i class="fa fa-sliders" aria-hidden="true"></i></i> Tools </h4>
+							<h4><i class="fa fa-sliders" aria-hidden="true"></i></i> Tools&Filters </h4>
 						</span>
 					</div>
-					<div class="col-md-3">
+					<div class="col-md-2">
 						<span>
 							<button id="assignButton" class="btns" onclick="taskAssignPopup()"> Assign Tasks</button>
 						</span>
 					</div>
-					<div class="col-md-3">
+					<div class="col-md-2">
 						<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
 							<div class="dropdown">
 								<select id="userList" type="button" class="btns dropdown-toggle userList"
@@ -152,7 +152,7 @@
 						</div>
 					</div>
 
-					<div class="col-md-3">
+					<div class="col-md-2">
 						<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
 							<div class="dropdown">
 								<select id="taskType" type="button" class="btns dropdown-toggle"
@@ -169,193 +169,317 @@
 							</div>
 						</div>
 					</div>
-					<!--<div class="col-md-3">
-						<span class="directions">
+					<div class="col-md-2">
+						<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+							<div class="dropdown">
+								<select id="selectDisposition" type="button" class="btns dropdown-toggle userList"
+									onchange="fetchTasks()">
+									<option value="">Select Disposition</option>
+									<option value="RNR">RNR</option>
+									<option value="Not Interested">Not Interested</option>
+									<option value="Follow up">Follow up</option>
+									<option value="Renewed Outside">Renewed Outside</option>
+									<option value="Ready to pay today">Ready to pay today</option>
+									<option value="Issued">Issued</option>
+									<option value="Paid">Paid</option>
+									<option value="Payment Issue">Payment Issue</option>
+									<option value="Others">Others</option>
+									<option value="Price is High (C)">Price is High (C)</option>
+									<option value="Financial issue (C)">Financial issue (C)</option>
+									<option value="Need EMI Option (C)">Need EMI Option (C)</option>
+									<option value="Not Happy with Insurance Vendor (NC)">Not Happy with Insurance Vendor
+										(NC)</option>
+									<option value="Not Happy with Porter Service (NC)">Not Happy with Porter Service
+										(NC)
+									</option>
+									<option value="Wrong Number (NC)">Wrong Number (NC)</option>
+									<option value="Sold his vehicle (NC)">Sold his vehicle (NC)</option>
+									<option value="Relative is an Agent (NC)">Relative is an Agent (NC)</option>
+									<option value="Payment Mode issue">Payment Mode issue</option>
+									<option value="EWI Interest is high">EWI Interest is high</option>
+									<option value="Not Answering the call">Not Answering the call</option>
+									<option value="Not Eligible">Not Eligible</option>
+									<option value="KYC issue">KYC issue</option>
+								</select>
+							</div>
+						</div>
+					</div>
 
+					<div class="col-md-2">
+						<div class="form-group mb-3">
 							<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
 								<div class="dropdown">
-									<button id="btnGroupDrop1" type="button" class="btns dropdown-toggle">
-										<i class="fa fa-plus-square" aria-hidden="true"></i> Add Task
-									</button>
-									<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-										<button class="dropdown-item" onclick="addTask()"><i class="fa fa-plus-square"
-												aria-hidden="true"></i> Add Task</button>
-										<button class="dropdown-item" onclick="bulckUpload()"><i class="fa fa-upload"
-												aria-hidden="true"></i> Bulk Upload Task</a>
-									</div>
+									<select id="selectStatus" type="button" class="btns dropdown-toggle userList"
+										onchange="fetchTasks();">
+										<option value="">Select Status</option>
+										<option value="S1-Payment Collection Pending">S1-Payment Collection Pending
+										</option>
+										<option value="S2-Finance Confirmation Pending">S2-Finance Confirmation Pending
+										</option>
+										<option value="S3-Document Pending">S3-Document Pending</option>
+										<option value="S4-Policy request Pending">S4-Policy request Pending</option>
+										<option value="S4.1-EWI Pending">S4.1-EWI Pending</option>
+										<option value="S5-Pending from vendor">S5-Pending from vendor</option>
+										<option value="S5.1-Pending for core insurance">S5.1-Pending for core insurance
+										</option>
+										<option value="S5.2-Agent different case">S5.2-Agent different case</option>
+										<option value="S6-Policy issued">S6-Policy issued</option>
+										<option value="Not Interested">Not Interested</option>
+										<option value="Renewed Outside">Renewed Outside</option>
+									</select>
 								</div>
 							</div>
-						</span>
-					</div>-->
-				</div>
-			</div>
+						</div>
+					</div>
 
-			<!--Add New Task-->
-			<div class="row">
-				<div class="col-md-12">
-					<div id="taskModal" class="modal" style="display: none;">
-						<div class="modal-content cardBackground">
-							<div class="card">
-								<h4 class="header"><i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp; <span
-										id="taskTitle">New
-										Task</span> </h4>
-								<form id="taskForm" class="formPadding">
-									<div class="row">
-										<div class="col-md-6">
-											<div class="form-group mb-3">
-												<label class="form-label" for="vehicleNumber">Vehicle Number</label>
-												<input class="form-control" id="vehicleNumber" name="vehicleNumber"
-													type="text" placeholder="Enter Vehicle Number" required>
+
+					<!--Add New Task-->
+					<div class="row">
+						<div class="col-md-12">
+							<div id="taskModal" class="modal" style="display: none;">
+								<div class="modal-content cardBackground">
+									<div class="card">
+										<h4 class="header"><i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp;
+											<span id="taskTitle">New
+												Task</span>
+										</h4>
+										<form id="taskForm" class="formPadding">
+											<div class="row">
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="vehicleNumber">Vehicle
+															Number</label>
+														<input class="form-control" id="vehicleNumber"
+															name="vehicleNumber" type="text"
+															placeholder="Enter Vehicle Number" required>
+													</div>
+												</div>
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="partnerNumber">Partner
+															Number</label>
+														<input class="form-control" id="partnerNumber"
+															name="partnerNumber" type="text"
+															placeholder="Enter Partner Number" required>
+													</div>
+												</div>
 											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="form-group mb-3">
-												<label class="form-label" for="partnerNumber">Partner Number</label>
-												<input class="form-control" id="partnerNumber" name="partnerNumber"
-													type="text" placeholder="Enter Partner Number" required>
+
+											<div class="row">
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="agentName">Agent Name</label>
+														<input class="form-control" id="agentName" name="agentName"
+															type="text" placeholder="Enter Agent Name" required>
+													</div>
+												</div>
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="driverName">Driver Name</label>
+														<input class="form-control" id="driverName" name="driverName"
+															type="text" placeholder="Enter Driver Name" required>
+													</div>
+												</div>
 											</div>
-										</div>
+
+											<div class="row">
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="city">City</label>
+														<input class="form-control" id="city" name="city" type="text"
+															placeholder="Enter City" required>
+													</div>
+												</div>
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="lastYearPolicyIssuedBy">Last Year
+															Policy
+															Issued By</label>
+														<input class="form-control" id="lastYearPolicyIssuedBy"
+															name="lastYearPolicyIssuedBy" type="text"
+															placeholder="Enter Issuer" required>
+													</div>
+												</div>
+											</div>
+
+											<div class="row">
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="partnerRate">Partner Rate</label>
+														<input class="form-control" id="partnerRate" name="partnerRate"
+															type="text" placeholder="Enter Partner Rate" required>
+													</div>
+												</div>
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="newExpiryDate">New Expiry
+															Date</label>
+														<input class="form-control" id="newExpiryDate"
+															name="newExpiryDate" type="date" required>
+													</div>
+												</div>
+											</div>
+
+											<div class="row">
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="message">Message</label>
+														<textarea class="form-control" id="message" name="message"
+															placeholder="Enter Message" rows="3"></textarea>
+													</div>
+												</div>
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="messageLink">Message Link</label>
+														<input class="form-control" id="messageLink" name="messageLink"
+															type="text" placeholder="Enter Message Link">
+													</div>
+												</div>
+											</div>
+
+											<div class="row">
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="policyIssuedDate">Policy Issued
+															Date</label>
+														<input class="form-control" id="policyIssuedDate"
+															name="policyIssuedDate" type="date" required>
+													</div>
+												</div>
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="messageStatus">Message
+															Status</label>
+														<select class="form-control" id="messageStatus"
+															name="messageStatus" required>
+															<option value="">Select Status</option>
+															<option value="Sent">message Sent</option>
+															<option value="Pending">not on whatsapp</option>
+														</select>
+													</div>
+												</div>
+											</div>
+
+											<div class="row">
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="disposition">Disposition</label>
+
+														<select class="form-control" id="disposition"
+															name="disposition">
+															<option value="">Select Disposition</option>
+															<option value="RNR">RNR</option>
+															<option value="Not Interested">Not Interested</option>
+															<option value="Follow up">Follow up</option>
+															<option value="Renewed Outside">Renewed Outside</option>
+															<option value="Ready to pay today">Ready to pay today
+															</option>
+															<option value="Issued">Issued</option>
+															<option value="Paid">Paid</option>
+															<option value="Payment Issue">Payment Issue</option>
+															<option value="Others">Others</option>
+															<option value="Price is High (C)">Price is High (C)</option>
+															<option value="Financial issue (C)">Financial issue (C)
+															</option>
+															<option value="Need EMI Option (C)">Need EMI Option (C)
+															</option>
+															<option value="Not Happy with Insurance Vendor (NC)">Not
+																Happy with
+																Insurance Vendor (NC)</option>
+															<option value="Not Happy with Porter Service (NC)">Not Happy
+																with
+																Porter Service (NC)</option>
+															<option value="Wrong Number (NC)">Wrong Number (NC)</option>
+															<option value="Sold his vehicle (NC)">Sold his vehicle (NC)
+															</option>
+															<option value="Relative is an Agent (NC)">Relative is an
+																Agent (NC)
+															</option>
+															<option value="Payment Mode issue">Payment Mode issue
+															</option>
+															<option value="EWI Interest is high">EWI Interest is high
+															</option>
+															<option value="Not Answering the call">Not Answering the
+																call
+															</option>
+															<option value="Not Eligible">Not Eligible</option>
+															<option value="KYC issue">KYC issue</option>
+														</select>
+													</div>
+												</div>
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="nextFollowUpDate">Next Follow-Up
+															Date</label>
+														<input class="form-control" id="nextFollowUpDate"
+															name="nextFollowUpDate" type="date" required>
+													</div>
+												</div>
+											</div>
+
+											<div class="row">
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="status">Status</label>
+
+														<select class="form-control" id="status" name="status">
+															<option value="">Select Disposition</option>
+															<option value="S1-Payment Collection Pending">S1-Payment
+																Collection
+																Pending</option>
+															<option value="S2-Finance Confirmation Pending">S2-Finance
+																Confirmation Pending</option>
+															<option value="S3-Document Pending">S3-Document Pending
+															</option>
+															<option value="S4-Policy request Pending">S4-Policy request
+																Pending
+															</option>
+															<option value="S4.1-EWI Pending">S4.1-EWI Pending</option>
+															<option value="S5-Pending from vendor">S5-Pending from
+																vendor
+															</option>
+															<option value="S5.1-Pending for core insurance">S5.1-Pending
+																for
+																core insurance</option>
+															<option value="S5.2-Agent different case">S5.2-Agent
+																different case
+															</option>
+															<option value="S6-Policy issued">S6-Policy issued</option>
+															<option value="Not Interested">Not Interested</option>
+															<option value="Renewed Outside">Renewed Outside</option>
+														</select>
+													</div>
+												</div>
+												<div class="col-md-6">
+													<div class="form-group mb-3">
+														<label class="form-label" for="comments">Comments</label>
+														<textarea class="form-control" id="comments" name="comments"
+															placeholder="Enter Comments" rows="3"></textarea>
+														<input type="hidden" id="id" name="id">
+													</div>
+												</div>
+											</div>
+
+											<div class="row">
+												<div class="col-md-12">
+													<div class="directions">
+														<button class="btn btn-outline-danger"
+															onclick="closeEmployeePopup()">Cancel</button>
+														&nbsp;
+														<button type="button" class="btn btn-outline-success"
+															onclick="submitForm()">Save</button>
+													</div>
+												</div>
+											</div>
+										</form>
+
 									</div>
-
-									<div class="row">
-										<div class="col-md-6">
-											<div class="form-group mb-3">
-												<label class="form-label" for="agentName">Agent Name</label>
-												<input class="form-control" id="agentName" name="agentName" type="text"
-													placeholder="Enter Agent Name" required>
-											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="form-group mb-3">
-												<label class="form-label" for="driverName">Driver Name</label>
-												<input class="form-control" id="driverName" name="driverName"
-													type="text" placeholder="Enter Driver Name" required>
-											</div>
-										</div>
-									</div>
-
-									<div class="row">
-										<div class="col-md-6">
-											<div class="form-group mb-3">
-												<label class="form-label" for="city">City</label>
-												<input class="form-control" id="city" name="city" type="text"
-													placeholder="Enter City" required>
-											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="form-group mb-3">
-												<label class="form-label" for="lastYearPolicyIssuedBy">Last Year Policy
-													Issued By</label>
-												<input class="form-control" id="lastYearPolicyIssuedBy"
-													name="lastYearPolicyIssuedBy" type="text" placeholder="Enter Issuer"
-													required>
-											</div>
-										</div>
-									</div>
-
-									<div class="row">
-										<div class="col-md-6">
-											<div class="form-group mb-3">
-												<label class="form-label" for="partnerRate">Partner Rate</label>
-												<input class="form-control" id="partnerRate" name="partnerRate"
-													type="text" placeholder="Enter Partner Rate" required>
-											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="form-group mb-3">
-												<label class="form-label" for="newExpiryDate">New Expiry Date</label>
-												<input class="form-control" id="newExpiryDate" name="newExpiryDate"
-													type="date" required>
-											</div>
-										</div>
-									</div>
-
-									<div class="row">
-										<div class="col-md-6">
-											<div class="form-group mb-3">
-												<label class="form-label" for="message">Message</label>
-												<textarea class="form-control" id="message" name="message"
-													placeholder="Enter Message" rows="3"></textarea>
-											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="form-group mb-3">
-												<label class="form-label" for="messageLink">Message Link</label>
-												<input class="form-control" id="messageLink" name="messageLink"
-													type="text" placeholder="Enter Message Link">
-											</div>
-										</div>
-									</div>
-
-									<div class="row">
-										<div class="col-md-6">
-											<div class="form-group mb-3">
-												<label class="form-label" for="policyIssuedDate">Policy Issued
-													Date</label>
-												<input class="form-control" id="policyIssuedDate"
-													name="policyIssuedDate" type="date" required>
-											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="form-group mb-3">
-												<label class="form-label" for="messageStatus">Message Status</label>
-												<select class="form-control" id="messageStatus" name="messageStatus"
-													required>
-													<option value="">Select Status</option>
-													<option value="Sent">Sent</option>
-													<option value="Pending">Pending</option>
-												</select>
-											</div>
-										</div>
-									</div>
-
-									<div class="row">
-										<div class="col-md-6">
-											<div class="form-group mb-3">
-												<label class="form-label" for="disposition">Disposition</label>
-												<input class="form-control" id="disposition" name="disposition"
-													type="text" placeholder="Enter Disposition">
-											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="form-group mb-3">
-												<label class="form-label" for="nextFollowUpDate">Next Follow-Up
-													Date</label>
-												<input class="form-control" id="nextFollowUpDate"
-													name="nextFollowUpDate" type="date" required>
-											</div>
-										</div>
-									</div>
-
-									<div class="row">
-										<div class="col-md-12">
-											<div class="form-group mb-3">
-												<label class="form-label" for="comments">Comments</label>
-												<textarea class="form-control" id="comments" name="comments"
-													placeholder="Enter Comments" rows="3"></textarea>
-											</div>
-										</div>
-									</div>
-
-									<div class="row">
-										<div class="col-md-12">
-											<div class="directions">
-												<button class="btn btn-outline-danger"
-													onclick="closeEmployeePopup()">Cancel</button>
-												&nbsp;
-												<button type="button" class="btn btn-outline-success"
-													onclick="submitForm()">Save</button>
-											</div>
-										</div>
-									</div>
-								</form>
-
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-
 			<div class="card" style="margin-top: 20px;">
 				<!--Employee List view-->
 				<div class="row">
@@ -386,111 +510,122 @@
 							</div>
 						</div>
 
-						<div class="table-container">
-							<table>
-								<thead>
-									<tr>
-										<th>
-											<input class="direction-left" type="checkbox" id="selectAll"
-												onclick="toggleSelectAll(this)" />
-											S.N.
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('vehicleNumber')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Vehicle
-													Number</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('partnerNumber')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Partner
-													Number</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('agentName')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Agent Name</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('driverName')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Driver Name</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('city')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> City</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('lastYearPolicyIssuedBy')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Last Year
-													IssuedBy</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('partnerRate')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Partner
-													rate</b>
-											</button>
-										</th>
-										<!--<th>
-											<button class="tableFilter" data-column="newExpiryDate" onclick="sortTable('newExpiryDate')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> New Expiry
-													Date</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('message')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Message</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('messageLink')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Message
-													Link</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('status')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Status</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('policyIssuedDate')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Policy Issued
-													Date</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('messageStatus')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Message
-													Status</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('disposition')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Disposition</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('nextFollowUpDate')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Next FollowUp
-													Date</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('comments')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Comments</b>
-											</button>
-										</th>-->
-										<th><i class="fa fa-pencil" aria-hidden="true"></i> Action </th>
-									</tr>
-								</thead>
-								<tbody id="userTableBody">
-									<!-- Table rows go here -->
-								</tbody>
-							</table>
+						<div class="table-container" style="border: 1px solid #ddd;padding: 5px;width: 1405px;">
+							<div>
+								<table>
+									<thead>
+										<tr>
+											<th class="srWidth">
+												<input class="direction-left" type="checkbox" id="selectAll"
+													onclick="toggleSelectAll(this)" />
+												S.N.
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('vehicleNumber')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Vehicle
+														Number</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('partnerNumber')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Partner
+														Number</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('agentName')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Agent
+														Name</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('driverName')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Driver
+														Name</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('city')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> City</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter"
+													onclick="sortTable('lastYearPolicyIssuedBy')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Last Year
+														IssuedBy</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('partnerRate')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Partner
+														rate</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" data-column="newExpiryDate"
+													onclick="sortTable('newExpiryDate')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> New Expiry
+														Date</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('message')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Message</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('messageLink')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Message
+														Link</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('status')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Status</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('policyIssuedDate')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Policy
+														Issued
+														Date</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('messageStatus')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Message
+														Status</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('disposition')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b>
+														Disposition</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('nextFollowUpDate')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Next
+														FollowUp
+														Date</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('comments')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b>
+														Comments</b>
+												</button>
+											</th>
+											<th class="actionWidth"><i class="fa fa-pencil" aria-hidden="true"></i>
+												Action </th>
+										</tr>
+									</thead>
+									<tbody id="userTableBody">
+										<!-- Table rows go here -->
+									</tbody>
+								</table>
+							</div>
 						</div>
 
 
@@ -499,110 +634,158 @@
 						</div>
 					</div>
 				</div>
-			</div>
+				<!--</div>-->
 
-			<!-- Task Delete Popup Start-->
-			<div class="row">
-				<div class="col-md-12">
-					<div id="taskDelPopup" class="empDelOverlay" style="display: none;">
-						<div class="empDelPopupContent">
-							<p id="taskDelMessage"></p>
-							<div class="empDelPopupButtons">
-								<button id="taskDelYes" class="empDelBtnRemove">Yes</button>
-								<button id="taskDelNo" class="empDelBtn">No</button>
+				<!-- Task Delete Popup Start-->
+				<div class="row">
+					<div class="col-md-12">
+						<div id="taskDelPopup" class="empDelOverlay" style="display: none;">
+							<div class="empDelPopupContent">
+								<p id="taskDelMessage"></p>
+								<div class="empDelPopupButtons">
+									<button id="taskDelYes" class="empDelBtnRemove">Yes</button>
+									<button id="taskDelNo" class="empDelBtn">No</button>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<!--Task Delete End-->
+				<!--Task Delete End-->
 
 
-			<!-- Bulk Upload Popup Start-->
-			<div class="row">
-				<div class="col-md-12">
-					<div id="taskPopup" class="empDelOverlay" style="display: none;">
-						<div class="empUploadPopupContent">
-							<div class="card">
-								<h6 class="header"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Upload Task
-								</h6>
-								<p id="taskMessage"></p>
+				<!-- Bulk Upload Popup Start-->
+				<div class="row">
+					<div class="col-md-12">
+						<div id="taskPopup" class="empDelOverlay" style="display: none;">
+							<div class="empUploadPopupContent">
+								<div class="card">
+									<h6 class="header"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Upload Task
+									</h6>
+									<p id="taskMessage"></p>
 
-								<div class="form-group mb-3">
-									<label class="form-label" for="taskFile" style="float: left;">Assign To:</label>
-									<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-										<div class="dropdown">
-											<select id="assignTo" type="button" class="btns dropdown-toggle assignTo">
-												<option class="form-control" value="">Select Employee</option>
-											</select>
+									<div class="form-group mb-3">
+										<label class="form-label" for="taskFile" style="float: left;">Assign To:</label>
+										<div class="btn-group" role="group"
+											aria-label="Button group with nested dropdown">
+											<div class="dropdown">
+												<select id="assignTo" type="button"
+													class="btns dropdown-toggle assignTo">
+													<option class="form-control" value="">Select Employee</option>
+												</select>
+											</div>
 										</div>
 									</div>
-								</div>
 
-								<div class="form-group mb-3">
-									<label class="form-label" for="taskFile" style="float: left;">Select File:</label>
-									<input type="file" class="form-control" id="taskFile" name="taskFile"
-										accept=".xls,.xlsx,.csv,.excel">
-								</div>
+									<div class="form-group mb-3">
+										<label class="form-label" for="taskFile" style="float: left;">Select
+											File:</label>
+										<input type="file" class="form-control" id="taskFile" name="taskFile"
+											accept=".xls,.xlsx,.csv,.excel">
+									</div>
 
 
 
-								<div class="empDelPopupButtons">
-									<button id="upload" class="uploadBtn">Upload</button>
-									<button id="uploadCancle" class="empDelBtnRemove">Cancel</button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!--Task Delete End-->
-
-			<!-- Task Assign Popup Start-->
-
-			<!-- Bulk Upload Popup Start-->
-			<div class="row">
-				<div class="col-md-12">
-					<div id="taskAssignPopup" class="empDelOverlay" style="display: none;">
-						<div class="empUploadPopupContent">
-							<div class="card">
-								<h6 class="header"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Assign Task
-								</h6>
-								<p id="taskAssignMessage"></p>
-
-								<div class="form-group mb-3">
-									<label class="form-label" for="taskFile" style="float: left;">Assign To:</label>
-									<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-										<div class="dropdown">
-											<select id="assignListTo" type="button"
-												class="btns dropdown-toggle assignTo">
-												<option class="form-control" value="">Select Employee</option>
-											</select>
-
-										</div>
+									<div class="empDelPopupButtons">
+										<button id="upload" class="uploadBtn">Upload</button>
+										<button id="uploadCancle" class="empDelBtnRemove">Cancel</button>
 									</div>
 								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--Task Delete End-->
 
-								<div class="empDelPopupButtons">
-									<button id="taskAssignYes" class="uploadBtn">Assign</button>
-									<button id="taskAssignNo" class="empDelBtnRemove">Cancel</button>
+				<!-- Task Assign Popup Start-->
+				<div class="row">
+					<div class="col-md-12">
+						<div id="taskAssignPopup" class="empDelOverlay" style="display: none;">
+							<div class="empUploadPopupContent">
+								<div class="card">
+									<h6 class="header"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Assign Task
+									</h6>
+									<p id="taskAssignMessage"></p>
+
+									<div class="form-group mb-3">
+										<label class="form-label" for="taskFile" style="float: left;">Assign To:</label>
+										<div class="btn-group" role="group"
+											aria-label="Button group with nested dropdown">
+											<div class="dropdown">
+												<select id="assignListTo" type="button"
+													class="btns dropdown-toggle assignTo">
+													<option class="form-control" value="">Select Employee</option>
+												</select>
+
+											</div>
+										</div>
+									</div>
+
+									<div class="empDelPopupButtons">
+										<button id="taskAssignYes" class="uploadBtn">Assign</button>
+										<button id="taskAssignNo" class="empDelBtnRemove">Cancel</button>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
+				<!--Task Assign End-->
+
+				<!-- Task Update Message Popup Start-->
+				<div class="row">
+					<div class="col-md-12">
+						<div id="messagePopup" class="empDelOverlay" style="display: none;">
+							<div class="card">
+								<div class="messageCommentPopupContent">
+									<!--<p id="messageErrorText"></p>-->
+									<div class="form-group mb-3">
+										<label class="form-label" for="taskFile" style="float: left;">Enter
+											Message:</label>
+										<textarea class="form-control textAreaHeight" id="userMessage"
+											name="userMessage" placeholder="Enter Message" rows="3"></textarea>
+									</div>
+									<div class="messageDelPopupButtons">
+										<button id="messageDelYes" class="empDelBtnRemove">Update</button>
+										<button id="messageDelNo" class="empDelBtn">Cancel</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--Task Update Message End-->
+
+				<!-- Task Update Comment Popup Start-->
+				<div class="row">
+					<div class="col-md-12">
+						<div id="commentPopup" class="empDelOverlay" style="display: none;">
+							<div class="card">
+								<div class="messageCommentPopupContent">
+								<!--<p id="commentErrorText"></p>-->
+								<div class="form-group mb-3">
+									<label class="form-label" for="taskFile" style="float: left;">Enter Message:</label>
+									<textarea class="form-control textAreaHeight" id="userComment" name="userComment"
+										placeholder="Enter Message" rows="3"></textarea>
+								</div>
+								<div class="empDelPopupButtons">
+									<button id="commentDelYes" class="empDelBtnRemove">Update</button>
+									<button id="commentDelNo" class="empDelBtn">Cancel</button>
+								</div>
+							</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--Task Update Comment End-->
+
 			</div>
-
-			<!--Task Assign End-->
-
 		</div>
-	</div>
-	<script>
-		window.addEventListener('load', function () {
-			fetchTasks(0);
-			populateEmployeeDropdown();
-		});
-	</script>
+		<script>
+			window.addEventListener('load', function () {
+				fetchTasks(0);
+				populateEmployeeDropdown();
+			});
+		</script>
 </body>
 
 </html>

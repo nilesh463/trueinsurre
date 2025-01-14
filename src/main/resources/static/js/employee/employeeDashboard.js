@@ -43,42 +43,111 @@ function submitForm() {
 		});
 }
 //add new Employee End//
- 
+
 async function fetchTasks(page = currentPage, size = currentSize) {
-  try {
-	  var taskType = document.getElementById('btnGroupDrop1');
-	  if(taskType != null){
-	  	taskType = taskType.value;
-	  }
-	  
-	  var userId = document.getElementById('userId').value;
-	  
-	  var url = `/task/emp-active/${userId}?page=${page}&size=${size}`;
-	  
-	  if(taskType == 'active'){
-		  url = url = `/task/emp-active/${userId}?page=${page}&size=${size}`;
-	  } else if(taskType == 'completed'){
-		  url = url = `/task/emp-completed/${userId}?page=${page}&size=${size}`;
-	  } else if(taskType == 'all'){
-		  url = url = `/task/emp-all/${userId}?page=${page}&size=${size}`;
-	  }
-	  
-    const response = await fetch(url);
-    const data = await response.json();
+	try {
+		var taskType = document.getElementById('btnGroupDrop1');
+		if (taskType != null) {
+			taskType = taskType.value;
+		}
 
-    // Populate table with task data
-    const userTableBody = document.getElementById("userTableBody");
-    userTableBody.innerHTML = ""; // Clear existing rows
-    if(data.tasks.length == 0){
-		userTableBody.style.textAlign = "center";
-		userTableBody.innerText = "No Task assign for you."
-	}
+		var selectDisposition = encodeURIComponent(document.getElementById('selectDisposition').value);
+		var selectStatus = encodeURIComponent(document.getElementById('selectStatus').value);
+		var userId = encodeURIComponent(document.getElementById('userId').value);
 
-    data.tasks.forEach((task, index) => {
-      const row = document.createElement("tr");
-      row.setAttribute("data-row", JSON.stringify(task)); // Store row data for filtering
-      row.innerHTML = `
-        <td>
+		var url = `/task/emp-active/${userId}?page=${page}&size=${size}`;
+
+		if (selectDisposition && selectStatus) {
+			url = `/task/by-status-disposition/${userId}/${selectDisposition}/${selectStatus}?page=${page}&size=${size}`;
+		} else if (selectDisposition) {
+			url = `/task/by-disposition/${userId}/${selectDisposition}?page=${page}&size=${size}`;
+		} else if (selectStatus) {
+			url = `/task/by-status/${userId}/${selectStatus}?page=${page}&size=${size}`;
+		} else {
+			if (taskType == 'active') {
+				url = `/task/emp-active/${userId}?page=${page}&size=${size}`;
+			} else if (taskType == 'completed') {
+				url = `/task/emp-completed/${userId}?page=${page}&size=${size}`;
+			} else if (taskType == 'all') {
+				url = `/task/emp-all/${userId}?page=${page}&size=${size}`;
+			}
+		}
+		const response = await fetch(url);
+		const data = await response.json();
+
+		// Populate table with task data
+		const userTableBody = document.getElementById("userTableBody");
+		userTableBody.innerHTML = ""; // Clear existing rows
+
+		const statusOptions = [
+			"S1-Payment Collection Pending",
+			"S2-Finance Confirmation Pending",
+			"S3-Document Pending",
+			"S4-Policy request Pending",
+			"S4.1-EWI Pending",
+			"S5-Pending from vendor",
+			"S5.1-Pending for core insurance",
+			"S5.2-Agent different case",
+			"S6-Policy issued",
+			"Not Interested",
+			"Renewed Outside"
+		];
+
+		const dispositionOptionsList = [
+			"RNR",
+			"Not Interested",
+			"Follow up",
+			"Renewed Outside",
+			"Ready to pay today",
+			"Issued",
+			"Paid",
+			"Payment Issue",
+			"Others",
+			"Price is High (C)",
+			"Financial issue (C)",
+			"Need EMI Option (C)",
+			"Not Happy with Insurance Vendor (NC)",
+			"Not Happy with Porter Service (NC)",
+			"Wrong Number (NC)",
+			"Sold his vehicle (NC)",
+			"Relative is an Agent (NC)",
+			"Payment Mode issue",
+			"EWI Interest is high",
+			"Not Answering the call",
+			"Not Eligible",
+			"KYC issue"
+		];
+
+		const messageStatusOptions = [
+			"message sent",
+			"Not on whatsapp"
+		];
+		if (data.tasks.length == 0) {
+			userTableBody.style.textAlign = "center";
+			userTableBody.innerText = "No Task assign for you."
+		}
+
+		data.tasks.forEach((task, index) => {
+			const row = document.createElement("tr");
+
+			const selectOptions = statusOptions.map(option => {
+				const isSelected = task.status === option ? 'selected' : ''; // Check if the option matches task.status
+				return `<option value="${option}" ${isSelected}>${option}</option>`;
+			}).join("");
+
+			const dispositionOptions = dispositionOptionsList.map(option => {
+				const isSelected = task.disposition === option ? 'selected' : ''; // Check if the option matches task.disposition
+				return `<option value="${option}" ${isSelected}>${option}</option>`;
+			}).join("");
+
+			const selectMessageStatusOptions = messageStatusOptions.map(option => {
+				const isSelected = task.messageStatus === option ? 'selected' : ''; // Check if the option matches task.messageStatus
+				return `<option value="${option}" ${isSelected}>${option}</option>`;
+			}).join("");
+
+			row.setAttribute("data-row", JSON.stringify(task)); // Store row data for filtering
+			row.innerHTML = `
+        <td class="srWidth">
             <input type="checkbox" class="rowCheckbox direction-left" data-task-id="${task.id}" />
             <span class="serialNumber">${page * size + index + 1}</span>
         </td>
@@ -90,40 +159,99 @@ async function fetchTasks(page = currentPage, size = currentSize) {
         <td data-column="lastYearPolicyIssuedBy">${task.lastYearPolicyIssuedBy || "-"}</td>
         <td data-column="partnerRate">${task.partnerRate || "-"}</td>
         <td data-column="newExpiryDate">${task.newExpiryDate || "-"}</td>
-        <td data-column="message">${task.message || "-"}</td>
-        <td data-column="messageLink">${task.messageLink || "-"}</td>
-        <td data-column="status">${task.status || "-"}</td>
-        <td data-column="policyIssuedDate">${task.policyIssuedDate || "-"}</td>
-        <td data-column="messageStatus">${task.messageStatus}</td>
-        <td data-column="disposition">${task.disposition || "-"}</td>
-        <td data-column="nextFollowUpDate">${task.nextFollowUpDate || "-"}</td>
-        <td data-column="comments">${task.comments || "-"}</td>
-      `;
-      userTableBody.appendChild(row);
-    });
+		<td data-column="message" onclick="confirmMessage('${task.message}, ${task.id}')">
+		    ${task.message || "-"}
+		</td>
+		 <td data-column="messageLink">
+			<button type="button" class="btns" 
+				onclick="redirectToWhatsApp('${task.partnerNumber}', '${task.message.replace(/'/g, "\\'")}')">
+				Open in WhatsApp
+			</button>
+		</td>
 
-    // Update pagination buttons
-    setupPagination(data.currentPage, data.totalPages);
-  } catch (error) {
-    console.error("Error fetching tasks:", error);
-  }
+		 <td data-column="status">
+				<select class="form-control statusDropdown" data-task-id="${task.id}" onchange="statusUpdate(this.value, '${task.id}', 'Status')">
+					${selectOptions}
+				</select>
+			</td>
+		 <td data-column="policyIssuedDate">${task.policyIssuedDate || "-"}</td>
+		 <td data-column="messageStatus">
+				<select class="form-control messageStatusDropdown" data-task-id="${task.id}" onchange="statusUpdate(this.value, '${task.id}', 'MessageStatus')">
+					${selectMessageStatusOptions}
+				</select>
+			</td>
+		 <td data-column="disposition">
+				<select class="form-control dispositionDropdown" data-task-id="${task.id}" onchange="statusUpdate(this.value, '${task.id}', 'Disposition')">
+					${dispositionOptions}
+				</select>
+			</td>
+		 <td data-column="nextFollowUpDate">${task.nextFollowUpDate || "-"}</td>
+		 
+		 <td data-column="comments" onclick="confirmMessage('${task.comments}, ${task.id}')">
+		    ${task.comments || "-"}
+		</td>
+      `;
+			userTableBody.appendChild(row);
+		});
+
+		// Update pagination buttons
+		setupPagination(data.currentPage, data.totalPages);
+	} catch (error) {
+		console.error("Error fetching tasks:", error);
+	}
 }
 
 
-       /* <td data-column="newExpiryDate">${task.newExpiryDate || "-"}</td>
-        <td data-column="message">${task.message || "-"}</td>
-        <td data-column="messageLink">${task.messageLink || "-"}</td>
-        <td data-column="status">${task.status || "-"}</td>
-        <td data-column="policyIssuedDate">${task.policyIssuedDate || "-"}</td>
-        <td data-column="messageStatus">${task.messageStatus}</td>
-        <td data-column="disposition">${task.disposition || "-"}</td>
-        <td data-column="nextFollowUpDate">${task.nextFollowUpDate || "-"}</td>
-        <td data-column="comments">${task.comments || "-"}</td>*/
+/* <td data-column="newExpiryDate">${task.newExpiryDate || "-"}</td>
+ <td data-column="message">${task.message || "-"}</td>
+ <td data-column="messageLink">${task.messageLink || "-"}</td>
+ <td data-column="status">
+		<select class="form-control statusDropdown" data-task-id="${task.id}">
+			${selectOptions}
+		</select>
+	</td>
+ <td data-column="policyIssuedDate">${task.policyIssuedDate || "-"}</td>
+ <td data-column="messageStatus">
+		<select class="form-control messageStatusDropdown" data-task-id="${task.id}">
+			${selectMessageStatusOptions}
+		</select>
+	</td>
+ <td data-column="disposition">
+		<select class="form-control dispositionDropdown" data-task-id="${task.id}">
+			${dispositionOptions}
+		</select>
+	</td>
+ <td data-column="nextFollowUpDate">${task.nextFollowUpDate || "-"}</td>
+ <td data-column="comments">${task.comments || "-"}</td>*/
+
+function statusUpdate(option, taskId, validateKey) {
+	const payload = {
+		id: taskId,
+		message: option, // Convert to numbers if IDs are numeric
+		validateKey: validateKey
+	};
+
+	fetch('/task/status', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(payload)
+	})
+		.then(response => response.json())
+		.then(data => {
+			fetchTasks(currentPage);
+			alert(data.message);
+		})
+		.catch(error => {
+			console.error('Error:', error);
+		});
+}
 
 function updateEntriesPerPage(size) {
-  currentSize = parseInt(size, 10); // Update entries per page
-  currentPage = 0; // Reset to the first page
-  fetchTasks(); // Fetch tasks with the new page size
+	currentSize = parseInt(size, 10); // Update entries per page
+	currentPage = 0; // Reset to the first page
+	fetchTasks(); // Fetch tasks with the new page size
 }
 
 function setupPagination(current, totalPages) {
@@ -160,25 +288,25 @@ function setupPagination(current, totalPages) {
 
 //filter Table
 function filterTable(searchValue) {
-  const userTableBody = document.getElementById("userTableBody");
-  const rows = Array.from(userTableBody.rows);
+	const userTableBody = document.getElementById("userTableBody");
+	const rows = Array.from(userTableBody.rows);
 
-  if (searchValue.trim() === "") {
-    // If search is empty, re-fetch and reload the default table data
-    fetchTasks();
-    return;
-  }
+	if (searchValue.trim() === "") {
+		// If search is empty, re-fetch and reload the default table data
+		fetchTasks();
+		return;
+	}
 
-  const lowerCaseSearch = searchValue.toLowerCase();
+	const lowerCaseSearch = searchValue.toLowerCase();
 
-  rows.forEach((row) => {
-    const rowData = row.getAttribute("data-row");
-    if (rowData && rowData.toLowerCase().includes(lowerCaseSearch)) {
-      row.style.display = ""; // Show matching row
-    } else {
-      row.style.display = "none"; // Hide non-matching row
-    }
-  });
+	rows.forEach((row) => {
+		const rowData = row.getAttribute("data-row");
+		if (rowData && rowData.toLowerCase().includes(lowerCaseSearch)) {
+			row.style.display = ""; // Show matching row
+		} else {
+			row.style.display = "none"; // Hide non-matching row
+		}
+	});
 }
 
 
@@ -275,10 +403,109 @@ function editEmployee(id) {
 		});
 }
 
+function redirectToWhatsApp(mobileNumber, message) {
+	if (!mobileNumber) {
+		alert('Mobile number is missing.');
+		return;
+	}
+
+	const whatsappUrl = `https://web.whatsapp.com/send?phone=` + mobileNumber + `&text=+` + message;
+
+	window.open(whatsappUrl, '_blank');
+}
+
+//Message Update
+function confirmMessage(messageText, id) {
+
+	const popup = document.getElementById("messagePopup");
+	//const message = document.getElementById("messageErrorText");
+	popup.style.display = "flex";
+
+	const userMessage = document.getElementById("userMessage");
+	userMessage .innerHTML = messageText;
+	/*message.innerHTML = `Update Message.`;*/
+
+	const yesButton = document.getElementById("messageDelYes");
+	const noButton = document.getElementById("messageDelNo");
 
 
+	yesButton.replaceWith(yesButton.cloneNode(true));
+	noButton.replaceWith(noButton.cloneNode(true));
+
+	document.getElementById("messageDelYes").addEventListener("click", function() {
+		updateMessage(messageText, id);
+		popup.style.display = "none";
+	});
+
+	document.getElementById("messageDelNo").addEventListener("click", function() {
+		popup.style.display = "none";
+	});
+}
+
+function updateMessage(message, id) {
+	fetch("/task/update-message/" + id, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+	})
+		.then((response) => response.json())
+		.then((data) => {
+			alert(data.message);
+			if (data.status === 200) {
+				fetchUsers(currentPage); // Refresh the user list
+			}
+		})
+		.catch((error) => {
+			console.error("Error:", error);
+		});
+}
+
+// comment Update
+function confirmComment(messageText, id) {
+
+	const popup = document.getElementById("commentPopup");
+	//const message = document.getElementById("commentErrorText");
+	popup.style.display = "flex";
 
 
+	const userComment = document.getElementById("userComment");
+	userComment .innerHTML = messageText;
+	//message.textContent = ;
+	//message.innerHTML = `Are you sure you want to remove?`;
+
+	const yesButton = document.getElementById("commentDelYes");
+	const noButton = document.getElementById("commentDelNo");
 
 
+	yesButton.replaceWith(yesButton.cloneNode(true));
+	noButton.replaceWith(noButton.cloneNode(true));
 
+	document.getElementById("commentDelYes").addEventListener("click", function() {
+		updateMessage(message, id);
+		popup.style.display = "none";
+	});
+
+	document.getElementById("commentDelNo").addEventListener("click", function() {
+		popup.style.display = "none";
+	});
+}
+
+function updateComment(messageText, id) {
+	fetch("/task/update-comment/" + id, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+	})
+		.then((response) => response.json())
+		.then((data) => {
+			alert(data.message);
+			if (data.status === 200) {
+				fetchUsers(currentPage); // Refresh the user list
+			}
+		})
+		.catch((error) => {
+			console.error("Error:", error);
+		});
+}

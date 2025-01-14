@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.trueinsurre.dto.CsvValidateResponce;
+import com.trueinsurre.dto.Responce;
+import com.trueinsurre.dto.StatusDto;
 import com.trueinsurre.dto.TaskDto;
 import com.trueinsurre.modal.Task;
 
@@ -23,6 +25,23 @@ public interface TaskService {
 	public void taskAssign(List<Long> taskList, List<Long> userList);
 	public void markAllCompleted(List<Long> taskList);
 	void taskDeAssign(List<Long> taskList);
-	public Task addTask(TaskDto taskDto);
+	public Task addTask(TaskDto taskDto)throws ParseException;
+	public Responce statusUpdate(StatusDto statusDto);
+	public Page<TaskDto> getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndStatus(boolean b, boolean c, boolean d,
+			String message, int page, int size);
+	Page<TaskDto> getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndDisposition(boolean isAssign,
+			boolean isCompleted, boolean isDeleted, String message, int page, int size);
+	Page<TaskDto> getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndDispositionAndStatus(boolean isAssign,
+			boolean isCompleted, boolean isDeleted, String disposition, String status, int page,
+			int size);
+	
+	public Page<TaskDto> getAllTaskByUserAndByIsAssignAndByIsCompletedANdByIsDeletedAndStatus(Long userId, boolean b, boolean c, boolean d,
+			String message, int page, int size);
+	Page<TaskDto> getAllTaskByUserAndByIsAssignAndByIsCompletedANdByIsDeletedAndDisposition(Long userId, boolean isAssign,
+			boolean isCompleted, boolean isDeleted, String message, int page, int size);
+	Page<TaskDto> getAllTaskByUserAndByIsAssignAndByIsCompletedANdByIsDeletedAndDispositionAndStatus(Long userId, boolean isAssign,
+			boolean isCompleted, boolean isDeleted, String disposition, String status, int page,
+			int size);
+	TaskDto getEdit(Long id);
 	
 }

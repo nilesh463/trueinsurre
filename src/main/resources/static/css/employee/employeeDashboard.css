@@ -57,7 +57,7 @@
 
 table {
 	width: 100%;
-	border-collapse: collapse;
+	table-layout: fixed;
 }
 
 .card {
@@ -66,9 +66,17 @@ table {
 
 th,
 td {
+	width: 200px;
 	padding: 10px;
 	text-align: center;
 	border: 1px solid #ddd;
+}
+.srWidth{
+	width: 71px;
+}
+
+.actionWidth {
+    width: 90px;
 }
 
 th {
@@ -308,4 +316,26 @@ tr:hover {
 	background-color: green;
 	color: white;
 	
+}
+
+.marginFilterButton{
+	margin-top: 8px;
+}
+
+.userList{
+	width: 200px;
+}
+
+.messageCommentPopupContent {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 390px;
+    
+}
+
+.textAreaHeight{
+	height: 200px;
 }

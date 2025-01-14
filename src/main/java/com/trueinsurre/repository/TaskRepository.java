@@ -14,5 +14,18 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     Page<Task> findByIsAssignAndIsCompletedAndIsDeleted(boolean isAssign, boolean isCompleted, boolean isDeleted, Pageable pageable);
     Page<Task> findByUsers_IdAndIsAssignAndIsDeleted(Long userId, boolean isAssign, boolean isDeleted, Pageable pageable);
     Page<Task> findByUsers_IdAndIsAssignAndIsCompletedAndIsDeleted(Long userId, boolean isAssign, boolean isCompleted, boolean isDeleted, Pageable pageable);
+	Page<Task> findByIsAssignAndIsCompletedAndIsDeletedAndStatus(boolean isAssign, boolean isCompleted,
+			boolean isDeleted, String status, Pageable pageable);
+	Page<Task> findByIsAssignAndIsCompletedAndIsDeletedAndDisposition(boolean isAssign, boolean isCompleted,
+					boolean isDeleted, String status, Pageable pageable);
+	Page<Task> findByIsAssignAndIsCompletedAndIsDeletedAndDispositionAndStatus(boolean isAssign, boolean isCompleted,
+			boolean isDeleted,String disposition, String status, Pageable pageable);
+	
+	Page<Task> findByUsers_IdAndIsAssignAndIsCompletedAndIsDeletedAndStatus(Long userId, boolean isAssign, boolean isCompleted,
+			boolean isDeleted, String status, Pageable pageable);
+	Page<Task> findByUsers_IdAndIsAssignAndIsCompletedAndIsDeletedAndDisposition(Long userId, boolean isAssign, boolean isCompleted,
+					boolean isDeleted, String status, Pageable pageable);
+	Page<Task> findByUsers_IdAndIsAssignAndIsCompletedAndIsDeletedAndDispositionAndStatus(Long userId, boolean isAssign, boolean isCompleted,
+			boolean isDeleted,String disposition, String status, Pageable pageable);
 
 }

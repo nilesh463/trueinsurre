@@ -21,13 +21,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.trueinsurre.dto.CsvValidate;
 import com.trueinsurre.dto.CsvValidateResponce;
+import com.trueinsurre.dto.Responce;
+import com.trueinsurre.dto.StatusDto;
 import com.trueinsurre.dto.TaskDto;
 import com.trueinsurre.exceptionHandeler.InvalidData;
+import com.trueinsurre.exceptionHandeler.NotFound;
 import com.trueinsurre.modal.Task;
 import com.trueinsurre.modal.User;
 import com.trueinsurre.repository.TaskRepository;
 import com.trueinsurre.service.TaskService;
 import com.trueinsurre.user.repository.UserRepository;
+import com.trueinsurre.utilityServices.DateUtility;
 
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -215,6 +219,21 @@ public class TaskServiceImpl implements TaskService {
 
 		return taskPage.map(this::convertToDto);
 	}
+	
+	@Override
+	public TaskDto getEdit(Long id) {
+		Task task = taskRepository.findById(id).orElseThrow(()-> new NotFound("No Task Found By id: "+id));
+		TaskDto taskdto = convertToDto(task);
+		try {
+			taskdto.setNewExpiryDate(DateUtility.convertToDDMMYYYY(taskdto.getNewExpiryDate()));
+			taskdto.setNextFollowUpDate(DateUtility.convertToDDMMYYYY(taskdto.getNextFollowUpDate()));
+			taskdto.setPolicyIssuedDate(DateUtility.convertToDDMMYYYY(taskdto.getPolicyIssuedDate()));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return taskdto;
+	}
 
 	private TaskDto convertToDto(Task task) {
 		TaskDto taskDto = new TaskDto();
@@ -249,7 +268,7 @@ public class TaskServiceImpl implements TaskService {
 	}
 
 	@Override
-	public Task addTask(TaskDto taskDto) {
+	public Task addTask(TaskDto taskDto) throws ParseException {
 		Task taskObj = new Task();
 
 		if (Objects.nonNull(taskDto.getId())) {
@@ -268,13 +287,13 @@ public class TaskServiceImpl implements TaskService {
 		taskObj.setCity(taskDto.getCity());
 		taskObj.setLastYearPolicyIssuedBy(taskDto.getLastYearPolicyIssuedBy());
 		taskObj.setPartnerRate(taskDto.getPartnerRate());
-		taskObj.setNewExpiryDate(taskDto.getNewExpiryDate());
+		taskObj.setNewExpiryDate(DateUtility.convertToMMDDYYYY(taskDto.getNewExpiryDate()));
 		taskObj.setMessage(taskDto.getMessage());
 		taskObj.setMessageLink(taskDto.getMessageLink());
-		taskObj.setPolicyIssuedDate(taskDto.getPolicyIssuedDate());
+		taskObj.setPolicyIssuedDate(DateUtility.convertToMMDDYYYY(taskDto.getPolicyIssuedDate()));
 		taskObj.setMessageStatus(taskDto.getMessageStatus());
 		taskObj.setDisposition(taskDto.getDisposition());
-		taskObj.setNextFollowUpDate(taskDto.getNextFollowUpDate());
+		taskObj.setNextFollowUpDate(DateUtility.convertToMMDDYYYY(taskDto.getNextFollowUpDate()));
 		taskObj.setComments(taskDto.getComments());
 
 		// Map boolean fields
@@ -345,6 +364,86 @@ public class TaskServiceImpl implements TaskService {
 			}
 		}
 		taskRepository.saveAll(list);
+	}
+
+	@Override
+	public Responce statusUpdate(StatusDto statusDto) {
+		Responce response = new Responce();
+		response.setStatus(200L);
+		response.setMessage(statusDto.getValidateKey()+"  status updated.");
+		
+		Task task = taskRepository.findById(statusDto.getId()).orElse(null);
+		
+		if(statusDto.getValidateKey().equalsIgnoreCase("Status")) {
+			task.setStatus(statusDto.getMessage());
+		} else if(statusDto.getValidateKey().equalsIgnoreCase("MessageStatus")) {
+			task.setMessageStatus(statusDto.getMessage());
+		} else if(statusDto.getValidateKey().equalsIgnoreCase("Disposition")) {
+			task.setDisposition(statusDto.getMessage());
+		}
+		taskRepository.save(task);
+		return response;
+	}
+
+	@Override
+	public Page<TaskDto> getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndStatus(boolean isAssign, boolean isCompleted, boolean isDeleted,
+			String message, int page, int size) {
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+		Page<Task> taskPage = taskRepository.findByIsAssignAndIsCompletedAndIsDeletedAndStatus(isAssign,
+				isCompleted, isDeleted, message, pageable);
+
+		return taskPage.map(this::convertToDto);
+	}
+	
+	@Override
+	public Page<TaskDto> getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndDisposition(boolean isAssign, boolean isCompleted, boolean isDeleted,
+			String message, int page, int size) {
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+		Page<Task> taskPage = taskRepository.findByIsAssignAndIsCompletedAndIsDeletedAndDisposition(isAssign,
+				isCompleted, isDeleted, message, pageable);
+
+		return taskPage.map(this::convertToDto);
+	}
+	
+	@Override
+	public Page<TaskDto> getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndDispositionAndStatus(boolean isAssign, boolean isCompleted, boolean isDeleted,
+			String disposition, String status, int page, int size) {
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+		Page<Task> taskPage = taskRepository.findByIsAssignAndIsCompletedAndIsDeletedAndDispositionAndStatus(isAssign,
+				isCompleted, isDeleted, disposition, status, pageable);
+
+		return taskPage.map(this::convertToDto);
+	}
+
+	@Override
+	public Page<TaskDto> getAllTaskByUserAndByIsAssignAndByIsCompletedANdByIsDeletedAndStatus(Long userId, boolean isAssign, boolean isCompleted, boolean isDeleted,
+			String message, int page, int size) {
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+		Page<Task> taskPage = taskRepository.findByUsers_IdAndIsAssignAndIsCompletedAndIsDeletedAndStatus(userId, isAssign,
+				isCompleted, isDeleted, message, pageable);
+
+		return taskPage.map(this::convertToDto);
+	}
+
+	@Override
+	public Page<TaskDto> getAllTaskByUserAndByIsAssignAndByIsCompletedANdByIsDeletedAndDisposition(Long userId,boolean isAssign, boolean isCompleted, boolean isDeleted,
+			String message, int page, int size) {
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+		Page<Task> taskPage = taskRepository.findByUsers_IdAndIsAssignAndIsCompletedAndIsDeletedAndDisposition(userId, isAssign,
+				isCompleted, isDeleted, message, pageable);
+
+		return taskPage.map(this::convertToDto);
+	}
+
+	@Override
+	public Page<TaskDto> getAllTaskByUserAndByIsAssignAndByIsCompletedANdByIsDeletedAndDispositionAndStatus(Long userId,
+			boolean isAssign, boolean isCompleted, boolean isDeleted,
+			String disposition, String status, int page, int size) {
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+		Page<Task> taskPage = taskRepository.findByUsers_IdAndIsAssignAndIsCompletedAndIsDeletedAndDispositionAndStatus(userId, isAssign,
+				isCompleted, isDeleted, disposition, status, pageable);
+
+		return taskPage.map(this::convertToDto);
 	}
 
 }

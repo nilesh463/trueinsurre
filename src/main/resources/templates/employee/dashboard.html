@@ -45,7 +45,7 @@
 			<div class="user-dropdown">
 				<span class="username" id="username"><i class="fa fa-user" aria-hidden="true"></i>&nbsp; <span
 						th:text="${user.name}"></span></span>
-					<input type="hidden" id="userId" th:value="${user.id}">
+				<input type="hidden" id="userId" th:value="${user.id}">
 				<div class="dropdown-menu" id="dropdown-menu">
 					<a href="#" class="dropdown-item"><i class="fa fa-cog" aria-hidden="true"></i>&nbsp; Settings</a>
 					<a href="/logout" class="dropdown-item"><i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;
@@ -70,13 +70,14 @@
 							<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
 								<!--<button type="button" class="btns" onclick="addTask()">Add Task</button>-->
 								<div class="dropdown">
-									<select id="btnGroupDrop1" type="button" class="btns dropdown-toggle" onchange="fetchTasks();">
-										<option class="dropdown-item form-control" value="active" > Active Task</option>
-										<option class="dropdown-item form-control" value="completed" >
-											 Completed Task
+									<select id="btnGroupDrop1" type="button" class="btns dropdown-toggle"
+										onchange="fetchTasks();">
+										<option class="dropdown-item form-control" value="active"> Active Task</option>
+										<option class="dropdown-item form-control" value="completed">
+											Completed Task
 										</option>
-										<option class="dropdown-item form-control" value="all" >
-											 All Task
+										<option class="dropdown-item form-control" value="all">
+											All Task
 										</option>
 									</select>
 
@@ -84,17 +85,18 @@
 							</div>
 						</span>
 					</div>
+
 				</div>
 			</div>
 
-			
+
 
 			<div class="card" style="margin-top: 20px;">
 				<!--Employee List view-->
 				<div class="row">
 					<div class="col-md-12">
 						<div class="row">
-							<div class="col-md-6">
+							<div class="col-md-3">
 								<label for="entriesPerPage">
 									<select class="table-search btns" id="entriesPerPage"
 										onchange="updateEntriesPerPage(this.value)">
@@ -111,7 +113,78 @@
 								</label>
 							</div>
 
-							<div class="col-md-6">
+
+							<div class="col-md-3">
+								<div class="btn-group marginFilterButton" role="group" aria-label="Button group with nested dropdown" >
+									<div class="dropdown">
+										<select id="selectDisposition" type="button"
+											class="btns dropdown-toggle userList" onchange="fetchTasks()">
+											<option value="">Select Disposition</option>
+											<option value="RNR">RNR</option>
+											<option value="Not Interested">Not Interested</option>
+											<option value="Follow up">Follow up</option>
+											<option value="Renewed Outside">Renewed Outside</option>
+											<option value="Ready to pay today">Ready to pay today</option>
+											<option value="Issued">Issued</option>
+											<option value="Paid">Paid</option>
+											<option value="Payment Issue">Payment Issue</option>
+											<option value="Others">Others</option>
+											<option value="Price is High (C)">Price is High (C)</option>
+											<option value="Financial issue (C)">Financial issue (C)</option>
+											<option value="Need EMI Option (C)">Need EMI Option (C)</option>
+											<option value="Not Happy with Insurance Vendor (NC)">Not Happy with
+												Insurance Vendor
+												(NC)</option>
+											<option value="Not Happy with Porter Service (NC)">Not Happy with Porter
+												Service
+												(NC)
+											</option>
+											<option value="Wrong Number (NC)">Wrong Number (NC)</option>
+											<option value="Sold his vehicle (NC)">Sold his vehicle (NC)</option>
+											<option value="Relative is an Agent (NC)">Relative is an Agent (NC)</option>
+											<option value="Payment Mode issue">Payment Mode issue</option>
+											<option value="EWI Interest is high">EWI Interest is high</option>
+											<option value="Not Answering the call">Not Answering the call</option>
+											<option value="Not Eligible">Not Eligible</option>
+											<option value="KYC issue">KYC issue</option>
+										</select>
+									</div>
+								</div>
+							</div>
+
+							<div class="col-md-3">
+								<div class="form-group mb-3">
+									<div class="btn-group marginFilterButton" role="group" aria-label="Button group with nested dropdown" >
+										<div class="dropdown">
+											<select id="selectStatus" type="button"
+												class="btns dropdown-toggle userList" onchange="fetchTasks();">
+												<option value="">Select Status</option>
+												<option value="S1-Payment Collection Pending">S1-Payment Collection
+													Pending
+												</option>
+												<option value="S2-Finance Confirmation Pending">S2-Finance Confirmation
+													Pending
+												</option>
+												<option value="S3-Document Pending">S3-Document Pending</option>
+												<option value="S4-Policy request Pending">S4-Policy request Pending
+												</option>
+												<option value="S4.1-EWI Pending">S4.1-EWI Pending</option>
+												<option value="S5-Pending from vendor">S5-Pending from vendor</option>
+												<option value="S5.1-Pending for core insurance">S5.1-Pending for core
+													insurance
+												</option>
+												<option value="S5.2-Agent different case">S5.2-Agent different case
+												</option>
+												<option value="S6-Policy issued">S6-Policy issued</option>
+												<option value="Not Interested">Not Interested</option>
+												<option value="Renewed Outside">Renewed Outside</option>
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="col-md-3">
 								<div class="directions table-search">
 									<span>Search: </span><input class="" type="text" id="searchBox" placeholder=""
 										oninput="filterTable(this.value)" />
@@ -119,105 +192,120 @@
 							</div>
 						</div>
 
-						<div class="table-container">
-							<table>
-								<thead>
-									<tr>
-										<th>
-											<input class="direction-left" type="checkbox" id="selectAll"
-												onclick="toggleSelectAll(this)" />
-											S.N.
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('vehicleNumber')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Vehicle
-													Number</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('partnerNumber')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Partner
-													Number</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('agentName')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Agent Name</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('driverName')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Driver Name</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('city')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> City</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('lastYearPolicyIssuedBy')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Last Year
-													IssuedBy</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('partnerRate')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Partner
-													rate</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('newExpiryDate')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> New Expiry
-													Date</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('message')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Message</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('messageLink')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Message
-													Link</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('policyIssuedDate')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Policy Issued
-													Date</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('messageStatus')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Message
-													Status</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('disposition')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Disposition</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('nextFollowUpDate')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Next FollowUp
-													Date</b>
-											</button>
-										</th>
-										<th>
-											<button class="tableFilter" onclick="sortTable('comments')">
-												<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Comments</b>
-											</button>
-										</th>
-									</tr>
-								</thead>
-								<tbody id="userTableBody">
-									<!-- Table rows go here -->
-								</tbody>
-							</table>
+						<div class="table-container" style="border: 1px solid #ddd;padding: 5px;width: 1405px;">
+							<div>
+								<table>
+									<thead>
+										<tr>
+											<th class="srWidth">
+												<input class="direction-left" type="checkbox" id="selectAll"
+													onclick="toggleSelectAll(this)" />
+												S.N.
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('vehicleNumber')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Vehicle
+														Number</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('partnerNumber')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Partner
+														Number</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('agentName')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Agent
+														Name</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('driverName')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Driver
+														Name</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('city')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> City</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter"
+													onclick="sortTable('lastYearPolicyIssuedBy')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Last Year
+														IssuedBy</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('partnerRate')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Partner
+														rate</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" data-column="newExpiryDate"
+													onclick="sortTable('newExpiryDate')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> New Expiry
+														Date</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('message')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Message</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('messageLink')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Message
+														Link</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('status')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Status</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('policyIssuedDate')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Policy
+														Issued
+														Date</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('messageStatus')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Message
+														Status</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('disposition')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b>
+														Disposition</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('nextFollowUpDate')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b> Next
+														FollowUp
+														Date</b>
+												</button>
+											</th>
+											<th>
+												<button class="tableFilter" onclick="sortTable('comments')">
+													<i class="fa fa-arrows-v" aria-hidden="true"></i><b>
+														Comments</b>
+												</button>
+											</th>
+										</tr>
+									</thead>
+									<tbody id="userTableBody">
+										<!-- Table rows go here -->
+									</tbody>
+								</table>
+							</div>
 						</div>
 
 
@@ -227,12 +315,55 @@
 					</div>
 				</div>
 			</div>
+			
+			
+				<!-- Task Update Message Popup Start-->
+				<div class="row">
+					<div class="col-md-12">
+						<div id="messagePopup" class="empDelOverlay" style="display: none;">
+							<div class="messageCommentPopupContent">
+								<!--<p id="messageErrorText"></p>-->
+								<div class="form-group mb-3">
+										<label class="form-label" for="taskFile" style="float: left;">Enter Message:</label>
+										<textarea class="form-control textAreaHeight" id="userMessage" name="userMessage"
+															placeholder="Enter Message" rows="3"></textarea>
+									</div>
+								<div class="messageDelPopupButtons">
+									<button id="messageDelYes" class="empDelBtnRemove">Update</button>
+									<button id="messageDelNo" class="empDelBtn">Cancel</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--Task Update Message End-->
+				
+				<!-- Task Update Comment Popup Start-->
+				<div class="row">
+					<div class="col-md-12">
+						<div id="commentPopup" class="empDelOverlay" style="display: none;">
+							<div class="messageCommentPopupContent">
+								<!--<p id="commentErrorText"></p>-->
+								<div class="form-group mb-3">
+										<label class="form-label" for="taskFile" style="float: left;">Enter Message:</label>
+										<textarea class="form-control textAreaHeight" id="userComment" name="userComment"
+															placeholder="Enter Message" rows="3"></textarea>
+									</div>
+								<div class="empDelPopupButtons">
+									<button id="commentDelYes" class="empDelBtnRemove">Update</button>
+									<button id="commentDelNo" class="empDelBtn">Cancel</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--Task Update Comment End-->
 
 		</div>
 	</div>
-	
+
 	<script>
-		
+
 		window.addEventListener('load', function () {
 			fetchTasks(0);
 		});
