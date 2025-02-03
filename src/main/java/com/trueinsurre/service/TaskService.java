@@ -1,5 +1,6 @@
 package com.trueinsurre.service;
 
+import java.io.Reader;
 import java.text.ParseException;
 import java.util.List;
 
@@ -43,5 +44,6 @@ public interface TaskService {
 			boolean isCompleted, boolean isDeleted, String disposition, String status, int page,
 			int size);
 	TaskDto getEdit(Long id);
+	public Responce updateCommentAndMessage(StatusDto statusDto);
 	
 }

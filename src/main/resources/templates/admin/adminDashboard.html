@@ -24,6 +24,8 @@
 	<!-- Include Select2 JS -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
 
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 
 	<link rel="stylesheet" type="text/css" href="/css/sideAndNavBar.css" />
@@ -41,8 +43,8 @@
 		<ul>
 			<li><a href="#" id="link-dashboard">&nbsp;<i class="fa fa-tachometer sideSpace" aria-hidden="true"></i>
 					Dashboard</a></li>
-			<li><a href="#" id="link-tracking">&nbsp;<i class="fa fa-line-chart sideSpace"
-						aria-hidden="true"></i>Task-Track</a></li>
+			<!--<li><a href="#" id="link-tracking">&nbsp;<i class="fa fa-line-chart sideSpace"
+						aria-hidden="true"></i>Task-Track</a></li>-->
 			<li><a href="/emp/" id="link-orders">&nbsp;<i class="fa fa-users sideSpace"
 						aria-hidden="true"></i>Employees</a></li>
 		</ul>
@@ -136,6 +138,7 @@
 						</span>
 					</div>
 					<div class="col-md-2">
+						<label>Assign:</label><br>
 						<span>
 							<button id="assignButton" class="btns" onclick="taskAssignPopup()"> Assign Tasks</button>
 						</span>
@@ -143,6 +146,7 @@
 					<div class="col-md-2">
 						<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
 							<div class="dropdown">
+								<label>Select Employee:</label>
 								<select id="userList" type="button" class="btns dropdown-toggle userList"
 									onchange="fetchTasks();">
 									<option class="dropdown-item form-control" value="" multiple>Select Employee
@@ -155,6 +159,7 @@
 					<div class="col-md-2">
 						<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
 							<div class="dropdown">
+								<label>Task Type:</label>
 								<select id="taskType" type="button" class="btns dropdown-toggle"
 									onchange="fetchTasks();">
 									<option class="dropdown-item form-control" value="active"> Active Task</option>
@@ -172,6 +177,7 @@
 					<div class="col-md-2">
 						<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
 							<div class="dropdown">
+								<label>Select Disposition:</label>
 								<select id="selectDisposition" type="button" class="btns dropdown-toggle userList"
 									onchange="fetchTasks()">
 									<option value="">Select Disposition</option>
@@ -209,6 +215,7 @@
 						<div class="form-group mb-3">
 							<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
 								<div class="dropdown">
+									<label>Select Status:</label>
 									<select id="selectStatus" type="button" class="btns dropdown-toggle userList"
 										onchange="fetchTasks();">
 										<option value="">Select Status</option>
@@ -504,8 +511,10 @@
 
 							<div class="col-md-6">
 								<div class="directions table-search">
-									<span>Search: </span><input class="" type="text" id="searchBox" placeholder=""
-										oninput="filterTable(this.value)" />
+									<span>Search: </span><!--<input class="" type="text" id="searchBox" placeholder=""
+										oninput="filterTable(this.value)" />-->
+										<input type="text" id="multiFilter" placeholder="Enter filters (e.g., Pune 05/15/2025 searchText)" oninput="filterTable(this.value)" />
+										
 								</div>
 							</div>
 						</div>
@@ -617,8 +626,8 @@
 														Comments</b>
 												</button>
 											</th>
-											<th class="actionWidth"><i class="fa fa-pencil" aria-hidden="true"></i>
-												Action </th>
+											<!--<th class="actionWidth"><i class="fa fa-pencil" aria-hidden="true"></i>
+												Action </th>-->
 										</tr>
 									</thead>
 									<tbody id="userTableBody">
@@ -734,19 +743,19 @@
 				<!-- Task Update Message Popup Start-->
 				<div class="row">
 					<div class="col-md-12">
-						<div id="messagePopup" class="empDelOverlay" style="display: none;">
+						<div id="commentPopup" class="empDelOverlay" style="display: none;">
 							<div class="card">
 								<div class="messageCommentPopupContent">
 									<!--<p id="messageErrorText"></p>-->
 									<div class="form-group mb-3">
-										<label class="form-label" for="taskFile" style="float: left;">Enter
-											Message:</label>
-										<textarea class="form-control textAreaHeight" id="userMessage"
-											name="userMessage" placeholder="Enter Message" rows="3"></textarea>
+										<label class="form-label" for="taskFile" style="float: left;"><b
+												id="confrmLable"></b></label>
+										<textarea class="form-control textAreaHeight" id="userComment"
+											name="userComment" placeholder="Enter..." rows="3"></textarea>
 									</div>
 									<div class="messageDelPopupButtons">
-										<button id="messageDelYes" class="empDelBtnRemove">Update</button>
-										<button id="messageDelNo" class="empDelBtn">Cancel</button>
+										<button id="commentDelYes" class="uploadBtn">Save</button>
+										<button id="commentDelNo" class="empDelBtn">Cancel</button>
 									</div>
 								</div>
 							</div>
@@ -755,28 +764,56 @@
 				</div>
 				<!--Task Update Message End-->
 
-				<!-- Task Update Comment Popup Start-->
+				<!--Duplicate Data List popup Start-->
 				<div class="row">
 					<div class="col-md-12">
-						<div id="commentPopup" class="empDelOverlay" style="display: none;">
-							<div class="card">
-								<div class="messageCommentPopupContent">
-								<!--<p id="commentErrorText"></p>-->
-								<div class="form-group mb-3">
-									<label class="form-label" for="taskFile" style="float: left;">Enter Message:</label>
-									<textarea class="form-control textAreaHeight" id="userComment" name="userComment"
-										placeholder="Enter Message" rows="3"></textarea>
-								</div>
-								<div class="empDelPopupButtons">
-									<button id="commentDelYes" class="empDelBtnRemove">Update</button>
-									<button id="commentDelNo" class="empDelBtn">Cancel</button>
-								</div>
+						<div class="overlay" id="popupOverlay"></div>
+
+						<div class="popup" id="dupPopup">
+							<div class="popup-header">Data already present.</div>
+							<div class="popup-content">
+								<table id="popupTable" class="popup-table">
+									<thead>
+										<tr>
+											<th>Vehicle Number</th>
+											<th>Partner Number</th>
+											<th>Agent Name</th>
+											<th>Driver Name</th>
+											<th>City</th>
+											<th>Partner Rate</th>
+										</tr>
+									</thead>
+									<tbody id="popupTableBody">
+										<!-- Dynamic rows will be inserted here -->
+									</tbody>
+								</table>
 							</div>
+							<div class="popup-footer">
+								<button onclick="closePopup()">Ok</button>
 							</div>
 						</div>
 					</div>
 				</div>
-				<!--Task Update Comment End-->
+				<!--Duplicate Data End-->
+
+				<!--Alert Popup Start-->
+
+				<div class="row">
+					<div class="col-md-12">
+						<div id="alertPopup" class="alert-popup hidden">
+							<div class="alert-content">
+								<div id="cardId"> <!--class="card "-->
+									<div class="">
+										<span id="alertMessage" class="alert-message"></span>
+									</div>
+									<!--<button id="alertClose" class="alert-close" onclick="hideAlert();">OK</button>-->
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!--Alert Popup end-->
 
 			</div>
 		</div>

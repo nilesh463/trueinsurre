@@ -3,8 +3,7 @@ package com.trueinsurre.config;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,89 +46,127 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler{
 	@Autowired
     private JwtUtil jwtUtil;
 
+	@Override
+	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+	                                    Authentication authentication) throws IOException, ServletException {
+
+	    String redirectUrl = determineRedirectUrl(authentication);
+	    handleUserRegistration(authentication);
+
+	    // Redirect the user
+	    response.sendRedirect(request.getContextPath() + redirectUrl);
+	}
+
+	private String determineRedirectUrl(Authentication authentication) {
+	    for (GrantedAuthority auth : authentication.getAuthorities()) {
+	        if ("ROLE_EMPLOYEE".equals(auth.getAuthority())) {
+	            return "/emp-dashboard/";
+	        } else if ("ROLE_ADMIN".equals(auth.getAuthority())) {
+	            return "/admin-dashboard/";
+	        }
+	    }
+	    return "/dashboards/dashboard"; // Default redirection
+	}
+
+	private void handleUserRegistration(Authentication authentication) {
+	    if (authentication.getPrincipal() instanceof DefaultOAuth2User) {
+	        DefaultOAuth2User userDetails = (DefaultOAuth2User) authentication.getPrincipal();
+	        String email = userDetails.getAttribute("email") != null ?
+	                       userDetails.getAttribute("email") :
+	                       userDetails.getAttribute("login") + "@gmail.com";
+
+	        if (userRepo.findByEmail(email) == null) {
+	            User user = new User();
+	            user.setEmail(email);
+	            user.setName(extractUsername(email));
+	            user.setPassword(null); // No password for OAuth users
+	            user.setCreationTime(System.currentTimeMillis());
+	            user.setCountry("Unknown"); // Default country
+	            user.setPhone("");
+
+	            // Assign default role
+	            Role role = roleRepository.findByName("ROLE_ADMIN");
+	            if (role == null) {
+	                role = checkRoleExist();
+	            }
+	            user.setRoles(Collections.singletonList(role));
+
+	            userRepo.save(user);
+	        }
+	    }
+	}
+
+	
 //	@Override
 //    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 //                                        Authentication authentication) throws IOException, ServletException {
-//        // Check if request is from a mobile client
-//       // boolean isMobile = request.getHeader("User-Agent") != null && request.getHeader("User-Agent").toLowerCase().contains("mobile");
 //
-////        if (isMobile) {
-////            handleMobileLogin(request, response, authentication);
-////        } else {
-//            handleWebLogin(request, response, authentication);
-////        }
+//        String redirectUrl = null;
+//
+//        // Determine the user's role
+//        for (GrantedAuthority auth : authentication.getAuthorities()) {
+//        	System.out.println("Role is: "+auth.getAuthority());
+//        	System.out.println("Role is: "+auth.getAuthority());
+//            if (auth.getAuthority().equals("ROLE_EMPLOYEE")) {
+//                redirectUrl = "/emp-dashboard/";
+//                break;
+//            } else if (auth.getAuthority().equals("ROLE_ADMIN")) {
+//            	redirectUrl = "/admin-dashboard/";
+//                break;
+//            }
+//        }
+//
+//        if (redirectUrl == null) {
+//            // Default redirect if no specific role-based URL found
+//            redirectUrl = "/emp-dashboard/";
+//        }
+//
+//        // Perform user registration if necessary
+//        if (authentication.getPrincipal() instanceof DefaultOAuth2User) {
+//            DefaultOAuth2User userDetails = (DefaultOAuth2User) authentication.getPrincipal();
+//            String username = userDetails.getAttribute("email") != null ?
+//                               userDetails.getAttribute("email") :
+//                               userDetails.getAttribute("login") + "@gmail.com";
+//
+//            // Check if the user already exists in the database
+//            if (userRepo.findByEmail(username) == null) {
+//                User user = new User();
+//                String country = getUserCountry(authentication);
+//                
+//                user.setCountry(""); // Set default value or handle accordingly
+//                
+//                user.setEmail(username);
+//                user.setName(userDetails.getAttribute("email") != null ?
+//                             userDetails.getAttribute("email") :
+//                             userDetails.getAttribute("login"));
+//                user.setName(extractUsername(username));
+//                user.setPassword("****");
+//                user.setCreationTime(System.currentTimeMillis());
+//                
+//                user.setPhone("");
+//
+//                // Assign role based on the logged in user's role
+//                
+//                User newUser = userRepo.save(user);
+//                Role role = roleRepository.findByName("ROLE_ADMIN");
+//                List<Role> roleList = new ArrayList<Role>();
+//        		if (role == null) {
+//        			role = checkRoleExist();
+//        		}
+//        		roleList.add(role);
+//        		newUser.setRoles(roleList);
+//        		userRepo.save(newUser);
+//				/*
+//				 * try { sendEmail(username,newUser); } catch (UnsupportedEncodingException e) {
+//				 * // TODO Auto-generated catch block e.printStackTrace(); } catch
+//				 * (MessagingException e) { // TODO Auto-generated catch block
+//				 * e.printStackTrace(); }
+//				 */
+//            }
+//        }
+//        // Redirect the user based on the determined URL
+//        response.sendRedirect(request.getContextPath() + redirectUrl);
 //    }
-	
-	@Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                        Authentication authentication) throws IOException, ServletException {
-
-        String redirectUrl = null;
-
-        // Determine the user's role
-        for (GrantedAuthority auth : authentication.getAuthorities()) {
-        	System.out.println("Role is: "+auth.getAuthority());
-        	System.out.println("Role is: "+auth.getAuthority());
-            if (auth.getAuthority().equals("ROLE_EMPLOYEE")) {
-                redirectUrl = "/emp-dashboard/";
-                break;
-            } else if (auth.getAuthority().equals("ROLE_ADMIN")) {
-                redirectUrl = "/admin-dashboard/";
-                break;
-            }
-        }
-
-        if (redirectUrl == null) {
-            // Default redirect if no specific role-based URL found
-            redirectUrl = "/dashboards/dashboard";
-        }
-
-        // Perform user registration if necessary
-        if (authentication.getPrincipal() instanceof DefaultOAuth2User) {
-            DefaultOAuth2User userDetails = (DefaultOAuth2User) authentication.getPrincipal();
-            String username = userDetails.getAttribute("email") != null ?
-                               userDetails.getAttribute("email") :
-                               userDetails.getAttribute("login") + "@gmail.com";
-
-            // Check if the user already exists in the database
-            if (userRepo.findByEmail(username) == null) {
-                User user = new User();
-                String country = getUserCountry(authentication);
-                
-                user.setCountry(""); // Set default value or handle accordingly
-                
-                user.setEmail(username);
-                user.setName(userDetails.getAttribute("email") != null ?
-                             userDetails.getAttribute("email") :
-                             userDetails.getAttribute("login"));
-                user.setName(extractUsername(username));
-                user.setPassword("****");
-                user.setCreationTime(System.currentTimeMillis());
-                
-                user.setPhone("");
-
-                // Assign role based on the logged in user's role
-                
-                User newUser = userRepo.save(user);
-                Role role = roleRepository.findByName("ROLE_ADMIN");
-                List<Role> roleList = new ArrayList<Role>();
-        		if (role == null) {
-        			role = checkRoleExist();
-        		}
-        		roleList.add(role);
-        		newUser.setRoles(roleList);
-        		userRepo.save(newUser);
-				/*
-				 * try { sendEmail(username,newUser); } catch (UnsupportedEncodingException e) {
-				 * // TODO Auto-generated catch block e.printStackTrace(); } catch
-				 * (MessagingException e) { // TODO Auto-generated catch block
-				 * e.printStackTrace(); }
-				 */
-            }
-        }
-        // Redirect the user based on the determined URL
-        response.sendRedirect(request.getContextPath() + redirectUrl);
-    }
 
     private void handleWebLogin(HttpServletRequest request, HttpServletResponse response,
                                 Authentication authentication) throws IOException {
@@ -139,9 +176,10 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler{
         for (GrantedAuthority auth : authentication.getAuthorities()) {
             if (auth.getAuthority().equals("ROLE_EMPLOYEE")) {
             	
-                redirectUrl = "/dashboards/dashboard";
+                redirectUrl = "/emp-dashboard/";
                 break;
             } else if (auth.getAuthority().equals("ROLE_ADMIN")) {
+            	
                 redirectUrl = "/admin-dashboard/";
                 break;
             }

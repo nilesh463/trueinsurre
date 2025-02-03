@@ -20,6 +20,25 @@ function submitForm() {
   const form = document.getElementById("employeeForm");
   const formData = new FormData(form);
   const userDto = Object.fromEntries(formData.entries());
+  
+  // Check if all form fields are empty
+    const isFormEmpty = Object.values(userDto).every(value => value.trim() === "");
+	
+	if (userDto.email=='') {
+        showAlert("Please fill out the Email field.");
+        return;
+    }
+    
+	if (userDto.id == '') {
+		if (userDto.password == '') {
+			showAlert("Please fill out the Password field.");
+			return;
+		}
+	}
+    if (isFormEmpty) {
+        showAlert("Please fill out the fields.");
+        return;
+    }
 
   fetch("/emp/add", {
     method: "POST",
@@ -30,7 +49,7 @@ function submitForm() {
   })
     .then((response) => response.json())
     .then((data) => {
-      alert(data.message);
+      showAlert(data.message);
       if (data.status === 200) {
 		 fetchUsers(currentPage);
         closeEmployeePopup();
@@ -136,7 +155,7 @@ function editEmployee(id) {
             document.getElementById("lastName").value = data.lastName || "";
             document.getElementById("phone").value = data.phone || "";
             document.getElementById("email").value = data.email || "";
-            document.getElementById("password").value = data.password || "";
+            document.getElementById("passwordLable").textContent = "Update Password";
             document.getElementById("country").value = data.country || "";
             //document.getElementById("countryCallingCode").value = data.countryCallingCode || "";
             document.getElementById("aadharNumber").value = data.aadharNumber || "";
@@ -192,7 +211,7 @@ function deleteEmployee(id) {
     })
         .then((response) => response.json())
         .then((data) => {
-            alert(data.message);
+            showAlert(data.message);
             if (data.status === 200) {
                 fetchUsers(currentPage); // Refresh the user list
             }

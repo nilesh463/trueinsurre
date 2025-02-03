@@ -1,0 +1,17 @@
+@charset "ISO-8859-1";
+
+.date-section {
+	margin-bottom: 30px;
+}
+
+.date-header {
+	font-size: 18px;
+	font-weight: bold;
+	color: #333;
+	margin-bottom: 10px;
+}
+
+.highlight {
+	background-color: #eaf4ff;
+	font-weight: bold;
+}

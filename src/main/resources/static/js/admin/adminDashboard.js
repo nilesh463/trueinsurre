@@ -32,11 +32,12 @@ function submitForm() {
 	})
 		.then((response) => response.json())
 		.then((data) => {
-			alert(data.message);
+			//alert(data.message);
 			if (data.status === 200) {
 				fetchTasks(currentPage);
 				closeEmployeePopup();
 				form.reset();
+				showAlert("Task added sucessfully.");
 			}
 		})
 		.catch((error) => {
@@ -93,6 +94,7 @@ async function fetchTasks(page = currentPage, size = currentSize) {
 		userTableBody.innerHTML = ""; // Clear existing rows
 
 		const statusOptions = [
+			"Select status",
 			"S1-Payment Collection Pending",
 			"S2-Finance Confirmation Pending",
 			"S3-Document Pending",
@@ -107,6 +109,7 @@ async function fetchTasks(page = currentPage, size = currentSize) {
 		];
 
 		const dispositionOptionsList = [
+			"Select disposition",
 			"RNR",
 			"Not Interested",
 			"Follow up",
@@ -132,6 +135,7 @@ async function fetchTasks(page = currentPage, size = currentSize) {
 		];
 
 		const messageStatusOptions = [
+			"Select",
 			"message sent",
 			"Not on whatsapp"
 		];
@@ -156,26 +160,27 @@ async function fetchTasks(page = currentPage, size = currentSize) {
 			}).join("");
 
 			row.setAttribute("data-row", JSON.stringify(task)); // Store row data for filtering
+			//<span ><a href="/task/${task.id}" title="History" style="color: green"><i class="fa fa-info-circle" aria-hidden="true"></i></a></span>
 			row.innerHTML = `
         <td class="srWidth">
             <input type="checkbox" class="rowCheckbox direction-left" data-task-id="${task.id}" />
             <span class="serialNumber">${page * size + index + 1}</span>
+            
         </td>
-        <td data-column="vehicleNumber">${task.vehicleNumber}</td>
-        <td data-column="partnerNumber">${task.partnerNumber}</td>
-        <td data-column="agentName">${task.agentName || "-"}</td>
-        <td data-column="driverName">${task.driverName || "-"}</td>
-        <td data-column="city">${task.city}</td>
-        <td data-column="lastYearPolicyIssuedBy">${task.lastYearPolicyIssuedBy || "-"}</td>
-        <td data-column="partnerRate">${task.partnerRate || "-"}</td>
-        
-        <td data-column="newExpiryDate">${task.newExpiryDate || "-"}</td>
-		 <td data-column="message" onclick="confirmMessage('${task.message}, ${task.id}')">
-		    ${task.message || "-"}
+        <td data-column="vehicleNumber" onclick="confirmation('${task.vehicleNumber}','${task.id}','Vehicle Number')">${task.vehicleNumber}</td>
+        <td data-column="partnerNumber" onclick="confirmation('${task.partnerNumber}','${task.id}','Partner Number')">${task.partnerNumber}</td>
+        <td data-column="agentName" onclick="confirmation('${task.agentName}','${task.id}','Agent Name')">${task.agentName || "-"}</td>
+        <td data-column="driverName" onclick="confirmation('${task.driverName}','${task.id}','Driver Name')">${task.driverName || "-"}</td>
+        <td data-column="city" onclick="confirmation('${task.city}','${task.id}','City')">${task.city}</td>
+        <td data-column="lastYearPolicyIssuedBy" onclick="confirmation('${task.lastYearPolicyIssuedBy}','${task.id}','Last Year Policy IssuedBy')">${task.lastYearPolicyIssuedBy || "-"}</td>
+        <td data-column="partnerRate" onclick="confirmation('${task.partnerRate}','${task.id}','Partner Rate')">${task.partnerRate || "-"}</td>
+        <td data-column="newExpiryDate" onclick="dateUpdate('${task.newExpiryDate}', '${task.id}', 'New Expiry Date')">${task.newExpiryDate || "-"}</td>
+		 <td data-column="message" onclick="confirmation('${task.message}','${task.id}','Message')">
+		   <i class="fa fa-external-link" aria-hidden="true"></i>
 		</td>
 		 <td data-column="messageLink">
 			<button type="button" class="btns" 
-				onclick="redirectToWhatsApp('${task.partnerNumber}', '${task.message.replace(/'/g, "\\'")}')">
+				onclick="redirectToWhatsApp('${task.partnerNumber}', '${task.message}')">
 				Send Message
 			</button>
 		</td>
@@ -184,7 +189,7 @@ async function fetchTasks(page = currentPage, size = currentSize) {
 					${selectOptions}
 				</select>
 			</td>
-		 <td data-column="policyIssuedDate">${task.policyIssuedDate || "-"}</td>
+		 <td data-column="policyIssuedDate" onclick="dateUpdate('${task.policyIssuedDate}', '${task.id}', 'Policy Issued Date')">${task.policyIssuedDate || "-"}</td>
 		 <td data-column="messageStatus">
 				<select class="form-control messageStatusDropdown" data-task-id="${task.id}" onchange="statusUpdate(this.value, '${task.id}', 'MessageStatus')">
 					${selectMessageStatusOptions}
@@ -195,19 +200,11 @@ async function fetchTasks(page = currentPage, size = currentSize) {
 					${dispositionOptions}
 				</select>
 			</td>
-		 <td data-column="nextFollowUpDate">${task.nextFollowUpDate || "-"}</td>
-		 <td data-column="comments" onclick="confirmComment('${task.comments}, ${task.id}')">
-		    ${task.comments || "-"}
+		 <td data-column="nextFollowUpDate" onclick="dateUpdate('${task.nextFollowUpDate}', '${task.id}', 'Next FollowUp Date')">${task.nextFollowUpDate || "-"}</td>
+		 <td data-column="comments" onclick="confirmation('${task.comments}', '${task.id}','Comment')">
+		    <i class="fa fa-external-link" aria-hidden="true"></i>
 		</td>
         
-        <td class ="actionWidth">
-            <button class="tableBtn" onclick="editEmployee(${task.id})" title="Edit">
-                <i class="fa fa-pencil-square" aria-hidden="true"></i>
-            </button>
-            <button class="tableBtn" onclick="confirmDelete(${task.id})" title="Delete">
-                <i class="fa fa-trash-o" aria-hidden="true"></i>
-            </button>
-        </td>
       `;
 			userTableBody.appendChild(row);
 		});
@@ -219,38 +216,10 @@ async function fetchTasks(page = currentPage, size = currentSize) {
 	}
 }
 
-
-/* <td data-column="newExpiryDate">${task.newExpiryDate || "-"}</td>
- <td data-column="message">${task.message || "-"}</td>
- <td data-column="messageLink">${task.messageLink || "-"}</td>
- <td data-column="status">
-		<select class="form-control statusDropdown" data-task-id="${task.id}">
-			${selectOptions}
-		</select>
-	</td>
- <td data-column="policyIssuedDate">${task.policyIssuedDate || "-"}</td>
- <td data-column="messageStatus">
-		<select class="form-control messageStatusDropdown" data-task-id="${task.id}">
-			${selectMessageStatusOptions}
-		</select>
-	</td>
- <td data-column="disposition">
-		<select class="form-control dispositionDropdown" data-task-id="${task.id}" onchange="dispositionUpdate(this.value, '${task.id}')">
-			${dispositionOptions}
-		</select>
-	</td>
- <td data-column="nextFollowUpDate">${task.nextFollowUpDate || "-"}</td>
- <td data-column="comments">${task.comments || "-"}</td>
- 
- 
- */
-
-
-
 function statusUpdate(option, taskId, validateKey) {
 	const payload = {
 		id: taskId,
-		message: option, // Convert to numbers if IDs are numeric
+		message: option,
 		validateKey: validateKey
 	};
 
@@ -264,7 +233,7 @@ function statusUpdate(option, taskId, validateKey) {
 		.then(response => response.json())
 		.then(data => {
 			fetchTasks(currentPage);
-			alert(data.message);
+			showAlert(data.message);
 		})
 		.catch(error => {
 			console.error('Error:', error);
@@ -273,9 +242,9 @@ function statusUpdate(option, taskId, validateKey) {
 
 
 function updateEntriesPerPage(size) {
-	currentSize = parseInt(size, 10); // Update entries per page
-	currentPage = 0; // Reset to the first page
-	fetchTasks(); // Fetch tasks with the new page size
+	currentSize = parseInt(size, 10);
+	currentPage = 0;
+	fetchTasks();
 }
 
 function setupPagination(current, totalPages) {
@@ -315,32 +284,46 @@ function filterTable(searchValue) {
 	const userTableBody = document.getElementById("userTableBody");
 	const rows = Array.from(userTableBody.rows);
 
+	// Clear the "Select All" checkbox when the filter changes
+	document.getElementById("selectAll").checked = false;
+
 	if (searchValue.trim() === "") {
 		// If search is empty, re-fetch and reload the default table data
 		fetchTasks();
 		return;
 	}
 
-	const lowerCaseSearch = searchValue.toLowerCase();
+	// Split the input value into individual filters based on spaces
+	const filters = searchValue.trim().toLowerCase().split(/\s+/);
 
 	rows.forEach((row) => {
-		const rowData = row.getAttribute("data-row");
-		if (rowData && rowData.toLowerCase().includes(lowerCaseSearch)) {
-			row.style.display = ""; // Show matching row
-		} else {
-			row.style.display = "none"; // Hide non-matching row
+		const rowData = JSON.parse(row.getAttribute("data-row") || "{}"); // Parse data-row JSON
+		const rowContent = JSON.stringify(rowData).toLowerCase(); // Flatten row data for search
+
+		// Check if the row matches all filters
+		const matchesAllFilters = filters.every((filter) => rowContent.includes(filter));
+
+		// Show or hide the row based on the filters
+		row.style.display = matchesAllFilters ? "" : "none";
+	});
+}
+
+
+
+// Table check box
+function toggleSelectAll(selectAllCheckbox) {
+	const userTableBody = document.getElementById("userTableBody");
+	const visibleRows = Array.from(userTableBody.rows).filter(row => row.style.display !== "none");
+
+	visibleRows.forEach(row => {
+		const checkbox = row.querySelector(".rowCheckbox");
+		if (checkbox) {
+			checkbox.checked = selectAllCheckbox.checked;
 		}
 	});
 }
 
 
-// Table check box
-function toggleSelectAll(selectAllCheckbox) {
-	const checkboxes = document.querySelectorAll(".rowCheckbox");
-	checkboxes.forEach(checkbox => {
-		checkbox.checked = selectAllCheckbox.checked;
-	});
-}
 
 function getSelectedRows() {
 	const selectedCheckboxes = document.querySelectorAll(".rowCheckbox:checked");
@@ -369,9 +352,9 @@ function sortTable(column) {
 			return sortOrder * (parseFloat(cellA) - parseFloat(cellB));
 		} else if (isDateColumn) {
 			// Date sorting
-			const dateA = new Date(cellA); // Convert to Date object
+			const dateA = new Date(cellA);
 			const dateB = new Date(cellB);
-			return sortOrder * (dateA - dateB); // Sort based on date comparison
+			return sortOrder * (dateA - dateB);
 		} else {
 			// Alphabetic sorting
 			return sortOrder * cellA.localeCompare(cellB);
@@ -381,7 +364,7 @@ function sortTable(column) {
 	// Rebuild the table body with sorted rows
 	userTableBody.innerHTML = "";
 	rows.forEach((row, index) => {
-		row.querySelector(".serialNumber").innerText = index + 1; // Update serial number
+		row.querySelector(".serialNumber").innerText = index + 1;
 		userTableBody.appendChild(row);
 	});
 
@@ -389,43 +372,6 @@ function sortTable(column) {
 	sortOrder *= -1;
 }
 
-
-//Edit Employee
-
-function editEmployee(id) {
-	fetch("/emp/edit/" + id, {
-		method: "GET",
-		headers: {
-			"Content-Type": "application/json",
-		},
-	})
-		.then((response) => {
-			if (!response.ok) {
-				throw new Error("Network response was not ok " + response.statusText);
-			}
-			return response.json();
-		})
-		.then((data) => {
-
-			addTask();
-			// Populate the form fields with the response data empTitle
-			document.getElementById("taskTitle").textContent = "Update task deatils"
-			document.getElementById("firstName").value = data.firstName || "";
-			document.getElementById("lastName").value = data.lastName || "";
-			document.getElementById("phone").value = data.phone || "";
-			document.getElementById("email").value = data.email || "";
-			document.getElementById("password").value = data.password || "";
-			document.getElementById("country").value = data.country || "";
-			//document.getElementById("countryCallingCode").value = data.countryCallingCode || "";
-			document.getElementById("aadharNumber").value = data.aadharNumber || "";
-			document.getElementById("empNo").value = data.empNo || "";
-			document.getElementById("id").value = data.id || "";
-		})
-		.catch((error) => {
-			console.error("Error fetching employee data:", error);
-			alert("Failed to load employee details. Please try again.");
-		});
-}
 
 //Delete Task
 function confirmDelete(id) {
@@ -464,9 +410,9 @@ function deleteTask(id) {
 	})
 		.then((response) => response.json())
 		.then((data) => {
-			alert(data.message);
+			showAlert(data.message);
 			if (data.status === 200) {
-				fetchUsers(currentPage); // Refresh the user list
+				fetchTasks(currentPage); // Refresh the user list
 			}
 		})
 		.catch((error) => {
@@ -481,12 +427,8 @@ function bulckUpload() {
 	const message = document.getElementById("taskMessage");
 	popup.style.display = "flex";
 
-
-
-
 	const yesButton = document.getElementById("upload");
 	const noButton = document.getElementById("uploadCancle");
-
 
 	yesButton.replaceWith(yesButton.cloneNode(true));
 	noButton.replaceWith(noButton.cloneNode(true));
@@ -504,7 +446,7 @@ function bulckUpload() {
 		const fileExtension = file.name.split(".").pop().toLowerCase();
 
 		if (!allowedExtensions.includes(fileExtension)) {
-			alert("Only Excel files (.xls, .xlsx, .csv, .excel) are allowed.");
+			showAlert("Only Excel files (.xls, .xlsx, .csv, .excel) are allowed.");
 			return;
 		}
 
@@ -539,11 +481,20 @@ function taskUpload(file) {
 			if (!response.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
-			return response.text();
+			return response.json();
 		})
 		.then((data) => {
 			fetchTasks(currentPage);
-			alert(data);
+			console.log(data.csvCount);
+			console.log(data.duplicateCount);
+			console.log(data.csvValidate);
+
+			if (data.duplicateCount > 0) {
+				openPopup(data.duplicateData);
+			} else {
+				showAlert("Task uploaded sucessfully.");
+			}
+			//alert(data);
 		})
 		.catch((error) => {
 			console.error("Error:", error);
@@ -576,7 +527,8 @@ async function populateEmployeeDropdown() {
 
 
 		const assignTo = document.getElementById('assignTo');
-		assignTo.innerHTML = `<option class="dropdown-item form-control" value="">Select Employee</option>`;
+		assignTo.innerHTML = `<option class="dropdown-item form-control" value="">Select Employee</option>,
+		<option class="dropdown-item form-control" value="">Admin</option>`;
 
 		employees.forEach(employee => {
 			const option = document.createElement('option');
@@ -587,7 +539,8 @@ async function populateEmployeeDropdown() {
 		});
 
 		const assignListTo = document.getElementById('assignListTo');
-		assignListTo.innerHTML = `<option class="dropdown-item form-control" value="">Select Employee</option>`;
+		assignListTo.innerHTML = `<option class="dropdown-item form-control" value="">Select Employee</option>,
+		<option class="dropdown-item form-control" value="">Admin</option>`;
 
 		employees.forEach(employee => {
 			const option = document.createElement('option');
@@ -604,10 +557,11 @@ async function populateEmployeeDropdown() {
 
 function assignTasks(selectedTasks, selectedUsers) {
 	const payload = {
-		taskList: selectedTasks.map(Number), // Convert to numbers if IDs are numeric
+		taskList: selectedTasks.map(Number),
 		userList: selectedUsers.map(Number)
 	};
 
+	
 	fetch('/task/assign', {
 		method: 'POST',
 		headers: {
@@ -617,8 +571,10 @@ function assignTasks(selectedTasks, selectedUsers) {
 	})
 		.then(response => response.json())
 		.then(data => {
-			fetchTasks(currentPage);
-			alert(data.message);
+			
+			//fetchTasks(currentPage);
+			showAlert(data.message);
+			window.location.reload();
 		})
 		.catch(error => {
 			console.error('Error:', error);
@@ -632,10 +588,10 @@ function taskAssignPopup() {
 		.map(checkbox => checkbox.dataset.taskId);
 
 	if (selectedTasks.length === 0) {
-		alert("Please select at least one task before Assign");
+		showAlert("Please select at least one task before Assign");
 		return;
 	}
-
+	
 	const popup = document.getElementById("taskAssignPopup");
 	const message = document.getElementById("taskAssignMessage");
 	popup.style.display = "flex";
@@ -649,13 +605,13 @@ function taskAssignPopup() {
 	document.getElementById("taskAssignYes").addEventListener("click", function() {
 		// Collect selected users
 		//if(isSelectedUser )
-		debugger;
+
 		const selectedUsers = Array.from(document.getElementById('assignListTo').selectedOptions)
 			.map(option => option.value);
 
 		const UserId = document.getElementById('assignListTo').value;
 
-
+		debugger;
 		assignTasks(selectedTasks, selectedUsers);
 		popup.style.display = "none";
 	});
@@ -668,9 +624,71 @@ function taskAssignPopup() {
 	});
 }
 
+
+function getPaymentLink(mobileNumber, message) {
+    debugger;
+    // UPI and payment details
+    mobileNumber = "91"+mobileNumber;
+    const upiId = "1998nileshicici@icici";
+    const amount = "1";
+    const currency = "INR"; // Currency, default is INR
+    message = message || "Hi, please make a payment.";
+
+    if (!mobileNumber) {
+        alert("Mobile number is missing.");
+        return;
+    }
+
+    // Construct the UPI payment link
+    const gpayLink = `upi://pay?pa=${upiId}&am=${amount}&cu=${currency}`;
+    const fullMessage = `${message}\n\nClick below to pay via Google Pay:\n${gpayLink}`;
+
+    // Construct the WhatsApp URL
+    const whatsappUrl = `https://wa.me/${mobileNumber}?text=${encodeURIComponent(fullMessage)}`;
+
+    // Open the WhatsApp URL in a new tab
+    window.open(whatsappUrl, '_blank');
+}
+
+
+
+//PaymentsLink 
+function redirectToWhatsApps(mobileNumber, message) {
+	debugger;
+	mobileNumber = "918707825790";
+	var upiId = "1998nileshicici@icici"
+	var amount = "1";
+	message = "Hi please Pay";
+    if (message != null && message != '') {
+        message = message.replace(/'/g, "\\'");
+    }
+
+    if (!mobileNumber) {
+        showAlert("Mobile number is missing.");
+        return;
+    }
+
+    // Construct GPay UPI payment link if UPI ID and amount are provided
+    let gpayLink = '';
+    if (upiId && amount) {
+        gpayLink = `upi://pay?pa=${encodeURIComponent(upiId)}&am=${encodeURIComponent(amount)}&cu=INR`;
+        message += `\n\nPay via GPay: ${gpayLink}`;
+    }
+
+    const whatsappUrl = `https://web.whatsapp.com/send?phone=${mobileNumber}&text=${encodeURIComponent(message)}`;
+
+    window.open(whatsappUrl, '_blank');
+}
+
+
 function redirectToWhatsApp(mobileNumber, message) {
+
+	if (message != null && message != '') {
+		message = message.replace(/'/g, "\\'");
+	}
+
 	if (!mobileNumber) {
-		alert('Mobile number is missing.');
+		showAlert("Mobile number is missing.");
 		return;
 	}
 
@@ -680,99 +698,213 @@ function redirectToWhatsApp(mobileNumber, message) {
 }
 
 
-//Message Update
-function confirmMessage(messageText, id) {
-
-	const popup = document.getElementById("messagePopup");
-	//const message = document.getElementById("messageErrorText");
-	popup.style.display = "flex";
-
-	const userMessage = document.getElementById("userMessage");
-	userMessage.innerHTML = messageText;
-	/*message.innerHTML = `Update Message.`;*/
-
-	const yesButton = document.getElementById("messageDelYes");
-	const noButton = document.getElementById("messageDelNo");
-
-
-	yesButton.replaceWith(yesButton.cloneNode(true));
-	noButton.replaceWith(noButton.cloneNode(true));
-
-	document.getElementById("messageDelYes").addEventListener("click", function() {
-		updateMessage(messageText, id);
-		popup.style.display = "none";
-	});
-
-	document.getElementById("messageDelNo").addEventListener("click", function() {
-		popup.style.display = "none";
-	});
-}
-
-function updateMessage(message, id) {
-	fetch("/task/update-message/" + id, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-	})
-		.then((response) => response.json())
-		.then((data) => {
-			alert(data.message);
-			if (data.status === 200) {
-				fetchUsers(currentPage); // Refresh the user list
-			}
-		})
-		.catch((error) => {
-			console.error("Error:", error);
-		});
-}
-
-// comment Update
-function confirmComment(messageText, id) {
-
+function confirmation(text, id, validateKey) {
 	const popup = document.getElementById("commentPopup");
-	//const message = document.getElementById("commentErrorText");
-	popup.style.display = "flex";
 
+	if (!popup) {
+		console.error("Popup element not found!");
+		return;
+	}
+
+	popup.style.display = "flex";
 
 	const userComment = document.getElementById("userComment");
-	userComment.innerHTML = messageText;
-	//message.textContent = ;
-	//message.innerHTML = `Are you sure you want to remove?`;
+	if (userComment) {
+		userComment.value = '';
+		userComment.value = text || '';
+	} else {
+		console.error("User comment textarea not found!");
+		return;
+	}
+
+	const confrmLable = document.getElementById("confrmLable");
+	if (confrmLable) {
+		confrmLable.innerHTML = `Enter ${validateKey} :`;
+	} else {
+		console.error("Confirmation label not found!");
+		return;
+	}
 
 	const yesButton = document.getElementById("commentDelYes");
 	const noButton = document.getElementById("commentDelNo");
 
+	if (yesButton && noButton) {
+		yesButton.replaceWith(yesButton.cloneNode(true));
+		noButton.replaceWith(noButton.cloneNode(true));
 
-	yesButton.replaceWith(yesButton.cloneNode(true));
-	noButton.replaceWith(noButton.cloneNode(true));
+		document.getElementById("commentDelYes").addEventListener("click", function() {
+			const textData = document.getElementById("userComment").value;
+			updateCommentAndMessage(textData, id, validateKey);
+			popup.style.display = "none";
+		});
 
-	document.getElementById("commentDelYes").addEventListener("click", function() {
-		updateMessage(message, id);
-		popup.style.display = "none";
-	});
-
-	document.getElementById("commentDelNo").addEventListener("click", function() {
-		popup.style.display = "none";
-	});
+		document.getElementById("commentDelNo").addEventListener("click", function() {
+			if (userComment) userComment.value = '';
+			popup.style.display = "none";
+		});
+	} else {
+		console.error("Yes or No button not found!");
+	}
 }
 
-function updateComment(messageText, id) {
-	fetch("/task/update-comment/" + id, {
-		method: "POST",
+
+function updateCommentAndMessage(messageText, taskId, validateKey) {
+	const payload = {
+		id: taskId,
+		message: messageText,
+		validateKey: validateKey
+	};
+
+	fetch('/task/update', {
+		method: 'POST',
 		headers: {
-			"Content-Type": "application/json",
+			'Content-Type': 'application/json'
 		},
+		body: JSON.stringify(payload)
 	})
-		.then((response) => response.json())
-		.then((data) => {
-			alert(data.message);
-			if (data.status === 200) {
-				fetchUsers(currentPage); // Refresh the user list
-			}
+		.then(response => response.json())
+		.then(data => {
+			fetchTasks(currentPage);
+			//alert(data.message);
+			showAlert(data.message);
 		})
-		.catch((error) => {
-			console.error("Error:", error);
+		.catch(error => {
+			console.error('Error:', error);
 		});
 }
+
+function dateUpdate(currentDate, taskId, label) {
+	// Remove any previously added date input to avoid duplicates
+	const existingInput = document.getElementById("dynamicDateInput");
+	if (existingInput) {
+		existingInput.remove();
+	}
+
+	// Create a dynamic Flatpickr input field
+	const dateInput = document.createElement("input");
+	dateInput.type = "text"; // Flatpickr works with text input
+	dateInput.id = "dynamicDateInput";
+	dateInput.style.position = "absolute";
+	dateInput.style.zIndex = "9999"; // Ensure it's on top
+	dateInput.style.left = `${event.clientX}px`; // Position near the click
+	dateInput.style.top = `${event.clientY}px`; // Position near the click
+
+	document.body.appendChild(dateInput); // Append the input to the document
+
+	// Initialize Flatpickr with custom format
+	flatpickr(dateInput, {
+		dateFormat: "m/d/Y", // Set the format to mm/dd/yyyy
+		defaultDate: currentDate, // Pre-fill the current date if available
+		onClose: function(selectedDates, dateStr) {
+			if (dateStr) {
+				console.log(`Selected Date: ${dateStr}`);
+				console.log(`Task ID: ${taskId}`);
+				console.log(`Label: ${label}`);
+
+				updateCommentAndMessage(dateStr, taskId, label);
+
+				// Update the clicked cell with the new date
+				const cell = event.target;
+				cell.textContent = dateStr;
+			}
+
+			// Remove the input element after selection
+			dateInput.remove();
+		},
+	});
+
+	// Automatically open the calendar
+	dateInput.focus();
+}
+
+
+
+//old Date Select
+function dateUpdates(currentDate, taskId, label) {
+	// Remove any previously added date input to avoid duplicates
+	const existingInput = document.getElementById("dynamicDateInput");
+	if (existingInput) {
+		existingInput.remove();
+	}
+
+	// Create a dynamic date input field
+	const dateInput = document.createElement("input");
+	dateInput.type = "date";
+	dateInput.id = "dynamicDateInput";
+	dateInput.style.position = "absolute";
+	dateInput.style.zIndex = "9999"; // Ensure it's on top
+	dateInput.style.left = `${event.clientX}px`; // Position near the click
+	dateInput.style.top = `${event.clientY}px`; // Position near the click
+
+	// Convert mm/dd/yyyy to yyyy-mm-dd for date input compatibility
+	if (currentDate) {
+		const [month, day, year] = currentDate.split("/");
+		dateInput.value = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+	}
+
+	document.body.appendChild(dateInput); // Append the input to the document
+
+	dateInput.focus();
+
+	dateInput.addEventListener("change", function() {
+		if (dateInput.value) {
+			// Convert yyyy-mm-dd back to mm/dd/yyyy
+			const [year, month, day] = dateInput.value.split("-");
+			const selectedDate = `${month}/${day}/${year}`;
+			console.log(`Selected Date: ${selectedDate}`);
+			console.log(`Task ID: ${taskId}`);
+			console.log(`Label: ${label}`);
+
+			updateCommentAndMessage(selectedDate, taskId, label);
+
+			const cell = event.target;
+			cell.textContent = selectedDate;
+		}
+
+		// Remove the input element after selection
+		dateInput.remove();
+	});
+
+	// Remove the input element if the user clicks elsewhere
+	dateInput.addEventListener("blur", function() {
+		dateInput.remove();
+	});
+}
+
+function openPopup(duplicateData) {
+	const popupOverlay = document.getElementById('popupOverlay');
+	const popup = document.getElementById('dupPopup');
+	const tableBody = document.getElementById('popupTableBody');
+
+	// Clear existing rows
+	tableBody.innerHTML = '';
+
+	// Populate table with duplicate data
+	duplicateData.forEach((data, index) => {
+		const row = document.createElement('tr');
+		row.id = `dup${index + 1}`;
+
+		row.innerHTML = `
+                <td>${data.vehicleNumber || ''}</td>
+                <td>${data.partnerNumber || ''}</td>
+                <td>${data.agentName || ''}</td>
+                <td>${data.driverName || ''}</td>
+                <td>${data.city || ''}</td>
+                <td>${data.partnerRate || ''}</td>
+            `;
+
+		tableBody.appendChild(row);
+	});
+
+	// Show popup and overlay
+	popupOverlay.style.display = 'block';
+	popup.style.display = 'block';
+}
+
+function closePopup() {
+	document.getElementById('popupOverlay').style.display = 'none';
+	document.getElementById('dupPopup').style.display = 'none';
+}
+
+
 

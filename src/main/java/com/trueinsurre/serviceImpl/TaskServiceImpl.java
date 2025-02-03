@@ -29,9 +29,9 @@ import com.trueinsurre.exceptionHandeler.NotFound;
 import com.trueinsurre.modal.Task;
 import com.trueinsurre.modal.User;
 import com.trueinsurre.repository.TaskRepository;
+import com.trueinsurre.service.TaskHistoryService;
 import com.trueinsurre.service.TaskService;
 import com.trueinsurre.user.repository.UserRepository;
-import com.trueinsurre.utilityServices.DateUtility;
 
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -40,18 +40,136 @@ public class TaskServiceImpl implements TaskService {
 	TaskRepository taskRepository;
 	@Autowired
 	UserRepository userRepository;
+	@Autowired
+	TaskHistoryService taskHistoryService;
 
 	public static List<String> REQUIREDFIELDS = Arrays.asList("Vehicle Number", "Partner Number", "Agent Name",
-			"Driver Name", "City", "	last year Policy issued by", "	Partner rate", "	New Expiry date", "Message",
+			"Driver Name", "City", "last year Policy issued by", "Partner rate", "New Expiry date", "Message",
 			"Message link", "Status", "PolicyIssuedDate", "Message status", "Disposition", "Next Follow up Date",
 			"comments");
 
 	@Override
 	public CsvValidateResponce saveCsvData(MultipartFile file, Long userId) throws ParseException {
+	    CsvValidateResponce response = new CsvValidateResponce();
+	    List<TaskDto> csvDataList = new ArrayList<>(); // To store the valid tasks
+	    List<TaskDto> duplicateTasks = new ArrayList<>(); // To store the duplicate tasks
+	    Set<String> vehicleNumbers = new HashSet<>(); // To track vehicle numbers for duplicates within the sheet
+	    int dataRowCount = 0; // To count rows containing valid data
+	    int duplicateCount = 0;
+
+	    User user = null;
+	    Set<User> setUser = new HashSet<>();
+	    if (Objects.nonNull(userId)) {
+	        user = userRepository.findById(userId).orElse(null);
+	        setUser.add(user);
+	    }
+
+	    try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+	        String line;
+	        String[] headers = null;
+	        boolean headerRow = true;
+	        response.setDataValidated(true);
+	        int lengths = 0;
+
+	        while ((line = reader.readLine()) != null) {
+	            String[] values = line.split(",");
+	            lengths = values.length;
+	            Task task = new Task();
+	            if (headerRow) {
+	                headers = values;
+
+	                // Validate header row length
+	                if (headers.length < REQUIREDFIELDS.size()) {
+	                    response.setDataValidated(false);
+	                }
+
+	                // Validate header content and sequence
+	                for (int i = 0; i < REQUIREDFIELDS.size(); i++) {
+	                    if (i >= headers.length || !REQUIREDFIELDS.get(i).equals(headers[i])) {
+	                        response.setDataValidated(false);
+	                    }
+	                }
+	                headerRow = false;
+	            } else {
+	                if (headers != null) {
+	                    // Check if row length is less than required
+	                    if (values.length < headers.length) {
+	                        // Fill missing columns with default values (e.g., "")
+	                        values = Arrays.copyOf(values, headers.length);
+	                        Arrays.fill(values, lengths, headers.length, "");
+	                    }
+
+	                    // Map values to Task object with default handling
+	                    task.setVehicleNumber(getValue(values, 0));
+	                    task.setPartnerNumber(getValue(values, 1));
+	                    task.setAgentName(getValue(values, 2));
+	                    task.setDriverName(getValue(values, 3));
+	                    task.setCity(getValue(values, 4));
+	                    task.setLastYearPolicyIssuedBy(getValue(values, 5));
+	                    task.setPartnerRate(getValue(values, 6));
+	                    task.setNewExpiryDate(getValue(values, 7));
+	                    String message = getValue(values, 8);
+	                    if(getValue(values, 9)!= null) {
+	                    	message = message + getValue(values, 9);
+	                    }
+	                    task.setMessage(message);
+	                    task.setMessageLink(getValue(values, 11));
+	                    task.setStatus(getValue(values, 12));
+	                    task.setPolicyIssuedDate(getValue(values, 13));
+	                    task.setMessageStatus(getValue(values, 14));
+	                    task.setDisposition(getValue(values, 15));
+	                    task.setNextFollowUpDate(getValue(values, 16));
+	                    task.setComments(getValue(values, 17));
+	                    
+	                }
+	                
+	                // Check for duplicate Vehicle Number within the sheet
+	                if (!vehicleNumbers.add(task.getVehicleNumber())) {
+	                    duplicateCount++;
+	                    duplicateTasks.add(convertToDto(task));
+	                } else {
+	                	if(taskRepository.existsByVehicleNumber(task.getVehicleNumber())) {
+	                		duplicateCount++;
+		                    duplicateTasks.add(convertToDto(task));
+		                    
+	                	} else {
+	                		if (user != null) {
+		                        task.setUsers(setUser);
+		                        task.setAssign(true);
+		                    }
+		                    task = addTask(task); // Save the task in the database
+		                    csvDataList.add(convertToDto(task));
+		                    dataRowCount++;
+	                	}
+	                }
+	                System.out.println("Length: " + lengths);
+	            }
+	        }
+
+	        response.setDuplicateCount(duplicateCount);
+	        response.setCsvValidate(csvDataList);
+	        response.setDuplicateData(duplicateTasks);
+	        response.setCsvCount(dataRowCount);
+	        response.setUploaded(true);
+	        return response;
+	    } catch (IOException e) {
+	        throw new InvalidData("Error reading CSV file.", e);
+	    }
+
+	}
+	
+	private String getValue(String[] values, int index) {
+	    return index < values.length ? values[index].trim() : "";
+	}
+
+
+	
+//	@Override
+	public CsvValidateResponce saveCsvDatas(MultipartFile file, Long userId) throws ParseException {
 
 		CsvValidateResponce responce = new CsvValidateResponce();
-		List<CsvValidate> csvDataList = new ArrayList<>(); // To store the extracted data
-		int dataRowCount = 0; // To count rows containing valid data
+		List<TaskDto> csvDataList = new ArrayList<>();
+		int dataRowCount = 0;
 		int duplicateCount = 0;
 		User user = null;
 		Set<User> setUser = new HashSet<User>();
@@ -99,6 +217,7 @@ public class TaskServiceImpl implements TaskService {
 
 						case "Vehicle Number":
 							task.setVehicleNumber(value);
+							value = "";
 							break;
 						case "Partner Number":
 							task.setPartnerNumber(value);
@@ -155,13 +274,13 @@ public class TaskServiceImpl implements TaskService {
 						task.setUsers(setUser);
 						task.setAssign(true);
 					}
-
+					task.setMessage(task.getMessage() + task.getMessageLink());
 					task = addTask(task);
 				}
 			}
 
 			responce.setDuplicateCount(duplicateCount);
-			responce.setCsvValidate(csvDataList);
+			// responce.setCsvValidate(csvDataList);
 			responce.setCsvCount(dataRowCount);
 			responce.setUploaded(true);
 			return responce;
@@ -172,9 +291,11 @@ public class TaskServiceImpl implements TaskService {
 
 	@Override
 	public Task addTask(Task task) {
-		task.setCompleted(false);
-		task.setDeleted(false);
-		task = taskRepository.save(task);
+		if (task.getVehicleNumber() != null) {
+			task.setCompleted(false);
+			task.setDeleted(false);
+			task = taskRepository.save(task);
+		}
 		return task;
 	}
 
@@ -219,19 +340,19 @@ public class TaskServiceImpl implements TaskService {
 
 		return taskPage.map(this::convertToDto);
 	}
-	
+
 	@Override
 	public TaskDto getEdit(Long id) {
-		Task task = taskRepository.findById(id).orElseThrow(()-> new NotFound("No Task Found By id: "+id));
+		Task task = taskRepository.findById(id).orElseThrow(() -> new NotFound("No Task Found By id: " + id));
 		TaskDto taskdto = convertToDto(task);
-		try {
-			taskdto.setNewExpiryDate(DateUtility.convertToDDMMYYYY(taskdto.getNewExpiryDate()));
-			taskdto.setNextFollowUpDate(DateUtility.convertToDDMMYYYY(taskdto.getNextFollowUpDate()));
-			taskdto.setPolicyIssuedDate(DateUtility.convertToDDMMYYYY(taskdto.getPolicyIssuedDate()));
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//			taskdto.setNewExpiryDate(DateUtility.convertToDDMMYYYY(taskdto.getNewExpiryDate()));
+//			taskdto.setNextFollowUpDate(DateUtility.convertToDDMMYYYY(taskdto.getNextFollowUpDate()));
+//			taskdto.setPolicyIssuedDate(DateUtility.convertToDDMMYYYY(taskdto.getPolicyIssuedDate()));
+			
+			taskdto.setNewExpiryDate(taskdto.getNewExpiryDate());
+			taskdto.setNextFollowUpDate(taskdto.getNextFollowUpDate());
+			taskdto.setPolicyIssuedDate(taskdto.getPolicyIssuedDate());
+		
 		return taskdto;
 	}
 
@@ -287,14 +408,21 @@ public class TaskServiceImpl implements TaskService {
 		taskObj.setCity(taskDto.getCity());
 		taskObj.setLastYearPolicyIssuedBy(taskDto.getLastYearPolicyIssuedBy());
 		taskObj.setPartnerRate(taskDto.getPartnerRate());
-		taskObj.setNewExpiryDate(DateUtility.convertToMMDDYYYY(taskDto.getNewExpiryDate()));
+		
 		taskObj.setMessage(taskDto.getMessage());
 		taskObj.setMessageLink(taskDto.getMessageLink());
-		taskObj.setPolicyIssuedDate(DateUtility.convertToMMDDYYYY(taskDto.getPolicyIssuedDate()));
+		
 		taskObj.setMessageStatus(taskDto.getMessageStatus());
 		taskObj.setDisposition(taskDto.getDisposition());
-		taskObj.setNextFollowUpDate(DateUtility.convertToMMDDYYYY(taskDto.getNextFollowUpDate()));
 		taskObj.setComments(taskDto.getComments());
+		
+//		taskObj.setPolicyIssuedDate(DateUtility.convertToMMDDYYYY(taskDto.getPolicyIssuedDate()));
+//		taskObj.setNewExpiryDate(DateUtility.convertToMMDDYYYY(taskDto.getNewExpiryDate()));
+//		taskObj.setNextFollowUpDate(DateUtility.convertToMMDDYYYY(taskDto.getNextFollowUpDate()));
+		
+		taskObj.setPolicyIssuedDate(taskDto.getPolicyIssuedDate());
+		taskObj.setNewExpiryDate(taskDto.getNewExpiryDate());
+		taskObj.setNextFollowUpDate(taskDto.getNextFollowUpDate());
 
 		// Map boolean fields
 		taskObj.setAssign(taskDto.isAssign());
@@ -312,7 +440,7 @@ public class TaskServiceImpl implements TaskService {
 	@Override
 	public void taskAssign(List<Long> taskList, List<Long> userList) {
 		if (Objects.nonNull(userList) && userList.get(0) > 0) {
-			
+
 			List<Task> list = new ArrayList<Task>();
 			Task task = null;
 			Set<User> userSet = new HashSet<User>();
@@ -331,7 +459,7 @@ public class TaskServiceImpl implements TaskService {
 			}
 			taskRepository.saveAll(list);
 		} else {
-			
+
 			taskDeAssign(taskList);
 		}
 	}
@@ -370,44 +498,52 @@ public class TaskServiceImpl implements TaskService {
 	public Responce statusUpdate(StatusDto statusDto) {
 		Responce response = new Responce();
 		response.setStatus(200L);
-		response.setMessage(statusDto.getValidateKey()+"  status updated.");
-		
+
 		Task task = taskRepository.findById(statusDto.getId()).orElse(null);
-		
-		if(statusDto.getValidateKey().equalsIgnoreCase("Status")) {
-			task.setStatus(statusDto.getMessage());
-		} else if(statusDto.getValidateKey().equalsIgnoreCase("MessageStatus")) {
-			task.setMessageStatus(statusDto.getMessage());
-		} else if(statusDto.getValidateKey().equalsIgnoreCase("Disposition")) {
-			task.setDisposition(statusDto.getMessage());
+		String key = statusDto.getValidateKey();
+		String oldValue = null;
+		String newValue = statusDto.getMessage();
+		if (key.equalsIgnoreCase("Status")) {
+			oldValue = task.getStatus();
+			task.setStatus(newValue);
+			response.setMessage("Status updated.");
+		} else if (key.equalsIgnoreCase("MessageStatus")) {
+			oldValue = task.getMessageStatus();
+			task.setMessageStatus(newValue);
+			response.setMessage("Message status updated.");
+		} else if (key.equalsIgnoreCase("Disposition")) {
+			oldValue = task.getDisposition();
+			task.setDisposition(newValue);
+			response.setMessage("Disposition updated.");
 		}
-		taskRepository.save(task);
+		task =taskRepository.save(task);
+		taskHistoryService.createHistory(key, oldValue, newValue, task);
 		return response;
 	}
 
 	@Override
-	public Page<TaskDto> getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndStatus(boolean isAssign, boolean isCompleted, boolean isDeleted,
-			String message, int page, int size) {
+	public Page<TaskDto> getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndStatus(boolean isAssign,
+			boolean isCompleted, boolean isDeleted, String message, int page, int size) {
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-		Page<Task> taskPage = taskRepository.findByIsAssignAndIsCompletedAndIsDeletedAndStatus(isAssign,
-				isCompleted, isDeleted, message, pageable);
+		Page<Task> taskPage = taskRepository.findByIsAssignAndIsCompletedAndIsDeletedAndStatus(isAssign, isCompleted,
+				isDeleted, message, pageable);
 
 		return taskPage.map(this::convertToDto);
 	}
-	
+
 	@Override
-	public Page<TaskDto> getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndDisposition(boolean isAssign, boolean isCompleted, boolean isDeleted,
-			String message, int page, int size) {
+	public Page<TaskDto> getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndDisposition(boolean isAssign,
+			boolean isCompleted, boolean isDeleted, String message, int page, int size) {
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 		Page<Task> taskPage = taskRepository.findByIsAssignAndIsCompletedAndIsDeletedAndDisposition(isAssign,
 				isCompleted, isDeleted, message, pageable);
 
 		return taskPage.map(this::convertToDto);
 	}
-	
+
 	@Override
-	public Page<TaskDto> getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndDispositionAndStatus(boolean isAssign, boolean isCompleted, boolean isDeleted,
-			String disposition, String status, int page, int size) {
+	public Page<TaskDto> getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndDispositionAndStatus(boolean isAssign,
+			boolean isCompleted, boolean isDeleted, String disposition, String status, int page, int size) {
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 		Page<Task> taskPage = taskRepository.findByIsAssignAndIsCompletedAndIsDeletedAndDispositionAndStatus(isAssign,
 				isCompleted, isDeleted, disposition, status, pageable);
@@ -416,34 +552,107 @@ public class TaskServiceImpl implements TaskService {
 	}
 
 	@Override
-	public Page<TaskDto> getAllTaskByUserAndByIsAssignAndByIsCompletedANdByIsDeletedAndStatus(Long userId, boolean isAssign, boolean isCompleted, boolean isDeleted,
-			String message, int page, int size) {
+	public Page<TaskDto> getAllTaskByUserAndByIsAssignAndByIsCompletedANdByIsDeletedAndStatus(Long userId,
+			boolean isAssign, boolean isCompleted, boolean isDeleted, String message, int page, int size) {
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-		Page<Task> taskPage = taskRepository.findByUsers_IdAndIsAssignAndIsCompletedAndIsDeletedAndStatus(userId, isAssign,
-				isCompleted, isDeleted, message, pageable);
+		Page<Task> taskPage = taskRepository.findByUsers_IdAndIsAssignAndIsCompletedAndIsDeletedAndStatus(userId,
+				isAssign, isCompleted, isDeleted, message, pageable);
 
 		return taskPage.map(this::convertToDto);
 	}
 
 	@Override
-	public Page<TaskDto> getAllTaskByUserAndByIsAssignAndByIsCompletedANdByIsDeletedAndDisposition(Long userId,boolean isAssign, boolean isCompleted, boolean isDeleted,
-			String message, int page, int size) {
+	public Page<TaskDto> getAllTaskByUserAndByIsAssignAndByIsCompletedANdByIsDeletedAndDisposition(Long userId,
+			boolean isAssign, boolean isCompleted, boolean isDeleted, String message, int page, int size) {
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-		Page<Task> taskPage = taskRepository.findByUsers_IdAndIsAssignAndIsCompletedAndIsDeletedAndDisposition(userId, isAssign,
-				isCompleted, isDeleted, message, pageable);
+		Page<Task> taskPage = taskRepository.findByUsers_IdAndIsAssignAndIsCompletedAndIsDeletedAndDisposition(userId,
+				isAssign, isCompleted, isDeleted, message, pageable);
 
 		return taskPage.map(this::convertToDto);
 	}
 
 	@Override
 	public Page<TaskDto> getAllTaskByUserAndByIsAssignAndByIsCompletedANdByIsDeletedAndDispositionAndStatus(Long userId,
-			boolean isAssign, boolean isCompleted, boolean isDeleted,
-			String disposition, String status, int page, int size) {
+			boolean isAssign, boolean isCompleted, boolean isDeleted, String disposition, String status, int page,
+			int size) {
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-		Page<Task> taskPage = taskRepository.findByUsers_IdAndIsAssignAndIsCompletedAndIsDeletedAndDispositionAndStatus(userId, isAssign,
-				isCompleted, isDeleted, disposition, status, pageable);
+		Page<Task> taskPage = taskRepository.findByUsers_IdAndIsAssignAndIsCompletedAndIsDeletedAndDispositionAndStatus(
+				userId, isAssign, isCompleted, isDeleted, disposition, status, pageable);
 
 		return taskPage.map(this::convertToDto);
 	}
+
+	@Override
+	public Responce updateCommentAndMessage(StatusDto statusDto) {
+	    Responce response = new Responce();
+	    response.setStatus(200L);
+	    response.setMessage("Your " + statusDto.getValidateKey() + " is updated.");
+	    
+	    // Fetch the task from the database
+	    Task task = taskRepository.findById(statusDto.getId())
+	        .orElseThrow(() -> new NotFound("No Task Found."));
+
+	    String fieldName = statusDto.getValidateKey();
+	    String oldValue = null;
+	    String newValue = statusDto.getMessage();
+	    
+	    // Determine which field to update and track the old value
+	    switch (fieldName) {
+	        case "Comment":
+	            oldValue = task.getComments();
+	            task.setComments(newValue);
+	            break;
+	        case "Message":
+	            oldValue = task.getMessage();
+	            task.setMessage(newValue);
+	            break;
+	        case "Agent Name":
+	            oldValue = task.getAgentName();
+	            task.setAgentName(newValue);
+	            break;
+	        case "Driver Name":
+	            oldValue = task.getDriverName();
+	            task.setDriverName(newValue);
+	            break;
+	        case "City":
+	            oldValue = task.getCity();
+	            task.setCity(newValue);
+	            break;
+	        case "Last Year Policy IssuedBy":
+	            oldValue = task.getLastYearPolicyIssuedBy();
+	            task.setLastYearPolicyIssuedBy(newValue);
+	            break;
+	        case "Partner Rate":
+	            oldValue = task.getPartnerRate();
+	            task.setPartnerRate(newValue);
+	            break;
+	        case "New Expiry Date":
+	            oldValue = task.getNewExpiryDate();
+	            task.setNewExpiryDate(newValue);
+	            break;
+	        case "Vehicle Number":
+	            oldValue = task.getVehicleNumber();
+	            task.setVehicleNumber(newValue);
+	            break;
+	        case "Partner Number":
+	            oldValue = task.getPartnerNumber();
+	            task.setPartnerNumber(newValue);
+	            break;
+	        case "Policy Issued Date":
+	            oldValue = task.getPolicyIssuedDate();
+	            task.setPolicyIssuedDate(newValue);
+	            break;
+	        case "Next FollowUp Date":
+	            oldValue = task.getNextFollowUpDate();
+	            task.setNextFollowUpDate(newValue);
+	            break;
+	        default:
+	            response.setMessage("Key not found.");
+	            return response;
+	    }
+	    taskHistoryService.createHistory(fieldName, oldValue, newValue, task);
+	    return response;
+	}
+
 
 }

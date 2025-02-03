@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -35,6 +37,12 @@ public class UserController {
 	
 	@Autowired
 	CurrentSession session;
+	
+	@GetMapping("/is-logged-in/{email}")
+    public ResponseEntity<Boolean> isLoggedIn(@PathVariable String email) {
+        
+        return ResponseEntity.ok(userService.isUserLoggedIn(email));
+    }
 
 	@GetMapping("/login")
 	public String login( Model model) {
@@ -94,7 +102,6 @@ public class UserController {
 		return "deleteProfile";
 	}
 
-	@SuppressWarnings("null")
 	@PostMapping("/admin/save")
 	public String masterAdminRegistration(@Valid @ModelAttribute("user") UserDto userDto, BindingResult result, Model model) {
 		
@@ -102,15 +109,16 @@ public class UserController {
 
 		if (existingUser != null && existingUser.getEmail() != null && !existingUser.getEmail().isEmpty()) {
 			result.rejectValue("email", null, "There is already an account registered with the same email");
+		}else {
+			userService.saveMasterUser(userDto);
 		}
 		
 		if (!result.hasErrors()) {
 			model.addAttribute("user", userDto);
-			return "/masterRegister";
+			return "/admin";
 		}
 	    
-		userService.saveMasterUser(userDto);
-	    return "redirect:/master?success";
+	    return "redirect:/login?success";
 	}
 	
 	

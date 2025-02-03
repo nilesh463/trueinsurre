@@ -15,6 +15,10 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;1,200&display=swap" rel="stylesheet">
 
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
 	<link rel="stylesheet" type="text/css" href="/css/sideAndNavBar.css" />
 	<link rel="stylesheet" type="text/css" href="/css/employee/employeeDashboard.css" />
 
@@ -30,8 +34,8 @@
 		<ul>
 			<li><a href="#" id="link-dashboard">&nbsp;<i class="fa fa-tachometer sideSpace" aria-hidden="true"></i>
 					Dashboard</a></li>
-			<!--<li><a href="#" id="link-tracking">&nbsp;<i class="fa fa-line-chart sideSpace"
-						aria-hidden="true"></i>Task-Track</a></li>-->
+			<li>&nbsp;<button id="link-tracking" class="addTaskNav" onclick="addTask()">&nbsp;<i
+						class="fa fa-plus-square" aria-hidden="true"></i>&nbsp;&nbsp;&nbsp;&nbsp; Add Task</button></li>
 			<!--<li><a href="/emp/" id="link-orders">&nbsp;<i class="fa fa-users sideSpace"
 						aria-hidden="true"></i>Employees</a></li>-->
 		</ul>
@@ -59,7 +63,7 @@
 				<div class="row">
 					<div class="col-md-6">
 						<span>
-							<h3><i class="fa fa-cart-plus" aria-hidden="true"></i> Task </h2>
+							<h3><i class="fa fa-cart-plus" aria-hidden="true"></i> Task</h2>
 						</span>
 					</div>
 					<div class="col-md-6">
@@ -115,7 +119,8 @@
 
 
 							<div class="col-md-3">
-								<div class="btn-group marginFilterButton" role="group" aria-label="Button group with nested dropdown" >
+								<div class="btn-group marginFilterButton" role="group"
+									aria-label="Button group with nested dropdown">
 									<div class="dropdown">
 										<select id="selectDisposition" type="button"
 											class="btns dropdown-toggle userList" onchange="fetchTasks()">
@@ -154,7 +159,8 @@
 
 							<div class="col-md-3">
 								<div class="form-group mb-3">
-									<div class="btn-group marginFilterButton" role="group" aria-label="Button group with nested dropdown" >
+									<div class="btn-group marginFilterButton" role="group"
+										aria-label="Button group with nested dropdown">
 										<div class="dropdown">
 											<select id="selectStatus" type="button"
 												class="btns dropdown-toggle userList" onchange="fetchTasks();">
@@ -186,8 +192,8 @@
 
 							<div class="col-md-3">
 								<div class="directions table-search">
-									<span>Search: </span><input class="" type="text" id="searchBox" placeholder=""
-										oninput="filterTable(this.value)" />
+									<span>Search: </span><input type="text" id="multiFilter" placeholder="Enter filters (e.g., Pune 05/15/2025 searchText)" oninput="filterTable(this.value)" />
+
 								</div>
 							</div>
 						</div>
@@ -315,49 +321,314 @@
 					</div>
 				</div>
 			</div>
-			
-			
-				<!-- Task Update Message Popup Start-->
-				<div class="row">
-					<div class="col-md-12">
-						<div id="messagePopup" class="empDelOverlay" style="display: none;">
-							<div class="messageCommentPopupContent">
-								<!--<p id="messageErrorText"></p>-->
-								<div class="form-group mb-3">
-										<label class="form-label" for="taskFile" style="float: left;">Enter Message:</label>
-										<textarea class="form-control textAreaHeight" id="userMessage" name="userMessage"
-															placeholder="Enter Message" rows="3"></textarea>
+
+
+			<!--Add Task Start-->
+
+			<div class="row">
+				<div class="col-md-12">
+					<div id="taskModal" class="modal" style="display: none;">
+						<div class="modal-content cardBackground">
+							<div class="card">
+								<h4 class="header"><i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp;
+									<span id="taskTitle">New
+										Task</span>
+								</h4>
+								<form id="taskForm" class="formPadding">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label" for="vehicleNumber">Vehicle
+													Number</label>
+												<input class="form-control" id="vehicleNumber" name="vehicleNumber"
+													type="text" placeholder="Enter Vehicle Number" required>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label" for="partnerNumber">Partner
+													Number</label>
+												<input class="form-control" id="partnerNumber" name="partnerNumber"
+													type="text" placeholder="Enter Partner Number" required>
+											</div>
+										</div>
 									</div>
-								<div class="messageDelPopupButtons">
-									<button id="messageDelYes" class="empDelBtnRemove">Update</button>
-									<button id="messageDelNo" class="empDelBtn">Cancel</button>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label" for="agentName">Agent Name</label>
+												<input class="form-control" id="agentName" name="agentName" type="text"
+													placeholder="Enter Agent Name" required>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label" for="driverName">Driver Name</label>
+												<input class="form-control" id="driverName" name="driverName"
+													type="text" placeholder="Enter Driver Name" required>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label" for="city">City</label>
+												<input class="form-control" id="city" name="city" type="text"
+													placeholder="Enter City" required>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label" for="lastYearPolicyIssuedBy">Last Year
+													Policy
+													Issued By</label>
+												<input class="form-control" id="lastYearPolicyIssuedBy"
+													name="lastYearPolicyIssuedBy" type="text" placeholder="Enter Issuer"
+													required>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label" for="partnerRate">Partner Rate</label>
+												<input class="form-control" id="partnerRate" name="partnerRate"
+													type="text" placeholder="Enter Partner Rate" required>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label" for="newExpiryDate">New Expiry
+													Date</label>
+												<input class="form-control" id="newExpiryDate" name="newExpiryDate"
+													type="date" required>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label" for="message">Message</label>
+												<textarea class="form-control" id="message" name="message"
+													placeholder="Enter Message" rows="3"></textarea>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label" for="messageLink">Message Link</label>
+												<input class="form-control" id="messageLink" name="messageLink"
+													type="text" placeholder="Enter Message Link">
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label" for="policyIssuedDate">Policy Issued
+													Date</label>
+												<input class="form-control" id="policyIssuedDate"
+													name="policyIssuedDate" type="date" required>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label" for="messageStatus">Message
+													Status</label>
+												<select class="form-control" id="messageStatus" name="messageStatus"
+													required>
+													<option value="">Select Status</option>
+													<option value="Sent">message Sent</option>
+													<option value="Pending">not on whatsapp</option>
+												</select>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label" for="disposition">Disposition</label>
+
+												<select class="form-control" id="disposition" name="disposition">
+													<option value="">Select Disposition</option>
+													<option value="RNR">RNR</option>
+													<option value="Not Interested">Not Interested</option>
+													<option value="Follow up">Follow up</option>
+													<option value="Renewed Outside">Renewed Outside</option>
+													<option value="Ready to pay today">Ready to pay today
+													</option>
+													<option value="Issued">Issued</option>
+													<option value="Paid">Paid</option>
+													<option value="Payment Issue">Payment Issue</option>
+													<option value="Others">Others</option>
+													<option value="Price is High (C)">Price is High (C)</option>
+													<option value="Financial issue (C)">Financial issue (C)
+													</option>
+													<option value="Need EMI Option (C)">Need EMI Option (C)
+													</option>
+													<option value="Not Happy with Insurance Vendor (NC)">Not
+														Happy with
+														Insurance Vendor (NC)</option>
+													<option value="Not Happy with Porter Service (NC)">Not Happy
+														with
+														Porter Service (NC)</option>
+													<option value="Wrong Number (NC)">Wrong Number (NC)</option>
+													<option value="Sold his vehicle (NC)">Sold his vehicle (NC)
+													</option>
+													<option value="Relative is an Agent (NC)">Relative is an
+														Agent (NC)
+													</option>
+													<option value="Payment Mode issue">Payment Mode issue
+													</option>
+													<option value="EWI Interest is high">EWI Interest is high
+													</option>
+													<option value="Not Answering the call">Not Answering the
+														call
+													</option>
+													<option value="Not Eligible">Not Eligible</option>
+													<option value="KYC issue">KYC issue</option>
+												</select>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label" for="nextFollowUpDate">Next Follow-Up
+													Date</label>
+												<input class="form-control" id="nextFollowUpDate"
+													name="nextFollowUpDate" type="date" required>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label" for="status">Status</label>
+
+												<select class="form-control" id="status" name="status">
+													<option value="">Select Disposition</option>
+													<option value="S1-Payment Collection Pending">S1-Payment
+														Collection
+														Pending</option>
+													<option value="S2-Finance Confirmation Pending">S2-Finance
+														Confirmation Pending</option>
+													<option value="S3-Document Pending">S3-Document Pending
+													</option>
+													<option value="S4-Policy request Pending">S4-Policy request
+														Pending
+													</option>
+													<option value="S4.1-EWI Pending">S4.1-EWI Pending</option>
+													<option value="S5-Pending from vendor">S5-Pending from
+														vendor
+													</option>
+													<option value="S5.1-Pending for core insurance">S5.1-Pending
+														for
+														core insurance</option>
+													<option value="S5.2-Agent different case">S5.2-Agent
+														different case
+													</option>
+													<option value="S6-Policy issued">S6-Policy issued</option>
+													<option value="Not Interested">Not Interested</option>
+													<option value="Renewed Outside">Renewed Outside</option>
+												</select>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label" for="comments">Comments</label>
+												<textarea class="form-control" id="comments" name="comments"
+													placeholder="Enter Comments" rows="3"></textarea>
+												<input type="hidden" id="id" name="id">
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-12">
+											<div class="directions">
+												<button class="btn btn-outline-danger"
+													onclick="closeEmployeePopup()">Cancel</button>
+												&nbsp;
+												<button type="button" class="btn btn-outline-success"
+													onclick="submitForm()">Save</button>
+											</div>
+										</div>
+									</div>
+								</form>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!--Add Task End-->
+			<!-- Task Update Message Popup Start-->
+			<div class="row">
+				<div class="col-md-12">
+					<div id="messagePopup" class="empDelOverlay" style="display: none;">
+						<div class="messageCommentPopupContent">
+							<!--<p id="messageErrorText"></p>-->
+							<div class="form-group mb-3">
+								<label class="form-label" for="taskFile" style="float: left;">Enter Message:</label>
+								<textarea class="form-control textAreaHeight" id="userMessage" name="userMessage"
+									placeholder="Enter Message" rows="3"></textarea>
+							</div>
+							<div class="messageDelPopupButtons">
+								<button id="messageDelYes" class="empDelBtnRemove">Update</button>
+								<button id="messageDelNo" class="empDelBtn">Cancel</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--Task Update Message End-->
+
+			<!-- Task Update Comment Popup Start-->
+			<div class="row">
+				<div class="col-md-12">
+					<div id="commentPopup" class="empDelOverlay" style="display: none;">
+						<div class="messageCommentPopupContent">
+							<!--<p id="commentErrorText"></p>-->
+							<div class="form-group mb-3">
+								<label class="form-label" for="taskFile" style="float: left;"><b
+										id="confrmLable"></b>Enter Message:</label>
+								<textarea class="form-control textAreaHeight" id="userComment" name="userComment"
+									placeholder="Enter ..." rows="3"></textarea>
+							</div>
+							<div class="empDelPopupButtons">
+								<button id="commentDelYes" class="empDelBtnRemove">Update</button>
+								<button id="commentDelNo" class="empDelBtn">Cancel</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--Task Update Comment End-->
+
+			<!--Alert Popup Start-->
+
+			<div class="row">
+					<div class="col-md-12">
+						<div id="alertPopup" class="alert-popup hidden">
+							<div class="alert-content">
+								<div id="cardId">
+									<div class="">
+										<span id="alertMessage" class="alert-message"></span>
+									</div>
+									<!--<button id="alertClose" class="alert-close" onclick="hideAlert();">OK</button>-->
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-				<!--Task Update Message End-->
-				
-				<!-- Task Update Comment Popup Start-->
-				<div class="row">
-					<div class="col-md-12">
-						<div id="commentPopup" class="empDelOverlay" style="display: none;">
-							<div class="messageCommentPopupContent">
-								<!--<p id="commentErrorText"></p>-->
-								<div class="form-group mb-3">
-										<label class="form-label" for="taskFile" style="float: left;">Enter Message:</label>
-										<textarea class="form-control textAreaHeight" id="userComment" name="userComment"
-															placeholder="Enter Message" rows="3"></textarea>
-									</div>
-								<div class="empDelPopupButtons">
-									<button id="commentDelYes" class="empDelBtnRemove">Update</button>
-									<button id="commentDelNo" class="empDelBtn">Cancel</button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<!--Task Update Comment End-->
+
+			<!--Alert Popup end-->
 
 		</div>
 	</div>

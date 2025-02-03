@@ -8,8 +8,8 @@ public class CsvValidateResponce {
 	private boolean uploaded;
 	private long duplicateCount;
 	private boolean dataValidated;
-	private List<CsvValidate> csvValidate;
-	private List<CsvValidate> duplicateData;
+	private List<TaskDto> csvValidate;
+	private List<TaskDto> duplicateData;
 
 	public long getCsvCount() {
 		return csvCount;
@@ -17,22 +17,6 @@ public class CsvValidateResponce {
 
 	public void setCsvCount(long csvCount) {
 		this.csvCount = csvCount;
-	}
-
-	public boolean isDataValidated() {
-		return dataValidated;
-	}
-
-	public void setDataValidated(boolean dataValidated) {
-		this.dataValidated = dataValidated;
-	}
-
-	public List<CsvValidate> getCsvValidate() {
-		return csvValidate;
-	}
-
-	public void setCsvValidate(List<CsvValidate> csvValidate) {
-		this.csvValidate = csvValidate;
 	}
 
 	public boolean isUploaded() {
@@ -43,14 +27,6 @@ public class CsvValidateResponce {
 		this.uploaded = uploaded;
 	}
 
-	public List<CsvValidate> getDuplicateData() {
-		return duplicateData;
-	}
-
-	public void setDuplicateData(List<CsvValidate> duplicateData) {
-		this.duplicateData = duplicateData;
-	}
-
 	public long getDuplicateCount() {
 		return duplicateCount;
 	}
@@ -59,11 +35,35 @@ public class CsvValidateResponce {
 		this.duplicateCount = duplicateCount;
 	}
 
+	public boolean isDataValidated() {
+		return dataValidated;
+	}
+
+	public void setDataValidated(boolean dataValidated) {
+		this.dataValidated = dataValidated;
+	}
+
+	public List<TaskDto> getCsvValidate() {
+		return csvValidate;
+	}
+
+	public void setCsvValidate(List<TaskDto> csvValidate) {
+		this.csvValidate = csvValidate;
+	}
+
+	public List<TaskDto> getDuplicateData() {
+		return duplicateData;
+	}
+
+	public void setDuplicateData(List<TaskDto> duplicateData) {
+		this.duplicateData = duplicateData;
+	}
+
 	@Override
 	public String toString() {
 		return "CsvValidateResponce [csvCount=" + csvCount + ", uploaded=" + uploaded + ", duplicateCount="
 				+ duplicateCount + ", dataValidated=" + dataValidated + ", csvValidate=" + csvValidate
 				+ ", duplicateData=" + duplicateData + "]";
 	}
-	
+
 }

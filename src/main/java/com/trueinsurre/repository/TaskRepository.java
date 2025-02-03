@@ -27,5 +27,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 					boolean isDeleted, String status, Pageable pageable);
 	Page<Task> findByUsers_IdAndIsAssignAndIsCompletedAndIsDeletedAndDispositionAndStatus(Long userId, boolean isAssign, boolean isCompleted,
 			boolean isDeleted,String disposition, String status, Pageable pageable);
+	boolean existsByVehicleNumber(String vehicleNumber);
 
 }

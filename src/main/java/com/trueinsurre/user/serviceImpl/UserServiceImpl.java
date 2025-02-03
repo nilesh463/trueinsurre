@@ -324,5 +324,12 @@ public class UserServiceImpl implements UserService {
 			}
 		}
 	}
+	@Override
+	public boolean isUserLoggedIn(String username) {
+        return sessionRegistry.getAllPrincipals().stream()
+                .filter(principal -> principal instanceof org.springframework.security.core.userdetails.User)
+                .map(principal -> (org.springframework.security.core.userdetails.User) principal)
+                .anyMatch(user -> user.getUsername().equals(username));
+    }
 
 }

@@ -42,7 +42,7 @@
 }
 
 .header {
-	background-color: #2c3e50;
+	background-color: rgb(0, 64, 0);
 	color: white;
 	padding: 7px;
 
@@ -68,6 +68,7 @@
 table {
 	width: 100%;
 	table-layout: fixed;
+	/*table-layout: absolute;*/
 }
 
 th,
@@ -87,14 +88,14 @@ td {
 }
 
 th {
-	background-color: #2c3e50;
+	background-color: rgb(0, 64, 0);
 	color: white;
 }
 
 tr:hover {
 	background-color: #ddd;
-	color: #2c3e50;
-	border: 1px solid #2c3e50;
+	color: rgb(0, 64, 0);
+	border: 1px solid rgb(0, 64, 0);
 }
 
 .pagination {
@@ -107,8 +108,8 @@ tr:hover {
 	padding: 10px 15px;
 	margin: 0 5px;
 	border: none;
-	background-color: #2c3e50;
-	border: 1px solid #2c3e50;
+	background-color: rgb(0, 64, 0);
+	border: 1px solid rgb(0, 64, 0);
 	color: white;
 	cursor: pointer;
 	border-radius: 4px;
@@ -116,7 +117,7 @@ tr:hover {
 
 .pagination button:hover {
 	background-color: white;
-	color: #2c3e50;
+	color: rgb(0, 64, 0);
 }
 
 #entriesPerPage {
@@ -130,11 +131,11 @@ tr:hover {
 
 .tableBtn:hover {
 	color: oldlace;
-	background-color: #2c3e50;
+	background-color: rgb(0, 64, 0);
 }
 
 .tableFilter {
-	background-color: #2c3e50;
+	background-color: rgb(0, 64, 0);
 	border: transparent;
 	color: white;
 }
@@ -169,14 +170,15 @@ tr:hover {
 
 /*Header buttons Add Task*/
 .btns {
-	padding: 10px 20px;
-	font-size: 16px;
-	cursor: pointer;
-	border: 1px solid #ccc;
-	background-color: #f8f9fa;
-	color: #333;
-	outline: none;
-	transition: background-color 0.3s;
+    padding: 7px 16px;
+    font-size: 15px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background-color: #f8f9fa;
+    color: #333;
+    outline: none;
+    transition: background-color 0.3s;
+    border-radius: 4px;
 }
 
 .btns:hover {
@@ -274,14 +276,14 @@ tr:hover {
 	margin: 0 10px;
 	border: none;
 	background-color: white;
-	color: #007bff;
-	border: 1px solid #007bff;
+	color: rgb(0, 64, 0);
+	border: 1px solid rgb(0, 64, 0);
 	border-radius: 3px;
 	cursor: pointer;
 }
 
 .empDelBtn:hover {
-	background-color: #007bff;
+	background-color: rgb(0, 64, 0);
 	color: white;
 
 }
@@ -305,7 +307,7 @@ tr:hover {
 }
 
 .empDelBtn:hover {
-	background-color: #0056b3;
+	background-color: rgb(0, 64, 0);
 }
 
 /*Upload Task Css*/
@@ -364,14 +366,107 @@ tr:hover {
 }
 
 .messageCommentPopupContent {
-    background: white;
-    padding: 20px;
-    border-radius: 5px;
-    text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 390px;
+	background: white;
+	padding: 20px;
+	border-radius: 5px;
+	text-align: center;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	width: 390px;
 }
 
-.textAreaHeight{
+.textAreaHeight {
 	height: 200px;
 }
+
+.popup {
+	max-height: 64%;
+	display: none;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 50%;
+	padding: 20px;
+	background: white;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	border-radius: 8px;
+	z-index: 1000;
+	overflow: scroll;
+}
+
+.popup-header {
+	font-size: 18px;
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+
+.popup-content {
+	margin-bottom: 20px;
+}
+
+#popupTable {
+	width: -1%;
+	overflow: hidden;
+	table-layout: unset;
+	border-collapse: collapse;
+}
+
+#popupTable th,
+#popupTable td {
+	white-space: nowrap;
+	padding: 8px;
+	text-align: left;
+}
+
+#popupTable th {
+	background-color: rgb(0, 64, 0);
+}
+
+.popup-content table th,
+.popup-content table td {
+	border: 1px solid #ddd;
+	padding: 8px;
+	text-align: left;
+}
+
+.popup-content table th {
+	background-color: #f4f4f4;
+}
+
+.popup-footer {
+	text-align: right;
+}
+
+.popup-footer button {
+	padding: 8px 16px;
+	background-color: rgb(0, 64, 0);
+	color: white;
+	border: 1px solid rgb(0, 64, 0);
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.popup-footer button:hover {
+	background-color: rgb(255, 255, 255);
+	color: rgb(0, 64, 0);
+}
+
+.overlay {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5);
+	z-index: 999;
+}
+
+#cardId{
+	padding: 10px;
+	margin: -6px;
+	/*text-align: center;
+	align-content: center;*/
+}
+
+
