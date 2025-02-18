@@ -70,4 +70,11 @@ function hideAlert() {
 	alertPopup.classList.add("hidden");
 }
 
+function toggleLoader() {
+	let loader = document.getElementById("loader");
+	//const popup = document.getElementById("loaderPopup");
+	loader.style.display = loader.style.display === "none" ? "block" : "none";
+	//popup.style.display = popup.style.display === "none" ? "block" : "none";
+}
+
 

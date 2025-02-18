@@ -397,10 +397,13 @@ public class TaskServiceImpl implements TaskService {
 			User user = userRepository.findById(taskDto.getId()).orElse(null);
 			userSet.add(user);
 			taskObj.setUsers(userSet);
+			taskObj.setAssign(true);
+		} else {
+			taskObj.setAssign(taskDto.isAssign());
 		}
 
 		// Map all fields
-		taskObj.setId(taskDto.getId());
+		//taskObj.setId(taskDto.getId());
 		taskObj.setVehicleNumber(taskDto.getVehicleNumber());
 		taskObj.setPartnerNumber(taskDto.getPartnerNumber());
 		taskObj.setAgentName(taskDto.getAgentName());
@@ -425,7 +428,7 @@ public class TaskServiceImpl implements TaskService {
 		taskObj.setNextFollowUpDate(taskDto.getNextFollowUpDate());
 
 		// Map boolean fields
-		taskObj.setAssign(taskDto.isAssign());
+		
 		taskObj.setCompleted(taskDto.isCompleted());
 		taskObj.setDeleted(taskDto.isDeleted());
 

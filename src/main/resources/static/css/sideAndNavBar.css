@@ -266,3 +266,45 @@ body {
 	background-color: rgb(255, 255, 255);
 	color: rgb(0, 64, 0);
 }
+
+.loader-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	background-color: #f4f4f4;
+}
+
+/* Loader ring */
+.loader {
+	width: 50px;
+	height: 50px;
+	border: 5px solid rgba(52, 152, 219, 0.3);
+	border-top-color: #3498db;
+	border-radius: 50%;
+	animation: spin 1s linear infinite, blink 1.5s infinite;
+}
+
+/* Spinning animation */
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+/* Blinking effect */
+@keyframes blink {
+
+	0%,
+	100% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0.5;
+	}
+}

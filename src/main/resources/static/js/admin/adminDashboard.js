@@ -48,7 +48,7 @@ function submitForm() {
 
 async function fetchTasks(page = currentPage, size = currentSize) {
 	try {
-
+		toggleLoader();
 		var taskType = document.getElementById('taskType');
 		if (taskType != null) {
 			taskType = taskType.value;
@@ -208,10 +208,12 @@ async function fetchTasks(page = currentPage, size = currentSize) {
       `;
 			userTableBody.appendChild(row);
 		});
-
+		
+		toggleLoader();
 		// Update pagination buttons
 		setupPagination(data.currentPage, data.totalPages);
 	} catch (error) {
+		toggleLoader();
 		console.error("Error fetching tasks:", error);
 	}
 }
@@ -248,36 +250,52 @@ function updateEntriesPerPage(size) {
 }
 
 function setupPagination(current, totalPages) {
+    const paginationContainer = document.getElementById("paginationButtons");
+    paginationContainer.innerHTML = ""; // Clear existing buttons
 
-	const paginationContainer = document.getElementById("paginationButtons");
-	paginationContainer.innerHTML = ""; // Clear existing buttons
+    // Previous button
+    const prevButton = document.createElement("button");
+    prevButton.textContent = "Previous";
+    prevButton.className = current === 0 ? "disabled" : "";
+    prevButton.disabled = current === 0;
+    prevButton.addEventListener("click", () => fetchTasks(current - 1));
+    paginationContainer.appendChild(prevButton);
 
-	// Previous button
-	const prevButton = document.createElement("button");
-	prevButton.textContent = "Previous";
-	prevButton.className = current === 0 ? "disabled" : "";
-	prevButton.disabled = current === 0;
-	prevButton.addEventListener("click", () => fetchTasks(current - 1));
-	paginationContainer.appendChild(prevButton);
+    const createPageButton = (page) => {
+        const pageButton = document.createElement("button");
+        pageButton.textContent = page + 1;
+        pageButton.className = page === current ? "active" : "";
+        pageButton.disabled = page === current;
+        pageButton.addEventListener("click", () => fetchTasks(page));
+        paginationContainer.appendChild(pageButton);
+    };
 
-	// Page numbers
-	for (let i = 0; i < totalPages; i++) {
-		const pageButton = document.createElement("button");
-		pageButton.textContent = i + 1;
-		pageButton.className = i === current ? "disabled" : "";
-		pageButton.disabled = i === current;
-		pageButton.addEventListener("click", () => fetchTasks(i));
-		paginationContainer.appendChild(pageButton);
-	}
+    if (totalPages <= 7) {
+        // Show all pages if total pages are small
+        for (let i = 0; i < totalPages; i++) createPageButton(i);
+    } else {
+        createPageButton(0); // First page
 
-	// Next button
-	const nextButton = document.createElement("button");
-	nextButton.textContent = "Next";
-	nextButton.className = current === totalPages - 1 ? "disabled" : "";
-	nextButton.disabled = current === totalPages - 1;
-	nextButton.addEventListener("click", () => fetchTasks(current + 1));
-	paginationContainer.appendChild(nextButton);
+        if (current > 3) paginationContainer.appendChild(document.createTextNode("..."));
+
+        for (let i = Math.max(1, current - 2); i <= Math.min(totalPages - 2, current + 2); i++) {
+            createPageButton(i);
+        }
+
+        if (current < totalPages - 4) paginationContainer.appendChild(document.createTextNode("..."));
+
+        createPageButton(totalPages - 1); // Last page
+    }
+
+    // Next button
+    const nextButton = document.createElement("button");
+    nextButton.textContent = "Next";
+    nextButton.className = current === totalPages - 1 ? "disabled" : "";
+    nextButton.disabled = current === totalPages - 1;
+    nextButton.addEventListener("click", () => fetchTasks(current + 1));
+    paginationContainer.appendChild(nextButton);
 }
+
 
 //filter Table
 function filterTable(searchValue) {
@@ -463,6 +481,7 @@ function bulckUpload() {
 }
 
 function taskUpload(file) {
+	toggleLoader();
 	const formData = new FormData();
 	formData.append("file", file);
 
@@ -488,7 +507,7 @@ function taskUpload(file) {
 			console.log(data.csvCount);
 			console.log(data.duplicateCount);
 			console.log(data.csvValidate);
-
+			toggleLoader();
 			if (data.duplicateCount > 0) {
 				openPopup(data.duplicateData);
 			} else {
@@ -497,6 +516,7 @@ function taskUpload(file) {
 			//alert(data);
 		})
 		.catch((error) => {
+			toggleLoader();
 			console.error("Error:", error);
 		});
 }
