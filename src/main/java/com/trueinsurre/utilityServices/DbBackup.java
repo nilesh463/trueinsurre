@@ -17,7 +17,7 @@ import jakarta.mail.internet.MimeMessage;
 
 @Component
 public class DbBackup {
-	
+
 	@Autowired
 	private JavaMailSender mailSender;
 
@@ -25,7 +25,7 @@ public class DbBackup {
 		MimeMessage message = mailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-		helper.setTo("bhattdaksh36@gmail.com"); // Change to recipient's email
+		helper.setTo("vaishalisosa94@gmail.com"); // Change to recipient's email
 		helper.setSubject("Daily Database Backup " + date);
 		helper.setText("Please find the attached database backup.", true);
 		helper.setFrom("support@interestbudsolutions.com", "From Trueinsurre Database Support");
@@ -38,6 +38,7 @@ public class DbBackup {
 	}
 
 	@Scheduled(cron = "0 0 22 * * ?") // Runs daily at 10 PM
+//	@Scheduled(cron = "0 * * * * ?") // Runs every minute
 	public void exportDatabaseLinux() {
 		try {
 			// Get current date in yyyy-MM-dd format
@@ -51,11 +52,12 @@ public class DbBackup {
 			// Ensure backup directory exists
 			new File(backupDir).mkdirs();
 
-			// Construct the mysqldump command
+			// Construct the mysqldump command linux
 			String command = "mysqldump -u root --password=mukul@Ibs2025# trueinsurre > " + backupFilePath + " 2>&1";
 
 			// Execute the command
 			Process process = Runtime.getRuntime().exec(new String[] { "/bin/sh", "-c", command });
+
 			int exitCode = process.waitFor();
 
 			if (exitCode == 0) {
@@ -69,6 +71,5 @@ public class DbBackup {
 			e.printStackTrace();
 		}
 	}
-
 
 }
