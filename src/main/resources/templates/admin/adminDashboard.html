@@ -57,7 +57,9 @@
 			</div>
 			<div class="user-dropdown">
 				<span class="username" id="username"><i class="fa fa-user" aria-hidden="true"></i>&nbsp; <span
-						th:text="${user.name}"></span></span>
+						th:text="${user.name}">
+						<input type="hidden" id="userId" th:value="${user.id}"
+						</span></span>
 				<div class="dropdown-menu" id="dropdown-menu">
 					<a href="#" class="dropdown-item"><i class="fa fa-cog" aria-hidden="true"></i>&nbsp; Settings</a>
 					<a href="/logout" class="dropdown-item"><i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;
@@ -110,7 +112,7 @@
 					</div>-->
 					<div class="col-md-6">
 						<span class="directions">
-
+							
 							<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
 								<div class="dropdown">
 									<button id="btnGroupDrop1" type="button" class="btns dropdown-toggle">
@@ -132,21 +134,21 @@
 
 			<div class="card" style="margin-top: 20px;">
 				<div class="row" style="margin-top: 10px;">
-					<div class="col-md-2">
+					<div class="col-md-3">
 						<span>
 							<h4><i class="fa fa-sliders" aria-hidden="true"></i></i> Tools&Filters </h4>
 						</span>
 					</div>
-					<div class="col-md-2">
-						<label>Assign:</label><br>
+					<div class="col-md-3">
+						<!--<label>Assign:</label>-->
 						<span>
 							<button id="assignButton" class="btns" onclick="taskAssignPopup()"> Assign Tasks</button>
 						</span>
 					</div>
-					<div class="col-md-2">
+					<div class="col-md-3">
 						<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
 							<div class="dropdown">
-								<label>Select Employee:</label>
+								<label><i class="fa fa-users" aria-hidden="true"></i></label>
 								<select id="userList" type="button" class="btns dropdown-toggle userList"
 									onchange="fetchTasks();">
 									<option class="dropdown-item form-control" value="" multiple>Select Employee
@@ -154,9 +156,18 @@
 								</select>
 							</div>
 						</div>
+						
+					</div>
+					
+					<div class="col-md-3">
+						<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+							<button style="float: right;" type="button" class="btns" onclick="openFilter();">
+								<i class="fa fa-filter" aria-hidden="true"></i> Custom Filters
+							</button>
+						</div>
 					</div>
 
-					<div class="col-md-2">
+					<!--<div class="col-md-2">
 						<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
 							<div class="dropdown">
 								<label>Task Type:</label>
@@ -173,8 +184,8 @@
 
 							</div>
 						</div>
-					</div>
-					<div class="col-md-2">
+					</div>-->
+					<!--<div class="col-md-2">
 						<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
 							<div class="dropdown">
 								<label>Select Disposition:</label>
@@ -209,9 +220,9 @@
 								</select>
 							</div>
 						</div>
-					</div>
+					</div>-->
 
-					<div class="col-md-2">
+					<!--<div class="col-md-2">
 						<div class="form-group mb-3">
 							<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
 								<div class="dropdown">
@@ -237,7 +248,7 @@
 								</div>
 							</div>
 						</div>
-					</div>
+					</div>-->
 
 
 					<!--Add New Task-->
@@ -496,19 +507,24 @@
 								<label for="entriesPerPage">
 									<select class="table-search btns" id="entriesPerPage"
 										onchange="updateEntriesPerPage(this.value)">
+
 										<option value="10">10</option>
 										<option value="25">25</option>
-										<option value="50" selected>50</option>
+										<option value="50">50</option>
 										<option value="100">100</option>
 										<option value="250">250</option>
 										<option value="500">500</option>
 										<option value="750">750</option>
 										<option value="1000">1000</option>
+										<option value="5000" selected>5000</option>
+										<option value="10000">10000</option>
+										<option value="20000">20000</option>
+										<option value="30000">30000</option>
 									</select>
 									entries per page
 								</label>
 							</div>
-							
+
 							<div class="col-md-2">
 								<div id="loader" class="loader" style="display: none;"></div>
 							</div>
@@ -517,8 +533,10 @@
 								<div class="directions table-search">
 									<span>Search: </span><!--<input class="" type="text" id="searchBox" placeholder=""
 										oninput="filterTable(this.value)" />-->
-										<input type="text" id="multiFilter" placeholder="Enter filters (e.g., Pune 05/15/2025 searchText)" oninput="filterTable(this.value)" />
-										
+									<input type="text" id="multiFilter"
+										placeholder="Enter filters (e.g., Pune 05/15/2025 searchText)"
+										oninput="filterTable(this.value)" />
+
 								</div>
 							</div>
 						</div>
@@ -819,14 +837,203 @@
 
 				<!--Alert Popup end-->
 
+				<!--Filter popup Start-->
+				<div class="row">
+					<div class="col-md-12">
+						<div class="overlay" id="filter"></div>
+
+						<div class="popup" id="filterdupPopup">
+							<div class="header" style="margin-bottom: 14px;"><i class="fa fa-filter"
+									aria-hidden="true"></i>
+								Apply Filter</div>
+							<div class="popup-content">
+								<div class="row">
+
+									<div class="col-md-6">
+										<div class="btn-group" role="group"
+											aria-label="Button group with nested dropdown">
+											<div class="dropdown">
+												<label>Select Disposition:</label>
+												<select id="filterDisposition" type="button"
+													class="btns dropdown-toggle userList">
+													<option value="">Select Disposition</option>
+													<option value="RNR">RNR</option>
+													<option value="Not Interested">Not Interested</option>
+													<option value="Follow up">Follow up</option>
+													<option value="Renewed Outside">Renewed Outside</option>
+													<option value="Ready to pay today">Ready to pay today</option>
+													<option value="Issued">Issued</option>
+													<option value="Paid">Paid</option>
+													<option value="Payment Issue">Payment Issue</option>
+													<option value="Others">Others</option>
+													<option value="Price is High (C)">Price is High (C)</option>
+													<option value="Financial issue (C)">Financial issue (C)</option>
+													<option value="Need EMI Option (C)">Need EMI Option (C)</option>
+													<option value="Not Happy with Insurance Vendor (NC)">Not Happy with
+														Insurance Vendor
+														(NC)</option>
+													<option value="Not Happy with Porter Service (NC)">Not Happy with
+														Porter Service
+														(NC)
+													</option>
+													<option value="Wrong Number (NC)">Wrong Number (NC)</option>
+													<option value="Sold his vehicle (NC)">Sold his vehicle (NC)</option>
+													<option value="Relative is an Agent (NC)">Relative is an Agent (NC)
+													</option>
+													<option value="Payment Mode issue">Payment Mode issue</option>
+													<option value="EWI Interest is high">EWI Interest is high</option>
+													<option value="Not Answering the call">Not Answering the call
+													</option>
+													<option value="Not Eligible">Not Eligible</option>
+													<option value="KYC issue">KYC issue</option>
+												</select>
+											</div>
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<div class="form-group mb-3">
+											<div class="btn-group" role="group"
+												aria-label="Button group with nested dropdown">
+												<div class="dropdown">
+													<label>Select Status:</label>
+													<select id="filterStatus" type="button"
+														class="btns dropdown-toggle userList">
+														<option value="">Select Status</option>
+														<option value="S1-Payment Collection Pending">S1-Payment
+															Collection Pending
+														</option>
+														<option value="S2-Finance Confirmation Pending">S2-Finance
+															Confirmation Pending
+														</option>
+														<option value="S3-Document Pending">S3-Document Pending</option>
+														<option value="S4-Policy request Pending">S4-Policy request
+															Pending</option>
+														<option value="S4.1-EWI Pending">S4.1-EWI Pending</option>
+														<option value="S5-Pending from vendor">S5-Pending from vendor
+														</option>
+														<option value="S5.1-Pending for core insurance">S5.1-Pending for
+															core insurance
+														</option>
+														<option value="S5.2-Agent different case">S5.2-Agent different
+															case</option>
+														<option value="S6-Policy issued">S6-Policy issued</option>
+														<option value="Not Interested">Not Interested</option>
+														<option value="Renewed Outside">Renewed Outside</option>
+													</select>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group mb-3">
+											<label>Next Followup Date :</label>
+											<input class="form-control" type="text" id="filternextfollowUpdate"
+												onclick="datesFormat('nextfollowUpdate');">
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group mb-3">
+											<label>Policy Issue Date: </label>
+											<input class="form-control" type="text" id="filterpolicyIssuedDate"
+												onclick="datesFormat('policyIssuedDate');">
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group mb-3">
+											<label>New Expiry Date: </label>
+											<input class="form-control" type="text" id="filternewExpiryDate"
+												onclick="datesFormat('newExpiryDate');">
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group mb-3">
+											<label>City Name:</label>
+											<input class="form-control" type="text" id="filterCity">
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group mb-3">
+											<label>Partner Number:</label>
+											<input class="form-control" type="text" id="filterPartnerNumber">
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group mb-3">
+											<label>Vehicle Number:</label>
+											<input class="form-control" type="text" id="filterVehicleNumber">
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group mb-3">
+											<label>Partner Rate :</label>
+											<input class="form-control" type="text" id="filterPartnerRate">
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group mb-3">
+											<label>Driver Name: </label>
+											<input class="form-control" type="text" id="filterDriverName">
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group mb-3">
+											<label>Last Year Issuedby: </label>
+											<input class="form-control" type="text" id="filterLastYearIssuedby">
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group mb-3">
+											<label>Agent Name: </label>
+											<input class="form-control" type="text" id="filteragentName">
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group mb-3">
+											<label>Message Status:</label>
+											<select id="filterMessageStatus" type="button"
+												class="btns dropdown-toggle userList">
+												<option value="">Select</option>
+												<option value="message sent">Message sent</option>
+												<option value="Not on whatsapp">Not on whatsapp</option>
+											</select>
+										</div>
+									</div>
+								</div>
+
+								<div class="popup-footer">
+									<span style="float: left;"><button class="btn btn-outline-danger" type="button"
+											onclick="resetFilters()">Reset</button>
+									</span>
+									<button onclick="fetchTasks()">Apply</button>
+									<button class="btn btn-outline-danger" onclick="closeFilterPopup()">Cancel</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--Filter Data End-->
+
+				</div>
 			</div>
-		</div>
-		<script>
-			window.addEventListener('load', function () {
-				fetchTasks(0);
-				populateEmployeeDropdown();
-			});
-		</script>
+			<script>
+				window.addEventListener('load', function () {
+					fetchTasks(0);
+					populateEmployeeDropdown();
+				});
+			</script>
 </body>
 
 </html>

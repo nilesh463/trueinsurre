@@ -9,12 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.trueinsurre.dto.CsvValidateResponce;
+import com.trueinsurre.dto.FilterDto;
 import com.trueinsurre.dto.Responce;
 import com.trueinsurre.dto.StatusDto;
 import com.trueinsurre.dto.TaskDto;
 import com.trueinsurre.modal.Task;
 
-@Service
 public interface TaskService {
 
 	public Task addTask(Task task);
@@ -45,5 +45,6 @@ public interface TaskService {
 			int size);
 	TaskDto getEdit(Long id);
 	public Responce updateCommentAndMessage(StatusDto statusDto);
+	Page<TaskDto> getFilteredTasks(FilterDto filterDto, int page, int size);
 	
 }

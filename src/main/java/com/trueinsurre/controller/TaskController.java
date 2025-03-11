@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.trueinsurre.config.CurrentSession;
 import com.trueinsurre.dto.CsvValidateResponce;
+import com.trueinsurre.dto.FilterDto;
 import com.trueinsurre.dto.Responce;
 import com.trueinsurre.dto.StatusDto;
 import com.trueinsurre.dto.TaskAssignRequest;
@@ -35,6 +36,7 @@ public class TaskController {
 	
 	@Autowired
 	CurrentSession session;
+	
 	
 	@GetMapping("/{id}")
 	public String dashboard(@PathVariable Long id, Model model) {
@@ -306,5 +308,23 @@ public class TaskController {
 		
 		return ResponseEntity.ok(taskService.updateCommentAndMessage(statusDto));
 	}
+	
+
+    @PostMapping("/filtered")
+    public ResponseEntity<Map<String, Object>> getFilteredTasks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestBody FilterDto filterDto) {
+
+        Page<TaskDto> taskPage = taskService.getFilteredTasks(filterDto, page, size);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("tasks", taskPage.getContent());
+        response.put("currentPage", taskPage.getNumber());
+        response.put("totalPages", taskPage.getTotalPages());
+        response.put("totalElements", taskPage.getTotalElements());
+
+        return ResponseEntity.ok(response);
+    }
 	
 }

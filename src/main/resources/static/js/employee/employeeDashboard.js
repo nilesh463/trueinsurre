@@ -46,9 +46,11 @@ function submitForm() {
 }
 //add new Employee End//
 
-async function fetchTasks(page = currentPage, size = currentSize) {
+async function getByfilterData(data) {
+	var page = currentPage;
+	var size = currentSize;
 	try {
-		var taskType = document.getElementById('btnGroupDrop1');
+		/*var taskType = document.getElementById('btnGroupDrop1');
 		if (taskType != null) {
 			taskType = taskType.value;
 		}
@@ -75,7 +77,7 @@ async function fetchTasks(page = currentPage, size = currentSize) {
 			}
 		}
 		const response = await fetch(url);
-		const data = await response.json();
+		const data = await response.json();*/
 
 		// Populate table with task data
 		const userTableBody = document.getElementById("userTableBody");
@@ -167,7 +169,7 @@ async function fetchTasks(page = currentPage, size = currentSize) {
         <td data-column="lastYearPolicyIssuedBy" >${task.lastYearPolicyIssuedBy || "-"}</td>
         <td data-column="partnerRate" >${task.partnerRate || "-"}</td>
         <td data-column="newExpiryDate" onclick="dateUpdate('${task.newExpiryDate}', '${task.id}', 'New Expiry Date')">${task.newExpiryDate || "-"}</td>
-		<td data-column="message" onclick="confirmation('${task.message}','${task.id}','Message')">
+		<td data-column="message" onclick="confirmation(decodeURIComponent('${encodeURIComponent(task.message)}'), '${task.id}', 'Message')">
 		   <i class="fa fa-external-link" aria-hidden="true"></i>
 		</td>
 		 <td data-column="messageLink">
@@ -193,7 +195,7 @@ async function fetchTasks(page = currentPage, size = currentSize) {
 				</select>
 			</td>
 		 <td data-column="nextFollowUpDate" onclick="dateUpdate('${task.nextFollowUpDate}', '${task.id}', 'Next FollowUp Date')">${task.nextFollowUpDate || "-"}</td>
-		 <td data-column="comments" onclick="confirmation('${task.comments}', '${task.id}','Comment')">
+		 <td data-column="comments" onclick="confirmation(decodeURIComponent('${encodeURIComponent(task.comments)}'), '${task.id}','Comment')">
 		    <i class="fa fa-external-link" aria-hidden="true"></i>
 		</td>
       `;
@@ -497,11 +499,6 @@ function updateCommentAndMessage(messageText, taskId, validateKey) {
 		});
 }
 
-function addTask() {
-	document.getElementById("taskTitle").textContent = "Add Task"
-	document.getElementById("taskModal").style.display = "block";
-	document.getElementById("id").value = document.getElementById("userId").value;
-}
 
 function closeEmployeePopup() {
 	document.getElementById("taskModal").style.display = "none";
@@ -577,3 +574,128 @@ function dateUpdate(currentDate, taskId, label) {
   // Automatically open the calendar
   dateInput.focus();
 }
+
+
+function openFilter() {
+	document.getElementById("filter").style.display = "block";
+}
+
+function closeFilterPopup() {
+	document.getElementById("filter").style.display = "none";
+}
+
+function datesFormat(datefrom) {
+	// Remove any previously added date input to avoid duplicates
+	var currentDate = '';
+	const existingInput = document.getElementById("dynamicDateInput");
+	if (existingInput) {
+		existingInput.remove();
+	}
+
+	// Create a dynamic date input field
+	const dateInput = document.createElement("input");
+	dateInput.type = "date";
+	dateInput.id = "dynamicDateInput";
+	dateInput.style.position = "absolute";
+	dateInput.style.zIndex = "9999"; // Ensure it's on top
+	dateInput.style.left = `${event.clientX}px`;
+	dateInput.style.top = `${event.clientY}px`;
+
+	// Convert mm/dd/yyyy to yyyy-mm-dd for date input compatibility
+	if (currentDate) {
+		const [month, day, year] = currentDate.split("/");
+		dateInput.value = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+	}
+
+	document.body.appendChild(dateInput); // Append the input to the document
+
+	dateInput.focus();
+
+	dateInput.addEventListener("change", function() {
+		if (dateInput.value) {
+			// Convert yyyy-mm-dd back to mm/dd/yyyy
+			const [year, month, day] = dateInput.value.split("-");
+			const selectedDate = `${month}/${day}/${year}`;
+			const cell = event.target;
+			cell.textContent = selectedDate;
+			if (datefrom === "nextfollowUpdate") {
+				document.getElementById('filternextfollowUpdate').value = selectedDate;
+			} else if (datefrom === "newExpiryDate") {
+				document.getElementById('filternewExpiryDate').value = selectedDate;
+			} else if (datefrom === "policyIssuedDate") {
+				document.getElementById('filterpolicyIssuedDate').value = selectedDate;
+			}
+		}
+
+		// Remove the input element after selection
+		dateInput.remove();
+	});
+
+	// Remove the input element if the user clicks elsewhere
+	dateInput.addEventListener("blur", function() {
+		dateInput.remove();
+	});
+}
+
+async function fetchTasks(page = currentPage, size = currentSize) {
+	
+	const url = `/task/filtered?page=${page}&size=${size}`;
+	var userId = document.getElementById('userId').value;
+	var vehicleNumber = document.getElementById('filterVehicleNumber').value;
+	var partnerNumber = document.getElementById('filterPartnerNumber').value;
+	var agentName = document.getElementById('filteragentName').value;
+	var driverName = document.getElementById('filterDriverName').value;
+	var city = document.getElementById('filterCity').value;
+	var lastYearPolicyIssuedBy = document.getElementById('filterLastYearIssuedby').value;
+	var partnerRate = document.getElementById('filterPartnerRate').value;
+	var newExpiryDate = document.getElementById('filternewExpiryDate').value;
+	var policyIssuedDate = document.getElementById('filterpolicyIssuedDate').value;
+	var messageStatus = document.getElementById('filterMessageStatus').value;
+	var disposition = document.getElementById('filterDisposition').value;
+	var nextFollowUpDate = document.getElementById('filternextfollowUpdate').value;
+	var status = document.getElementById('filterStatus').value;
+
+	const filterDto = {
+		userId: userId,
+		vehicleNumber: vehicleNumber,
+		partnerNumber: partnerNumber,
+		agentName: agentName,
+		driverName: driverName,
+		city: city,
+		lastYearPolicyIssuedBy: lastYearPolicyIssuedBy,
+		partnerRate: partnerRate,
+		newExpiryDate: newExpiryDate,
+		policyIssuedDate: policyIssuedDate,
+		messageStatus: messageStatus,
+		disposition: disposition,
+		nextFollowUpDate: nextFollowUpDate,
+		status: status
+	};
+	toggleLoader();
+	closeFilterPopup();
+
+	try {
+		const response = await fetch(url, {
+			method: "Post",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(filterDto)
+		});
+
+		if (!response.ok) {
+			toggleLoader();
+			throw new Error(`HTTP error! Status: ${response.status}`);
+		}
+
+		const data = await response.json();
+		getByfilterData(data);
+		toggleLoader();
+		console.log(data);
+		return data;
+	} catch (error) {
+		console.error("Error fetching filtered tasks:", error);
+	}
+}
+
+

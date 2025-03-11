@@ -1,7 +1,7 @@
 
 let currentPage = 0;
 const pageSize = 50;
-let currentSize = 50;
+let currentSize = 1000;
 let sortOrder = 1; // 1 for ascending, -1 for descending
 //Employee List url
 const API_URL = window.location.origin + "/task/all";
@@ -46,10 +46,15 @@ function submitForm() {
 }
 //add new Employee End//
 
-async function fetchTasks(page = currentPage, size = currentSize) {
+//async function fetchTasks(page = currentPage, size = currentSize) {
+function getByfilterData(data){
+	var page = currentPage;
+	var size = currentSize;
+	
 	try {
-		toggleLoader();
-		var taskType = document.getElementById('taskType');
+		//toggleLoader();
+		debugger;
+		/*var taskType = document.getElementById('taskType');
 		if (taskType != null) {
 			taskType = taskType.value;
 		}
@@ -87,7 +92,16 @@ async function fetchTasks(page = currentPage, size = currentSize) {
 		}
 
 		const response = await fetch(url + baseUrl);
-		const data = await response.json();
+		const data = await response.json();*/
+		//const data = getFilteredTasks(currentPage);
+		
+		console.log("responce data");
+		console.log(data);
+		
+		if (!data || !Array.isArray(data.tasks)) {
+            console.warn("No tasks found or tasks is not an array:", data.tasks);
+            return;
+        }
 
 		// Populate table with task data
 		const userTableBody = document.getElementById("userTableBody");
@@ -175,9 +189,9 @@ async function fetchTasks(page = currentPage, size = currentSize) {
         <td data-column="lastYearPolicyIssuedBy" onclick="confirmation('${task.lastYearPolicyIssuedBy}','${task.id}','Last Year Policy IssuedBy')">${task.lastYearPolicyIssuedBy || "-"}</td>
         <td data-column="partnerRate" onclick="confirmation('${task.partnerRate}','${task.id}','Partner Rate')">${task.partnerRate || "-"}</td>
         <td data-column="newExpiryDate" onclick="dateUpdate('${task.newExpiryDate}', '${task.id}', 'New Expiry Date')">${task.newExpiryDate || "-"}</td>
-		 <td data-column="message" onclick="confirmation('${task.message}','${task.id}','Message')">
-		   <i class="fa fa-external-link" aria-hidden="true"></i>
-		</td>
+		 <td data-column="message" onclick="confirmation(decodeURIComponent('${encodeURIComponent(task.message)}'), '${task.id}', 'Message')">
+   <i class="fa fa-external-link" aria-hidden="true"></i>
+</td>
 		 <td data-column="messageLink">
 			<button type="button" class="btns" 
 				onclick="redirectToWhatsApp('${task.partnerNumber}', '${task.message}')">
@@ -201,15 +215,16 @@ async function fetchTasks(page = currentPage, size = currentSize) {
 				</select>
 			</td>
 		 <td data-column="nextFollowUpDate" onclick="dateUpdate('${task.nextFollowUpDate}', '${task.id}', 'Next FollowUp Date')">${task.nextFollowUpDate || "-"}</td>
-		 <td data-column="comments" onclick="confirmation('${task.comments}', '${task.id}','Comment')">
+		 
+		<td data-column="comments" onclick="confirmation(decodeURIComponent('${encodeURIComponent(task.comments)}'), '${task.id}','Comment')">
 		    <i class="fa fa-external-link" aria-hidden="true"></i>
 		</td>
         
       `;
 			userTableBody.appendChild(row);
 		});
-		
-		toggleLoader();
+
+		//toggleLoader();
 		// Update pagination buttons
 		setupPagination(data.currentPage, data.totalPages);
 	} catch (error) {
@@ -250,50 +265,50 @@ function updateEntriesPerPage(size) {
 }
 
 function setupPagination(current, totalPages) {
-    const paginationContainer = document.getElementById("paginationButtons");
-    paginationContainer.innerHTML = ""; // Clear existing buttons
+	const paginationContainer = document.getElementById("paginationButtons");
+	paginationContainer.innerHTML = ""; // Clear existing buttons
 
-    // Previous button
-    const prevButton = document.createElement("button");
-    prevButton.textContent = "Previous";
-    prevButton.className = current === 0 ? "disabled" : "";
-    prevButton.disabled = current === 0;
-    prevButton.addEventListener("click", () => fetchTasks(current - 1));
-    paginationContainer.appendChild(prevButton);
+	// Previous button
+	const prevButton = document.createElement("button");
+	prevButton.textContent = "Previous";
+	prevButton.className = current === 0 ? "disabled" : "";
+	prevButton.disabled = current === 0;
+	prevButton.addEventListener("click", () => fetchTasks(current - 1));
+	paginationContainer.appendChild(prevButton);
 
-    const createPageButton = (page) => {
-        const pageButton = document.createElement("button");
-        pageButton.textContent = page + 1;
-        pageButton.className = page === current ? "active" : "";
-        pageButton.disabled = page === current;
-        pageButton.addEventListener("click", () => fetchTasks(page));
-        paginationContainer.appendChild(pageButton);
-    };
+	const createPageButton = (page) => {
+		const pageButton = document.createElement("button");
+		pageButton.textContent = page + 1;
+		pageButton.className = page === current ? "active" : "";
+		pageButton.disabled = page === current;
+		pageButton.addEventListener("click", () => fetchTasks(page));
+		paginationContainer.appendChild(pageButton);
+	};
 
-    if (totalPages <= 7) {
-        // Show all pages if total pages are small
-        for (let i = 0; i < totalPages; i++) createPageButton(i);
-    } else {
-        createPageButton(0); // First page
+	if (totalPages <= 7) {
+		// Show all pages if total pages are small
+		for (let i = 0; i < totalPages; i++) createPageButton(i);
+	} else {
+		createPageButton(0); // First page
 
-        if (current > 3) paginationContainer.appendChild(document.createTextNode("..."));
+		if (current > 3) paginationContainer.appendChild(document.createTextNode("..."));
 
-        for (let i = Math.max(1, current - 2); i <= Math.min(totalPages - 2, current + 2); i++) {
-            createPageButton(i);
-        }
+		for (let i = Math.max(1, current - 2); i <= Math.min(totalPages - 2, current + 2); i++) {
+			createPageButton(i);
+		}
 
-        if (current < totalPages - 4) paginationContainer.appendChild(document.createTextNode("..."));
+		if (current < totalPages - 4) paginationContainer.appendChild(document.createTextNode("..."));
 
-        createPageButton(totalPages - 1); // Last page
-    }
+		createPageButton(totalPages - 1); // Last page
+	}
 
-    // Next button
-    const nextButton = document.createElement("button");
-    nextButton.textContent = "Next";
-    nextButton.className = current === totalPages - 1 ? "disabled" : "";
-    nextButton.disabled = current === totalPages - 1;
-    nextButton.addEventListener("click", () => fetchTasks(current + 1));
-    paginationContainer.appendChild(nextButton);
+	// Next button
+	const nextButton = document.createElement("button");
+	nextButton.textContent = "Next";
+	nextButton.className = current === totalPages - 1 ? "disabled" : "";
+	nextButton.disabled = current === totalPages - 1;
+	nextButton.addEventListener("click", () => fetchTasks(current + 1));
+	paginationContainer.appendChild(nextButton);
 }
 
 
@@ -581,7 +596,7 @@ function assignTasks(selectedTasks, selectedUsers) {
 		userList: selectedUsers.map(Number)
 	};
 
-	
+
 	fetch('/task/assign', {
 		method: 'POST',
 		headers: {
@@ -591,7 +606,7 @@ function assignTasks(selectedTasks, selectedUsers) {
 	})
 		.then(response => response.json())
 		.then(data => {
-			
+
 			//fetchTasks(currentPage);
 			showAlert(data.message);
 			window.location.reload();
@@ -611,7 +626,7 @@ function taskAssignPopup() {
 		showAlert("Please select at least one task before Assign");
 		return;
 	}
-	
+
 	const popup = document.getElementById("taskAssignPopup");
 	const message = document.getElementById("taskAssignMessage");
 	popup.style.display = "flex";
@@ -646,28 +661,28 @@ function taskAssignPopup() {
 
 
 function getPaymentLink(mobileNumber, message) {
-    debugger;
-    // UPI and payment details
-    mobileNumber = "91"+mobileNumber;
-    const upiId = "1998nileshicici@icici";
-    const amount = "1";
-    const currency = "INR"; // Currency, default is INR
-    message = message || "Hi, please make a payment.";
+	debugger;
+	// UPI and payment details
+	mobileNumber = "91" + mobileNumber;
+	const upiId = "1998nileshicici@icici";
+	const amount = "1";
+	const currency = "INR"; // Currency, default is INR
+	message = message || "Hi, please make a payment.";
 
-    if (!mobileNumber) {
-        alert("Mobile number is missing.");
-        return;
-    }
+	if (!mobileNumber) {
+		alert("Mobile number is missing.");
+		return;
+	}
 
-    // Construct the UPI payment link
-    const gpayLink = `upi://pay?pa=${upiId}&am=${amount}&cu=${currency}`;
-    const fullMessage = `${message}\n\nClick below to pay via Google Pay:\n${gpayLink}`;
+	// Construct the UPI payment link
+	const gpayLink = `upi://pay?pa=${upiId}&am=${amount}&cu=${currency}`;
+	const fullMessage = `${message}\n\nClick below to pay via Google Pay:\n${gpayLink}`;
 
-    // Construct the WhatsApp URL
-    const whatsappUrl = `https://wa.me/${mobileNumber}?text=${encodeURIComponent(fullMessage)}`;
+	// Construct the WhatsApp URL
+	const whatsappUrl = `https://wa.me/${mobileNumber}?text=${encodeURIComponent(fullMessage)}`;
 
-    // Open the WhatsApp URL in a new tab
-    window.open(whatsappUrl, '_blank');
+	// Open the WhatsApp URL in a new tab
+	window.open(whatsappUrl, '_blank');
 }
 
 
@@ -679,25 +694,25 @@ function redirectToWhatsApps(mobileNumber, message) {
 	var upiId = "1998nileshicici@icici"
 	var amount = "1";
 	message = "Hi please Pay";
-    if (message != null && message != '') {
-        message = message.replace(/'/g, "\\'");
-    }
+	if (message != null && message != '') {
+		message = message.replace(/'/g, "\\'");
+	}
 
-    if (!mobileNumber) {
-        showAlert("Mobile number is missing.");
-        return;
-    }
+	if (!mobileNumber) {
+		showAlert("Mobile number is missing.");
+		return;
+	}
 
-    // Construct GPay UPI payment link if UPI ID and amount are provided
-    let gpayLink = '';
-    if (upiId && amount) {
-        gpayLink = `upi://pay?pa=${encodeURIComponent(upiId)}&am=${encodeURIComponent(amount)}&cu=INR`;
-        message += `\n\nPay via GPay: ${gpayLink}`;
-    }
+	// Construct GPay UPI payment link if UPI ID and amount are provided
+	let gpayLink = '';
+	if (upiId && amount) {
+		gpayLink = `upi://pay?pa=${encodeURIComponent(upiId)}&am=${encodeURIComponent(amount)}&cu=INR`;
+		message += `\n\nPay via GPay: ${gpayLink}`;
+	}
 
-    const whatsappUrl = `https://web.whatsapp.com/send?phone=${mobileNumber}&text=${encodeURIComponent(message)}`;
+	const whatsappUrl = `https://web.whatsapp.com/send?phone=${mobileNumber}&text=${encodeURIComponent(message)}`;
 
-    window.open(whatsappUrl, '_blank');
+	window.open(whatsappUrl, '_blank');
 }
 
 
@@ -802,19 +817,19 @@ function dateUpdate(currentDate, taskId, label) {
 
 	// Create a dynamic Flatpickr input field
 	const dateInput = document.createElement("input");
-	dateInput.type = "text"; // Flatpickr works with text input
+	dateInput.type = "text";
 	dateInput.id = "dynamicDateInput";
 	dateInput.style.position = "absolute";
-	dateInput.style.zIndex = "9999"; // Ensure it's on top
-	dateInput.style.left = `${event.clientX}px`; // Position near the click
-	dateInput.style.top = `${event.clientY}px`; // Position near the click
+	dateInput.style.zIndex = "9999";
+	dateInput.style.left = `${event.clientX}px`;
+	dateInput.style.top = `${event.clientY}px`;
 
-	document.body.appendChild(dateInput); // Append the input to the document
+	document.body.appendChild(dateInput);
 
 	// Initialize Flatpickr with custom format
 	flatpickr(dateInput, {
-		dateFormat: "m/d/Y", // Set the format to mm/dd/yyyy
-		defaultDate: currentDate, // Pre-fill the current date if available
+		dateFormat: "m/d/Y",
+		defaultDate: currentDate,
 		onClose: function(selectedDates, dateStr) {
 			if (dateStr) {
 				console.log(`Selected Date: ${dateStr}`);
@@ -924,6 +939,141 @@ function openPopup(duplicateData) {
 function closePopup() {
 	document.getElementById('popupOverlay').style.display = 'none';
 	document.getElementById('dupPopup').style.display = 'none';
+}
+
+
+function openFilter() {
+	const popupOverlay = document.getElementById('filter');
+	const popup = document.getElementById('filterdupPopup');
+
+
+	// Show popup and overlay
+	popupOverlay.style.display = 'block';
+	popup.style.display = 'block';
+}
+
+function closeFilterPopup() {
+	document.getElementById('filter').style.display = 'none';
+	document.getElementById('filterdupPopup').style.display = 'none';
+}
+
+function datesFormat(datefrom) {
+	// Remove any previously added date input to avoid duplicates
+	var currentDate = '';
+	const existingInput = document.getElementById("dynamicDateInput");
+	if (existingInput) {
+		existingInput.remove();
+	}
+
+	// Create a dynamic date input field
+	const dateInput = document.createElement("input");
+	dateInput.type = "date";
+	dateInput.id = "dynamicDateInput";
+	dateInput.style.position = "absolute";
+	dateInput.style.zIndex = "9999"; // Ensure it's on top
+	dateInput.style.left = `${event.clientX}px`;
+	dateInput.style.top = `${event.clientY}px`;
+
+	// Convert mm/dd/yyyy to yyyy-mm-dd for date input compatibility
+	if (currentDate) {
+		const [month, day, year] = currentDate.split("/");
+		dateInput.value = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+	}
+
+	document.body.appendChild(dateInput); // Append the input to the document
+
+	dateInput.focus();
+
+	dateInput.addEventListener("change", function() {
+		if (dateInput.value) {
+			// Convert yyyy-mm-dd back to mm/dd/yyyy
+			const [year, month, day] = dateInput.value.split("-");
+			const selectedDate = `${month}/${day}/${year}`;
+			const cell = event.target;
+			cell.textContent = selectedDate;
+			if (datefrom === "nextfollowUpdate") {
+				document.getElementById('filternextfollowUpdate').value = selectedDate;
+			} else if (datefrom === "newExpiryDate") {
+				document.getElementById('filternewExpiryDate').value = selectedDate;
+			} else if (datefrom === "policyIssuedDate") {
+				document.getElementById('filterpolicyIssuedDate').value = selectedDate;
+			}
+		}
+
+		// Remove the input element after selection
+		dateInput.remove();
+	});
+
+	// Remove the input element if the user clicks elsewhere
+	dateInput.addEventListener("blur", function() {
+		dateInput.remove();
+	});
+}
+
+
+async function fetchTasks(page = currentPage, size = currentSize) {
+	
+	const url = `/task/filtered?page=${page}&size=${size}`;
+	var userId = document.getElementById('userList').value;
+	var vehicleNumber = document.getElementById('filterVehicleNumber').value;
+	var partnerNumber = document.getElementById('filterPartnerNumber').value;
+	var agentName = document.getElementById('filteragentName').value;
+	var driverName = document.getElementById('filterDriverName').value;
+	var city = document.getElementById('filterCity').value;
+	var lastYearPolicyIssuedBy = document.getElementById('filterLastYearIssuedby').value;
+	var partnerRate = document.getElementById('filterPartnerRate').value;
+	var newExpiryDate = document.getElementById('filternewExpiryDate').value;
+	var policyIssuedDate = document.getElementById('filterpolicyIssuedDate').value;
+	var messageStatus = document.getElementById('filterMessageStatus').value;
+	var disposition = document.getElementById('filterDisposition').value;
+	var nextFollowUpDate = document.getElementById('filternextfollowUpdate').value;
+	var status = document.getElementById('filterStatus').value;
+	
+	if(userId == ""){
+		//userId = document.getElementById('userId').value;
+	}
+
+	const filterDto = {
+		userId: userId,
+		vehicleNumber: vehicleNumber,
+		partnerNumber: partnerNumber,
+		agentName: agentName,
+		driverName: driverName,
+		city: city,
+		lastYearPolicyIssuedBy: lastYearPolicyIssuedBy,
+		partnerRate: partnerRate,
+		newExpiryDate: newExpiryDate,
+		policyIssuedDate: policyIssuedDate,
+		messageStatus: messageStatus,
+		disposition: disposition,
+		nextFollowUpDate: nextFollowUpDate,
+		status: status
+	};
+	toggleLoader();
+	closeFilterPopup();
+
+	try {
+		const response = await fetch(url, {
+			method: "Post",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(filterDto)
+		});
+
+		if (!response.ok) {
+			toggleLoader();
+			throw new Error(`HTTP error! Status: ${response.status}`);
+		}
+
+		const data = await response.json();
+		getByfilterData(data);
+		toggleLoader();
+		console.log(data);
+		return data;
+	} catch (error) {
+		console.error("Error fetching filtered tasks:", error);
+	}
 }
 
 

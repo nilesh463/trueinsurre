@@ -69,7 +69,7 @@ public class WebSecurityConfig {
                                            CustomSessionExpiredStrategy customSessionExpiredStrategy) throws Exception {
         http.csrf().disable()
             .authorizeRequests()
-            .requestMatchers("/","/index/**","/is-logged-in/**","/login/**","/delete-profile","/request-delete", "/confirm-delete","/api/auth/**","/sidebar","/password-request","/password-request/**","/reset-password","/reset-password/**","/admin/**", "/images/**","draft/**","/css/**","js/**","/video/**","/opt/javaProjects/ibsInvoice/images/").permitAll()
+            .requestMatchers("/task/**","/","/index/**","/is-logged-in/**","/login/**","/delete-profile","/request-delete", "/confirm-delete","/api/auth/**","/sidebar","/password-request","/password-request/**","/reset-password","/reset-password/**","/admin/**", "/images/**","draft/**","/css/**","js/**","/video/**","/opt/javaProjects/ibsInvoice/images/").permitAll()
 .anyRequest().authenticated()
             .and()
             .formLogin().loginPage("/login").successHandler(successHandler)

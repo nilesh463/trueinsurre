@@ -77,4 +77,15 @@ function toggleLoader() {
 	//popup.style.display = popup.style.display === "none" ? "block" : "none";
 }
 
+function resetFilters() {
+    document.querySelectorAll('.popup-content input, .popup-content select').forEach(element => {
+        if (element.tagName === 'SELECT') {
+            element.selectedIndex = 0; // Reset select dropdowns
+        } else {
+            element.value = ''; // Reset text inputs
+        }
+    });
+}
+
+
 

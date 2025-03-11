@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.trueinsurre.dto.CsvValidate;
 import com.trueinsurre.dto.CsvValidateResponce;
+import com.trueinsurre.dto.FilterDto;
 import com.trueinsurre.dto.Responce;
 import com.trueinsurre.dto.StatusDto;
 import com.trueinsurre.dto.TaskDto;
@@ -50,120 +51,129 @@ public class TaskServiceImpl implements TaskService {
 
 	@Override
 	public CsvValidateResponce saveCsvData(MultipartFile file, Long userId) throws ParseException {
-	    CsvValidateResponce response = new CsvValidateResponce();
-	    List<TaskDto> csvDataList = new ArrayList<>(); // To store the valid tasks
-	    List<TaskDto> duplicateTasks = new ArrayList<>(); // To store the duplicate tasks
-	    Set<String> vehicleNumbers = new HashSet<>(); // To track vehicle numbers for duplicates within the sheet
-	    int dataRowCount = 0; // To count rows containing valid data
-	    int duplicateCount = 0;
+		CsvValidateResponce response = new CsvValidateResponce();
+		List<TaskDto> csvDataList = new ArrayList<>(); // To store the valid tasks
+		List<TaskDto> duplicateTasks = new ArrayList<>(); // To store the duplicate tasks
+		Set<String> vehicleNumbers = new HashSet<>(); // To track vehicle numbers for duplicates within the sheet
+		int dataRowCount = 0; // To count rows containing valid data
+		int duplicateCount = 0;
 
-	    User user = null;
-	    Set<User> setUser = new HashSet<>();
-	    if (Objects.nonNull(userId)) {
-	        user = userRepository.findById(userId).orElse(null);
-	        setUser.add(user);
-	    }
+		User user = null;
+		Set<User> setUser = new HashSet<>();
+		if (Objects.nonNull(userId)) {
+			user = userRepository.findById(userId).orElse(null);
+			setUser.add(user);
+		}
+		List<Task> taskForDb = new ArrayList<Task>();
 
-	    try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
-	        String line;
-	        String[] headers = null;
-	        boolean headerRow = true;
-	        response.setDataValidated(true);
-	        int lengths = 0;
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+			String line;
+			String[] headers = null;
+			boolean headerRow = true;
+			response.setDataValidated(true);
+			int lengths = 0;
 
-	        while ((line = reader.readLine()) != null) {
-	            String[] values = line.split(",");
-	            lengths = values.length;
-	            Task task = new Task();
-	            if (headerRow) {
-	                headers = values;
+			while ((line = reader.readLine()) != null) {
+				String[] values = line.split(",");
+				lengths = values.length;
+				Task task = new Task();
+				if (headerRow) {
+					headers = values;
 
-	                // Validate header row length
-	                if (headers.length < REQUIREDFIELDS.size()) {
-	                    response.setDataValidated(false);
-	                }
+					// Validate header row length
+					if (headers.length < REQUIREDFIELDS.size()) {
+						response.setDataValidated(false);
+					}
 
-	                // Validate header content and sequence
-	                for (int i = 0; i < REQUIREDFIELDS.size(); i++) {
-	                    if (i >= headers.length || !REQUIREDFIELDS.get(i).equals(headers[i])) {
-	                        response.setDataValidated(false);
-	                    }
-	                }
-	                headerRow = false;
-	            } else {
-	                if (headers != null) {
-	                    // Check if row length is less than required
-	                    if (values.length < headers.length) {
-	                        // Fill missing columns with default values (e.g., "")
-	                        values = Arrays.copyOf(values, headers.length);
-	                        Arrays.fill(values, lengths, headers.length, "");
-	                    }
+					// Validate header content and sequence
+					for (int i = 0; i < REQUIREDFIELDS.size(); i++) {
+						if (i >= headers.length || !REQUIREDFIELDS.get(i).equals(headers[i])) {
+							response.setDataValidated(false);
+						}
+					}
+					headerRow = false;
+				} else {
+					if (headers != null) {
+						// Check if row length is less than required
+						if (values.length < headers.length) {
+							// Fill missing columns with default values (e.g., "")
+							values = Arrays.copyOf(values, headers.length);
+							Arrays.fill(values, lengths, headers.length, "");
+						}
 
-	                    // Map values to Task object with default handling
-	                    task.setVehicleNumber(getValue(values, 0));
-	                    task.setPartnerNumber(getValue(values, 1));
-	                    task.setAgentName(getValue(values, 2));
-	                    task.setDriverName(getValue(values, 3));
-	                    task.setCity(getValue(values, 4));
-	                    task.setLastYearPolicyIssuedBy(getValue(values, 5));
-	                    task.setPartnerRate(getValue(values, 6));
-	                    task.setNewExpiryDate(getValue(values, 7));
-	                    String message = getValue(values, 8);
-	                    if(getValue(values, 9)!= null) {
-	                    	message = message + getValue(values, 9);
-	                    }
-	                    task.setMessage(message);
-	                    task.setMessageLink(getValue(values, 11));
-	                    task.setStatus(getValue(values, 12));
-	                    task.setPolicyIssuedDate(getValue(values, 13));
-	                    task.setMessageStatus(getValue(values, 14));
-	                    task.setDisposition(getValue(values, 15));
-	                    task.setNextFollowUpDate(getValue(values, 16));
-	                    task.setComments(getValue(values, 17));
-	                    
-	                }
-	                
-	                // Check for duplicate Vehicle Number within the sheet
-	                if (!vehicleNumbers.add(task.getVehicleNumber())) {
-	                    duplicateCount++;
-	                    duplicateTasks.add(convertToDto(task));
-	                } else {
-	                	if(taskRepository.existsByVehicleNumber(task.getVehicleNumber())) {
-	                		duplicateCount++;
-		                    duplicateTasks.add(convertToDto(task));
-		                    
-	                	} else {
-	                		if (user != null) {
-		                        task.setUsers(setUser);
-		                        task.setAssign(true);
-		                    }
-		                    task = addTask(task); // Save the task in the database
-		                    csvDataList.add(convertToDto(task));
-		                    dataRowCount++;
-	                	}
-	                }
-	                System.out.println("Length: " + lengths);
-	            }
-	        }
+						// Map values to Task object with default handling
+						task.setVehicleNumber(getValue(values, 0));
+						task.setPartnerNumber(getValue(values, 1));
+						task.setAgentName(getValue(values, 2));
+						task.setDriverName(getValue(values, 3));
+						task.setCity(getValue(values, 4));
+						task.setLastYearPolicyIssuedBy(getValue(values, 5));
+						task.setPartnerRate(getValue(values, 6));
+						task.setNewExpiryDate(getValue(values, 7));
+						String message = getValue(values, 8);
+						if (getValue(values, 9) != null) {
+							message = message+" " + getValue(values, 9);
+							if(getValue(values, 11).equals("send message")) {
+								message = message+", " + getValue(values, 10);
+							}else {
+								message = message+", " + getValue(values, 11);
+							}
+							
+						}
+						task.setMessage(message);
+						task.setMessageLink(getValue(values, 11));
+						task.setStatus(getValue(values, 12));
+						task.setPolicyIssuedDate(getValue(values, 13));
+						task.setMessageStatus(getValue(values, 14));
+						task.setDisposition(getValue(values, 15));
+						task.setNextFollowUpDate(getValue(values, 16));
+						task.setComments(getValue(values, 17));
+					}
+					
+					System.out.println("12: "+getValue(values, 12));
+					// Check for duplicate Vehicle Number within the sheet
+					if (!vehicleNumbers.add(task.getVehicleNumber())) {
+						duplicateCount++;
+						duplicateTasks.add(convertToDto(task));
+					} else {
+						if (taskRepository.existsByVehicleNumber(task.getVehicleNumber())) {
+							duplicateCount++;
+							duplicateTasks.add(convertToDto(task));
 
-	        response.setDuplicateCount(duplicateCount);
-	        response.setCsvValidate(csvDataList);
-	        response.setDuplicateData(duplicateTasks);
-	        response.setCsvCount(dataRowCount);
-	        response.setUploaded(true);
-	        return response;
-	    } catch (IOException e) {
-	        throw new InvalidData("Error reading CSV file.", e);
-	    }
+						} else {
+							if (user != null) {
+								task.setUsers(setUser);
+								task.setAssign(true);
+							}
+							//task = addTask(task); // Save the task in the database
+							task.setCompleted(false);
+							task.setDeleted(false);
+							taskForDb.add(task);
+							csvDataList.add(convertToDto(task));
+							dataRowCount++;
+						}
+					}
+					System.out.println("Length: " + lengths);
+				}
+			}
+
+			taskRepository.saveAll(taskForDb);
+			response.setDuplicateCount(duplicateCount);
+			response.setCsvValidate(csvDataList);
+			response.setDuplicateData(duplicateTasks);
+			response.setCsvCount(dataRowCount);
+			response.setUploaded(true);
+			return response;
+		} catch (IOException e) {
+			throw new InvalidData("Error reading CSV file.", e);
+		}
 
 	}
-	
+
 	private String getValue(String[] values, int index) {
-	    return index < values.length ? values[index].trim() : "";
+		return index < values.length ? values[index].trim() : "";
 	}
 
-
-	
 //	@Override
 	public CsvValidateResponce saveCsvDatas(MultipartFile file, Long userId) throws ParseException {
 
@@ -241,7 +251,7 @@ public class TaskServiceImpl implements TaskService {
 							task.setNewExpiryDate(value);
 							break;
 						case "Message":
-							task.setMessage(value);
+							task.setMessage(removeLeadingQuote(value));
 							break;
 						case "Message link":
 							task.setMessageLink(value);
@@ -298,6 +308,13 @@ public class TaskServiceImpl implements TaskService {
 		}
 		return task;
 	}
+	
+	public static String removeLeadingQuote(String input) {
+        if (input != null && input.startsWith("\"")) {
+            return input.substring(1);
+        }
+        return input;
+    }
 
 	@Override
 	public Page<TaskDto> getAllTaskByIsAssignAndByIsCompletedANdByIsDeleted(boolean isAssign, boolean isCompleted,
@@ -348,11 +365,11 @@ public class TaskServiceImpl implements TaskService {
 //			taskdto.setNewExpiryDate(DateUtility.convertToDDMMYYYY(taskdto.getNewExpiryDate()));
 //			taskdto.setNextFollowUpDate(DateUtility.convertToDDMMYYYY(taskdto.getNextFollowUpDate()));
 //			taskdto.setPolicyIssuedDate(DateUtility.convertToDDMMYYYY(taskdto.getPolicyIssuedDate()));
-			
-			taskdto.setNewExpiryDate(taskdto.getNewExpiryDate());
-			taskdto.setNextFollowUpDate(taskdto.getNextFollowUpDate());
-			taskdto.setPolicyIssuedDate(taskdto.getPolicyIssuedDate());
-		
+
+		taskdto.setNewExpiryDate(taskdto.getNewExpiryDate());
+		taskdto.setNextFollowUpDate(taskdto.getNextFollowUpDate());
+		taskdto.setPolicyIssuedDate(taskdto.getPolicyIssuedDate());
+
 		return taskdto;
 	}
 
@@ -403,7 +420,7 @@ public class TaskServiceImpl implements TaskService {
 		}
 
 		// Map all fields
-		//taskObj.setId(taskDto.getId());
+		// taskObj.setId(taskDto.getId());
 		taskObj.setVehicleNumber(taskDto.getVehicleNumber());
 		taskObj.setPartnerNumber(taskDto.getPartnerNumber());
 		taskObj.setAgentName(taskDto.getAgentName());
@@ -411,24 +428,24 @@ public class TaskServiceImpl implements TaskService {
 		taskObj.setCity(taskDto.getCity());
 		taskObj.setLastYearPolicyIssuedBy(taskDto.getLastYearPolicyIssuedBy());
 		taskObj.setPartnerRate(taskDto.getPartnerRate());
-		
+
 		taskObj.setMessage(taskDto.getMessage());
 		taskObj.setMessageLink(taskDto.getMessageLink());
-		
+
 		taskObj.setMessageStatus(taskDto.getMessageStatus());
 		taskObj.setDisposition(taskDto.getDisposition());
 		taskObj.setComments(taskDto.getComments());
-		
+
 //		taskObj.setPolicyIssuedDate(DateUtility.convertToMMDDYYYY(taskDto.getPolicyIssuedDate()));
 //		taskObj.setNewExpiryDate(DateUtility.convertToMMDDYYYY(taskDto.getNewExpiryDate()));
 //		taskObj.setNextFollowUpDate(DateUtility.convertToMMDDYYYY(taskDto.getNextFollowUpDate()));
-		
+
 		taskObj.setPolicyIssuedDate(taskDto.getPolicyIssuedDate());
 		taskObj.setNewExpiryDate(taskDto.getNewExpiryDate());
 		taskObj.setNextFollowUpDate(taskDto.getNextFollowUpDate());
 
 		// Map boolean fields
-		
+
 		taskObj.setCompleted(taskDto.isCompleted());
 		taskObj.setDeleted(taskDto.isDeleted());
 
@@ -519,7 +536,7 @@ public class TaskServiceImpl implements TaskService {
 			task.setDisposition(newValue);
 			response.setMessage("Disposition updated.");
 		}
-		task =taskRepository.save(task);
+		task = taskRepository.save(task);
 		taskHistoryService.createHistory(key, oldValue, newValue, task);
 		return response;
 	}
@@ -587,75 +604,82 @@ public class TaskServiceImpl implements TaskService {
 
 	@Override
 	public Responce updateCommentAndMessage(StatusDto statusDto) {
-	    Responce response = new Responce();
-	    response.setStatus(200L);
-	    response.setMessage("Your " + statusDto.getValidateKey() + " is updated.");
-	    
-	    // Fetch the task from the database
-	    Task task = taskRepository.findById(statusDto.getId())
-	        .orElseThrow(() -> new NotFound("No Task Found."));
+		Responce response = new Responce();
+		response.setStatus(200L);
+		response.setMessage("Your " + statusDto.getValidateKey() + " is updated.");
 
-	    String fieldName = statusDto.getValidateKey();
-	    String oldValue = null;
-	    String newValue = statusDto.getMessage();
-	    
-	    // Determine which field to update and track the old value
-	    switch (fieldName) {
-	        case "Comment":
-	            oldValue = task.getComments();
-	            task.setComments(newValue);
-	            break;
-	        case "Message":
-	            oldValue = task.getMessage();
-	            task.setMessage(newValue);
-	            break;
-	        case "Agent Name":
-	            oldValue = task.getAgentName();
-	            task.setAgentName(newValue);
-	            break;
-	        case "Driver Name":
-	            oldValue = task.getDriverName();
-	            task.setDriverName(newValue);
-	            break;
-	        case "City":
-	            oldValue = task.getCity();
-	            task.setCity(newValue);
-	            break;
-	        case "Last Year Policy IssuedBy":
-	            oldValue = task.getLastYearPolicyIssuedBy();
-	            task.setLastYearPolicyIssuedBy(newValue);
-	            break;
-	        case "Partner Rate":
-	            oldValue = task.getPartnerRate();
-	            task.setPartnerRate(newValue);
-	            break;
-	        case "New Expiry Date":
-	            oldValue = task.getNewExpiryDate();
-	            task.setNewExpiryDate(newValue);
-	            break;
-	        case "Vehicle Number":
-	            oldValue = task.getVehicleNumber();
-	            task.setVehicleNumber(newValue);
-	            break;
-	        case "Partner Number":
-	            oldValue = task.getPartnerNumber();
-	            task.setPartnerNumber(newValue);
-	            break;
-	        case "Policy Issued Date":
-	            oldValue = task.getPolicyIssuedDate();
-	            task.setPolicyIssuedDate(newValue);
-	            break;
-	        case "Next FollowUp Date":
-	            oldValue = task.getNextFollowUpDate();
-	            task.setNextFollowUpDate(newValue);
-	            break;
-	        default:
-	            response.setMessage("Key not found.");
-	            return response;
-	    }
-	    taskHistoryService.createHistory(fieldName, oldValue, newValue, task);
-	    return response;
+		// Fetch the task from the database
+		Task task = taskRepository.findById(statusDto.getId()).orElseThrow(() -> new NotFound("No Task Found."));
+
+		String fieldName = statusDto.getValidateKey();
+		String oldValue = null;
+		String newValue = statusDto.getMessage();
+
+		// Determine which field to update and track the old value
+		switch (fieldName) {
+		case "Comment":
+			oldValue = task.getComments();
+			task.setComments(newValue);
+			break;
+		case "Message":
+			oldValue = task.getMessage();
+			task.setMessage(newValue);
+			break;
+		case "Agent Name":
+			oldValue = task.getAgentName();
+			task.setAgentName(newValue);
+			break;
+		case "Driver Name":
+			oldValue = task.getDriverName();
+			task.setDriverName(newValue);
+			break;
+		case "City":
+			oldValue = task.getCity();
+			task.setCity(newValue);
+			break;
+		case "Last Year Policy IssuedBy":
+			oldValue = task.getLastYearPolicyIssuedBy();
+			task.setLastYearPolicyIssuedBy(newValue);
+			break;
+		case "Partner Rate":
+			oldValue = task.getPartnerRate();
+			task.setPartnerRate(newValue);
+			break;
+		case "New Expiry Date":
+			oldValue = task.getNewExpiryDate();
+			task.setNewExpiryDate(newValue);
+			break;
+		case "Vehicle Number":
+			oldValue = task.getVehicleNumber();
+			task.setVehicleNumber(newValue);
+			break;
+		case "Partner Number":
+			oldValue = task.getPartnerNumber();
+			task.setPartnerNumber(newValue);
+			break;
+		case "Policy Issued Date":
+			oldValue = task.getPolicyIssuedDate();
+			task.setPolicyIssuedDate(newValue);
+			break;
+		case "Next FollowUp Date":
+			oldValue = task.getNextFollowUpDate();
+			task.setNextFollowUpDate(newValue);
+			break;
+		default:
+			response.setMessage("Key not found.");
+			return response;
+		}
+		taskHistoryService.createHistory(fieldName, oldValue, newValue, task);
+		return response;
 	}
 
+	@Override
+	public Page<TaskDto> getFilteredTasks(FilterDto filterDto, int page, int size) {
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+		Page<Task> taskPage = taskRepository.findTasksByFilter(filterDto, pageable);
+
+		return taskPage.map(this::convertToDto);
+	}
+	
 
 }

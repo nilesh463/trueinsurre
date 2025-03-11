@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.trueinsurre.modal.Task;
 
 @Repository
-public interface TaskRepository extends JpaRepository<Task, Long> {
+public interface TaskRepository extends JpaRepository<Task, Long>, TaskRepositoryCustom {
 	
 	Page<Task> findByIsAssignAndIsDeleted(boolean isAssign, boolean isDeleted, Pageable pageable);
     Page<Task> findByIsAssignAndIsCompletedAndIsDeleted(boolean isAssign, boolean isCompleted, boolean isDeleted, Pageable pageable);
