@@ -3,6 +3,7 @@ package com.trueinsurre.serviceImpl;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +20,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import com.trueinsurre.dto.CsvValidate;
 import com.trueinsurre.dto.CsvValidateResponce;
 import com.trueinsurre.dto.FilterDto;
@@ -50,7 +54,86 @@ public class TaskServiceImpl implements TaskService {
 			"comments");
 
 	@Override
-	public CsvValidateResponce saveCsvData(MultipartFile file, Long userId) throws ParseException {
+	public CsvValidateResponce saveCsvData(MultipartFile file, Long userId) {
+		CsvValidateResponce response = new CsvValidateResponce();
+		List<TaskDto> csvDataList = new ArrayList<>();
+		List<TaskDto> duplicateTasks = new ArrayList<>();
+		Set<String> vehicleNumbers = new HashSet<>();
+		int dataRowCount = 0;
+		int duplicateCount = 0;
+
+		User user = null;
+		Set<User> setUser = new HashSet<>();
+		if (Objects.nonNull(userId)) {
+			user = userRepository.findById(userId).orElse(null);
+			setUser.add(user);
+		}
+
+		List<Task> taskForDb = new ArrayList<>();
+
+		try (BufferedReader fileReader = new BufferedReader(
+				new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
+				CSVParser csvParser = new CSVParser(fileReader,
+						CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
+
+			for (CSVRecord record : csvParser) {
+				Task task = new Task();
+
+				task.setVehicleNumber(record.get("Vehicle Number"));
+				task.setPartnerNumber(record.get("Partner Number"));
+				task.setAgentName(record.get("Agent Name"));
+				task.setDriverName(record.get("Driver Name"));
+				task.setCity(record.get("City"));
+				task.setLastYearPolicyIssuedBy(record.get("last year Policy issued by"));
+				task.setPartnerRate(record.get("Partner rate"));
+				task.setNewExpiryDate(record.get("New Expiry date"));
+				task.setMessage(removeLeadingQuote(record.get("Message")));
+				task.setMessageLink(record.get("Message link"));
+				task.setStatus(record.get("Status"));
+				task.setPolicyIssuedDate(record.get("PolicyIssuedDate"));
+				task.setMessageStatus(record.get("Message status"));
+				task.setDisposition(record.get("Disposition"));
+				task.setNextFollowUpDate(record.get("Next Follow up Date"));
+				task.setComments(record.get("comments"));
+
+				if (!vehicleNumbers.add(task.getVehicleNumber())) {
+					duplicateCount++;
+					duplicateTasks.add(convertToDto(task));
+				} else {
+					if (taskRepository.existsByVehicleNumber(task.getVehicleNumber())) {
+						duplicateCount++;
+						duplicateTasks.add(convertToDto(task));
+					} else {
+						if (user != null) {
+							task.setUsers(setUser);
+							task.setAssign(true);
+						}
+						task.setCompleted(false);
+						task.setDeleted(false);
+						taskForDb.add(task);
+						csvDataList.add(convertToDto(task));
+						dataRowCount++;
+					}
+				}
+			}
+
+			taskRepository.saveAll(taskForDb);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.setUploaded(false);
+			return response;
+		}
+
+		response.setDuplicateCount(duplicateCount);
+		response.setCsvValidate(csvDataList);
+		response.setDuplicateData(duplicateTasks);
+		response.setCsvCount(dataRowCount);
+		response.setUploaded(true);
+		return response;
+	}
+
+	public CsvValidateResponce saveCsvDataN(MultipartFile file, Long userId) throws ParseException {
 		CsvValidateResponce response = new CsvValidateResponce();
 		List<TaskDto> csvDataList = new ArrayList<>(); // To store the valid tasks
 		List<TaskDto> duplicateTasks = new ArrayList<>(); // To store the duplicate tasks
@@ -112,16 +195,16 @@ public class TaskServiceImpl implements TaskService {
 						task.setNewExpiryDate(getValue(values, 7));
 						String message = getValue(values, 8);
 						if (getValue(values, 9) != null) {
-							message = message+" " + getValue(values, 9);
-							if(getValue(values, 11).equals("send message")) {
-								message = message+", " + getValue(values, 10);
-							}else {
-								message = message+", " + getValue(values, 11);
+							message = message + " " + getValue(values, 9);
+							if (getValue(values, 11).equals("send message")) {
+								message = message + ", " + getValue(values, 10);
+							} else {
+								message = message + ", " + getValue(values, 11);
 							}
-							
+							message = removeQuotedText(message);
 						}
 						task.setMessage(message);
-						task.setMessageLink(getValue(values, 11));
+						// task.setMessageLink(getValue(values, 11));
 						task.setStatus(getValue(values, 12));
 						task.setPolicyIssuedDate(getValue(values, 13));
 						task.setMessageStatus(getValue(values, 14));
@@ -129,8 +212,21 @@ public class TaskServiceImpl implements TaskService {
 						task.setNextFollowUpDate(getValue(values, 16));
 						task.setComments(getValue(values, 17));
 					}
-					
-					System.out.println("12: "+getValue(values, 12));
+
+					System.out.println("0: " + getValue(values, 0));
+					System.out.println("1: " + getValue(values, 1));
+					System.out.println("2: " + getValue(values, 2));
+					System.out.println("3: " + getValue(values, 3));
+					System.out.println("4: " + getValue(values, 4));
+					System.out.println("5: " + getValue(values, 5));
+					System.out.println("6: " + getValue(values, 6));
+					System.out.println("7: " + getValue(values, 7));
+					System.out.println("8: " + getValue(values, 8));
+					System.out.println("9: " + getValue(values, 9));
+					System.out.println("10: " + getValue(values, 10));
+					System.out.println("11: " + getValue(values, 11));
+					System.out.println("12: " + getValue(values, 12));
+
 					// Check for duplicate Vehicle Number within the sheet
 					if (!vehicleNumbers.add(task.getVehicleNumber())) {
 						duplicateCount++;
@@ -145,7 +241,7 @@ public class TaskServiceImpl implements TaskService {
 								task.setUsers(setUser);
 								task.setAssign(true);
 							}
-							//task = addTask(task); // Save the task in the database
+							// task = addTask(task); // Save the task in the database
 							task.setCompleted(false);
 							task.setDeleted(false);
 							taskForDb.add(task);
@@ -172,6 +268,13 @@ public class TaskServiceImpl implements TaskService {
 
 	private String getValue(String[] values, int index) {
 		return index < values.length ? values[index].trim() : "";
+	}
+
+	public static String removeQuotedText(String text) {
+		if (text.startsWith("\"") && text.endsWith("\"")) {
+			return text.substring(1, text.length() - 1);
+		}
+		return text;
 	}
 
 //	@Override
@@ -308,13 +411,13 @@ public class TaskServiceImpl implements TaskService {
 		}
 		return task;
 	}
-	
+
 	public static String removeLeadingQuote(String input) {
-        if (input != null && input.startsWith("\"")) {
-            return input.substring(1);
-        }
-        return input;
-    }
+		if (input != null && input.startsWith("\"")) {
+			return input.substring(1);
+		}
+		return input;
+	}
 
 	@Override
 	public Page<TaskDto> getAllTaskByIsAssignAndByIsCompletedANdByIsDeleted(boolean isAssign, boolean isCompleted,
@@ -680,6 +783,5 @@ public class TaskServiceImpl implements TaskService {
 
 		return taskPage.map(this::convertToDto);
 	}
-	
 
 }
