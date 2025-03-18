@@ -78,6 +78,8 @@ public class TaskRepositoryImpl implements TaskRepositoryCustom {
 		if (filterDto.getUserId() != null && filterDto.getUserId() != 0) {
 		    Join<Task, User> userJoin = root.join("users"); 
 		    predicates.add(cb.equal(userJoin.get("id"), filterDto.getUserId()));
+		} else {
+			predicates.add(cb.equal(root.get("isAssign"), false));
 		}
 
 
