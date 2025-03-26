@@ -115,15 +115,17 @@ public class EmployeeServiceImpl implements EmployeeService {
 		responce.setStatus(200);
 		User user = userRepository.findById(userDto.getId()).orElse(null);
 		if (Objects.nonNull(userDto.getEmail()) && !userDto.getEmail().isBlank()) {
-			if (!user.getEmail().equals(userDto.getEmail())) {
-				User existingUser = userRepository.findByEmail(userDto.getEmail());
-				if (existingUser != null && existingUser.getEmail() != null && !existingUser.getEmail().isEmpty()) {
-					responce.setMessage("Same Email address already exist");
-					responce.setStatus(401);
-				} else {
+			if (user.getEmail().equals(userDto.getEmail())) {
+//				User existingUser = userRepository.findByEmail(userDto.getEmail());
+//				if (existingUser != null && existingUser.getEmail() != null && !existingUser.getEmail().isEmpty()) {
+//					responce.setMessage("Same Email address already exist");
+//					responce.setStatus(401);
+//				} else {
 					user.setEmail(userDto.getEmail());
 					if (Objects.nonNull(userDto.getFirstName()) && !userDto.getFirstName().isBlank()) {
-						user.setName(userDto.getFirstName()+" "+userDto.getLastName());
+						if(!user.getName().equals("userDto.getFirstName()")) {
+							user.setName(userDto.getFirstName()+" "+userDto.getLastName());
+						}
 					}
 					
 					if (Objects.nonNull(userDto.getCountry()) && !userDto.getCountry().isBlank()) {
@@ -151,7 +153,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 					}
 
 					userRepository.save(user);
-				}
+//				}
 			}
 		}
 		
