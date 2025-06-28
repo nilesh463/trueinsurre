@@ -47,10 +47,10 @@ function submitForm() {
 //add new Employee End//
 
 //async function fetchTasks(page = currentPage, size = currentSize) {
-function getByfilterData(data){
+function getByfilterData(data) {
 	var page = currentPage;
 	var size = currentSize;
-	
+
 	try {
 		//toggleLoader();
 		debugger;
@@ -94,14 +94,14 @@ function getByfilterData(data){
 		const response = await fetch(url + baseUrl);
 		const data = await response.json();*/
 		//const data = getFilteredTasks(currentPage);
-		
+
 		console.log("responce data");
 		console.log(data);
-		
+
 		if (!data || !Array.isArray(data.tasks)) {
-            console.warn("No tasks found or tasks is not an array:", data.tasks);
-            return;
-        }
+			console.warn("No tasks found or tasks is not an array:", data.tasks);
+			return;
+		}
 
 		// Populate table with task data
 		const userTableBody = document.getElementById("userTableBody");
@@ -194,7 +194,8 @@ function getByfilterData(data){
 </td>
 		 <td data-column="messageLink">
 			<button type="button" class="btns" 
-				onclick="redirectToWhatsApp('${task.partnerNumber}', '${task.message}')">
+				
+				onclick="getPaymentLink('${task.partnerNumber}', '${task.message}')">
 				Send Message
 			</button>
 		</td>
@@ -223,6 +224,8 @@ function getByfilterData(data){
       `;
 			userTableBody.appendChild(row);
 		});
+
+		//onclick="redirectToWhatsApp('${task.partnerNumber}', '${task.message}')">
 
 		//toggleLoader();
 		// Update pagination buttons
@@ -676,7 +679,7 @@ function getPaymentLink(mobileNumber, message) {
 
 	// Construct the UPI payment link
 	const gpayLink = `upi://pay?pa=${upiId}&am=${amount}&cu=${currency}`;
-	const fullMessage = `${message}\n\nClick below to pay via Google Pay:\n${gpayLink}`;
+	const fullMessage = `${message}%0A%0AClick below to pay via Google Pay:%0A${gpayLink}`;
 
 	// Construct the WhatsApp URL
 	const whatsappUrl = `https://wa.me/${mobileNumber}?text=${encodeURIComponent(fullMessage)}`;
@@ -687,10 +690,10 @@ function getPaymentLink(mobileNumber, message) {
 
 
 
+
 //PaymentsLink 
 function redirectToWhatsApps(mobileNumber, message) {
-	debugger;
-	mobileNumber = "918707825790";
+
 	var upiId = "1998nileshicici@icici"
 	var amount = "1";
 	message = "Hi please Pay";
@@ -712,7 +715,8 @@ function redirectToWhatsApps(mobileNumber, message) {
 
 	const whatsappUrl = `https://web.whatsapp.com/send?phone=${mobileNumber}&text=${encodeURIComponent(message)}`;
 
-	window.open(whatsappUrl, '_blank');
+	return whatsappUrl;
+	//window.open(whatsappUrl, '_blank');
 }
 
 
@@ -809,13 +813,13 @@ function updateCommentAndMessage(messageText, taskId, validateKey) {
 }
 
 function dateUpdate(currentDate, taskId, label) {
-	// Remove any previously added date input to avoid duplicates
+
 	const existingInput = document.getElementById("dynamicDateInput");
 	if (existingInput) {
 		existingInput.remove();
 	}
 
-	// Create a dynamic Flatpickr input field
+
 	const dateInput = document.createElement("input");
 	dateInput.type = "text";
 	dateInput.id = "dynamicDateInput";
@@ -826,7 +830,7 @@ function dateUpdate(currentDate, taskId, label) {
 
 	document.body.appendChild(dateInput);
 
-	// Initialize Flatpickr with custom format
+
 	flatpickr(dateInput, {
 		dateFormat: "m/d/Y",
 		defaultDate: currentDate,
@@ -838,17 +842,17 @@ function dateUpdate(currentDate, taskId, label) {
 
 				updateCommentAndMessage(dateStr, taskId, label);
 
-				// Update the clicked cell with the new date
+
 				const cell = event.target;
 				cell.textContent = dateStr;
 			}
 
-			// Remove the input element after selection
+
 			dateInput.remove();
 		},
 	});
 
-	// Automatically open the calendar
+
 	dateInput.focus();
 }
 
@@ -964,6 +968,7 @@ function datesFormat(datefrom) {
 	if (existingInput) {
 		existingInput.remove();
 	}
+	debugger;
 
 	// Create a dynamic date input field
 	const dateInput = document.createElement("input");
@@ -997,6 +1002,8 @@ function datesFormat(datefrom) {
 				document.getElementById('filternewExpiryDate').value = selectedDate;
 			} else if (datefrom === "policyIssuedDate") {
 				document.getElementById('filterpolicyIssuedDate').value = selectedDate;
+			} else if (datefrom === "nextfollowUpdateTo") {
+				document.getElementById('filternextfollowUpdateTo').value = selectedDate;
 			}
 		}
 
@@ -1011,44 +1018,12 @@ function datesFormat(datefrom) {
 }
 
 
-async function fetchTasks(page = currentPage, size = currentSize) {
-	
-	const url = `/task/filtered?page=${page}&size=${size}`;
-	var userId = document.getElementById('userList').value;
-	var vehicleNumber = document.getElementById('filterVehicleNumber').value;
-	var partnerNumber = document.getElementById('filterPartnerNumber').value;
-	var agentName = document.getElementById('filteragentName').value;
-	var driverName = document.getElementById('filterDriverName').value;
-	var city = document.getElementById('filterCity').value;
-	var lastYearPolicyIssuedBy = document.getElementById('filterLastYearIssuedby').value;
-	var partnerRate = document.getElementById('filterPartnerRate').value;
-	var newExpiryDate = document.getElementById('filternewExpiryDate').value;
-	var policyIssuedDate = document.getElementById('filterpolicyIssuedDate').value;
-	var messageStatus = document.getElementById('filterMessageStatus').value;
-	var disposition = document.getElementById('filterDisposition').value;
-	var nextFollowUpDate = document.getElementById('filternextfollowUpdate').value;
-	var status = document.getElementById('filterStatus').value;
-	
-	if(userId == ""){
-		//userId = document.getElementById('userId').value;
-	}
 
-	const filterDto = {
-		userId: userId,
-		vehicleNumber: vehicleNumber,
-		partnerNumber: partnerNumber,
-		agentName: agentName,
-		driverName: driverName,
-		city: city,
-		lastYearPolicyIssuedBy: lastYearPolicyIssuedBy,
-		partnerRate: partnerRate,
-		newExpiryDate: newExpiryDate,
-		policyIssuedDate: policyIssuedDate,
-		messageStatus: messageStatus,
-		disposition: disposition,
-		nextFollowUpDate: nextFollowUpDate,
-		status: status
-	};
+async function fetchTasks(page = currentPage, size = currentSize) {
+
+	var filterDto = requestBody();
+
+	const url = `/task/filtered?page=${page}&size=${size}`;
 	toggleLoader();
 	closeFilterPopup();
 
@@ -1068,6 +1043,8 @@ async function fetchTasks(page = currentPage, size = currentSize) {
 
 		const data = await response.json();
 		getByfilterData(data);
+
+
 		toggleLoader();
 		console.log(data);
 		return data;
@@ -1076,5 +1053,100 @@ async function fetchTasks(page = currentPage, size = currentSize) {
 	}
 }
 
+function downloadExcel() {
+
+	var filterDto = requestBody();
+
+	toggleLoader();
+	fetch('/task/download-excel', {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify(filterDto)
+	})
+		.then(response => {
+			if (!response.ok) {
+				throw new Error("Failed to download the file.");
+			}
+			return response.blob();
+		})
+		.then(blob => {
+			const url = window.URL.createObjectURL(blob);
+			const a = document.createElement("a");
+			a.href = url;
+			a.download = "tasks.xlsx"; // Set the file name
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			window.URL.revokeObjectURL(url);
+			toggleLoader();
+		})
+		.catch(error =>
+
+			console.error("Error downloading the Excel file:", error), toggleLoader()
+		);
+}
+
+function requestBody() {
+	var userId = document.getElementById('userList').value;
+	var vehicleNumber = document.getElementById('filterVehicleNumber').value;
+	var partnerNumber = document.getElementById('filterPartnerNumber').value;
+	var agentName = document.getElementById('filteragentName').value;
+	var driverName = document.getElementById('filterDriverName').value;
+	var city = document.getElementById('filterCity').value;
+	var lastYearPolicyIssuedBy = document.getElementById('filterLastYearIssuedby').value;
+	var partnerRate = document.getElementById('filterPartnerRate').value;
+	var newExpiryDate = convertDateFormat(document.getElementById('filternewExpiryDate').value);
+	var policyIssuedDate = convertDateFormat(document.getElementById('filterpolicyIssuedDate').value);
+	var messageStatus = document.getElementById('filterMessageStatus').value;
+	var disposition = document.getElementById('filterDisposition').value;
+	var nextFollowUpDateFrom = convertDateFormat(document.getElementById('filternextfollowUpdate').value);
+	var nextFollowUpDateTo = convertDateFormat(document.getElementById('filternextfollowUpdateTo').value);
+	var status = document.getElementById('filterStatus').value;
+	debugger;
+	if (userId == "") {
+		//userId = document.getElementById('userId').value;
+	}
+
+	if (nextFollowUpDateFrom != "") {
+		if (nextFollowUpDateTo == "") {
+			alert("Both 'Next Follow-Up Date From' and 'Next Follow-Up Date To' must be filled.");
+			return;
+		}
+	}
+
+	if (nextFollowUpDateTo != "") {
+		if (nextFollowUpDateFrom == "") {
+			alert("Both 'Next Follow-Up Date From' and 'Next Follow-Up Date To' must be filled.");
+			return;
+		}
+	}
+	const filterDto = {
+		userId: userId,
+		vehicleNumber: vehicleNumber,
+		partnerNumber: partnerNumber,
+		agentName: agentName,
+		driverName: driverName,
+		city: city,
+		lastYearPolicyIssuedBy: lastYearPolicyIssuedBy,
+		partnerRate: partnerRate,
+		newExpiryDate: newExpiryDate,
+		policyIssuedDate: policyIssuedDate,
+		messageStatus: messageStatus,
+		disposition: disposition,
+		nextFollowUpDateFrom: nextFollowUpDateFrom,
+		nextFollowUpDateTo: nextFollowUpDateTo,
+		status: status
+	};
+
+	return filterDto;
+}
+function convertDateFormat(dateString) {
+	if (!dateString) return ""; // Handle empty or invalid input
+
+	const [year, month, day] = dateString.split("-");
+	return `${month}/${day}/${year}`;
+}
 
 

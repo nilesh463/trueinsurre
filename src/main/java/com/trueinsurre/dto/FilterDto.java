@@ -14,7 +14,8 @@ public class FilterDto {
 	private String policyIssuedDate;
 	private String messageStatus;
 	private String disposition;
-	private String nextFollowUpDate;
+	private String nextFollowUpDateFrom;
+	private String nextFollowUpDateTo;
 	private String status;
 	
 	public Long getUserId() {
@@ -113,12 +114,12 @@ public class FilterDto {
 		this.disposition = disposition;
 	}
 
-	public String getNextFollowUpDate() {
-		return nextFollowUpDate;
+	public String getNextFollowUpDateFrom() {
+		return nextFollowUpDateFrom;
 	}
 
-	public void setNextFollowUpDate(String nextFollowUpDate) {
-		this.nextFollowUpDate = nextFollowUpDate;
+	public void setNextFollowUpDateFrom(String nextFollowUpDateFrom) {
+		this.nextFollowUpDateFrom = nextFollowUpDateFrom;
 	}
 
 	public String getStatus() {
@@ -128,16 +129,23 @@ public class FilterDto {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	
+	public String getNextFollowUpDateTo() {
+		return nextFollowUpDateTo;
+	}
+
+	public void setNextFollowUpDateTo(String nextFollowUpDateTo) {
+		this.nextFollowUpDateTo = nextFollowUpDateTo;
+	}
 
 	@Override
 	public String toString() {
-		return "FilterDto [user_id=" + userId + ", vehicleNumber=" + vehicleNumber + ", partnerNumber=" + partnerNumber
+		return "FilterDto [userId=" + userId + ", vehicleNumber=" + vehicleNumber + ", partnerNumber=" + partnerNumber
 				+ ", agentName=" + agentName + ", driverName=" + driverName + ", city=" + city
 				+ ", lastYearPolicyIssuedBy=" + lastYearPolicyIssuedBy + ", partnerRate=" + partnerRate
 				+ ", newExpiryDate=" + newExpiryDate + ", policyIssuedDate=" + policyIssuedDate + ", messageStatus="
-				+ messageStatus + ", disposition=" + disposition + ", nextFollowUpDate=" + nextFollowUpDate
-				+ ", status=" + status + "]";
+				+ messageStatus + ", disposition=" + disposition + ", nextFollowUpDateFrom=" + nextFollowUpDateFrom
+				+ ", nextFollowUpDateTo=" + nextFollowUpDateTo + ", status=" + status + "]";
 	}
-	
 
 }

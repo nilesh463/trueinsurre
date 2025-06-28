@@ -9,33 +9,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class DateUtility {
 
-//	// Convert dd-MM-yyyy to MM/dd/yyyy
-//	public static String convertToMMDDYYYY(String date) throws ParseException {
-//		if (date != null && date != "") {
-//			SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MM-yyyy");
-//			SimpleDateFormat outputFormat = new SimpleDateFormat("MM/dd/yyyy");
-//			Date parsedDate = inputFormat.parse(date);
-//			return outputFormat.format(parsedDate);
-//		} else {
-//			return "";
-//		}
-//	}
-//
-//	// Convert MM/dd/yyyy to dd-MM-yyyy
-//	public static String convertToDDMMYYYY(String date) throws ParseException {
-//		if (date != null && date != "") {
-//			System.out.println("date: "+date);
-//			System.out.println("date: "+date);
-//			System.out.println("date: "+date);
-//			System.out.println("date: "+date);
-//			System.out.println("date: "+date);
-//			SimpleDateFormat inputFormat = new SimpleDateFormat("MM/dd/yyyy");
-//			SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM-yyyy");
-//			Date parsedDate = inputFormat.parse(date);
-//			return outputFormat.format(parsedDate);
-//		} else {
-//			return "";
-//		}
-//	}
+	public static String convertToMMDDYYYY(String inputDate) {
+		SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat outputFormat = new SimpleDateFormat("MM/dd/yyyy");
+		if (inputDate != null && inputDate != "") {
+			try {
+				Date date = inputFormat.parse(inputDate);
+				return outputFormat.format(date);
+			} catch (ParseException e) {
+				e.printStackTrace();
+				return null; // or return "Invalid date"
+			}
+		} else {
+			return "";
+		}
+	}
+	
 
 }

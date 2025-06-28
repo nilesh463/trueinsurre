@@ -90,6 +90,8 @@
 							<button type="button" class="btns" onclick="openFilter();">
 								<i class="fa fa-filter" aria-hidden="true"></i> Custom Filters
 							</button>
+							
+							<button id="" class="btns" onclick="downloadExcel()" ><i class="fa fa-download" aria-hidden="true"></i> Download CSV</button>
 						</span>
 					</div>
 
@@ -646,7 +648,9 @@
 
 						<div class="modal-content cardBackground" id="filterdupPopup">
 							<div class="header" style="margin-bottom: 14px;"><i class="fa fa-filter" aria-hidden="true"></i>
-								Apply Filter<span style="float: right;"><button class="btn btn-outline-danger"
+								Apply Filter 
+						
+								<span style="float: right;"><button class="btn btn-outline-danger"
 										type="button" onclick="resetFilters()">Reset</button>
 								</span></div>
 
@@ -734,16 +738,22 @@
 								<div class="row">
 									<div class="col-md-6">
 										<div class="form-group mb-3">
-											<label>Next Followup Date :</label>
-											<input class="form-control" type="text" id="filternextfollowUpdate"
-												onclick="datesFormat('nextfollowUpdate');">
+											
+												<label>Next Followup Date From:</label> <input
+													class="form-control" type="date"
+													id="filternextfollowUpdate">
+													<!-- onclick="datesFormat('nextfollowUpdate');"> -->
+											
 										</div>
 									</div>
 									<div class="col-md-6">
 										<div class="form-group mb-3">
-											<label>Policy Issue Date: </label>
-											<input class="form-control" type="text" id="filterpolicyIssuedDate"
-												onclick="datesFormat('policyIssuedDate');">
+											<label>Next Followup Date To :</label> <input
+													class="form-control" type="date"
+													id="filternextfollowUpdateTo">
+													<!-- onclick="datesFormat('nextfollowUpdateTo');" -->
+										
+											
 										</div>
 									</div>
 								</div>
@@ -751,8 +761,8 @@
 									<div class="col-md-6">
 										<div class="form-group mb-3">
 											<label>New Expiry Date: </label>
-											<input class="form-control" type="text" id="filternewExpiryDate"
-												onclick="datesFormat('newExpiryDate');">
+											<input class="form-control" type="date" id="filternewExpiryDate">
+												<!-- onclick="datesFormat('newExpiryDate');" -->
 										</div>
 									</div>
 									<div class="col-md-6">
@@ -805,6 +815,13 @@
 									</div>
 								</div>
 								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group mb-3">
+											<label>Policy Issue Date: </label>
+											<input class="form-control" type="date" id="filterpolicyIssuedDate">
+												<!-- onclick="datesFormat('policyIssuedDate');" -->
+										</div>
+									</div>
 									<div class="col-md-6">
 										<div class="form-group mb-3">
 											<label>Message Status:</label>

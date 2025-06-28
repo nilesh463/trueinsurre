@@ -32,7 +32,7 @@ function submitForm() {
 	})
 		.then((response) => response.json())
 		.then((data) => {
-			
+
 			if (data.status === 200) {
 				fetchTasks(currentPage);
 				closeEmployeePopup();
@@ -152,7 +152,7 @@ async function getByfilterData(data) {
 				return `<option value="${option}" ${isSelected}>${option}</option>`;
 			}).join("");
 
-			row.setAttribute("data-row", JSON.stringify(task)); 
+			row.setAttribute("data-row", JSON.stringify(task));
 			// <span ><a href="/task/emp/${task.id}" title="History" style="color: green"><i class="fa fa-info-circle" aria-hidden="true"></i></a></span>
 			row.innerHTML = `
         <td class="srWidth">
@@ -241,50 +241,50 @@ function updateEntriesPerPage(size) {
 }
 
 function setupPagination(current, totalPages) {
-    const paginationContainer = document.getElementById("paginationButtons");
-    paginationContainer.innerHTML = ""; // Clear existing buttons
+	const paginationContainer = document.getElementById("paginationButtons");
+	paginationContainer.innerHTML = ""; // Clear existing buttons
 
-    // Previous button
-    const prevButton = document.createElement("button");
-    prevButton.textContent = "Previous";
-    prevButton.className = current === 0 ? "disabled" : "";
-    prevButton.disabled = current === 0;
-    prevButton.addEventListener("click", () => fetchTasks(current - 1));
-    paginationContainer.appendChild(prevButton);
+	// Previous button
+	const prevButton = document.createElement("button");
+	prevButton.textContent = "Previous";
+	prevButton.className = current === 0 ? "disabled" : "";
+	prevButton.disabled = current === 0;
+	prevButton.addEventListener("click", () => fetchTasks(current - 1));
+	paginationContainer.appendChild(prevButton);
 
-    const createPageButton = (page) => {
-        const pageButton = document.createElement("button");
-        pageButton.textContent = page + 1;
-        pageButton.className = page === current ? "active" : "";
-        pageButton.disabled = page === current;
-        pageButton.addEventListener("click", () => fetchTasks(page));
-        paginationContainer.appendChild(pageButton);
-    };
+	const createPageButton = (page) => {
+		const pageButton = document.createElement("button");
+		pageButton.textContent = page + 1;
+		pageButton.className = page === current ? "active" : "";
+		pageButton.disabled = page === current;
+		pageButton.addEventListener("click", () => fetchTasks(page));
+		paginationContainer.appendChild(pageButton);
+	};
 
-    if (totalPages <= 7) {
-        // Show all pages if total pages are small
-        for (let i = 0; i < totalPages; i++) createPageButton(i);
-    } else {
-        createPageButton(0); // First page
+	if (totalPages <= 7) {
+		// Show all pages if total pages are small
+		for (let i = 0; i < totalPages; i++) createPageButton(i);
+	} else {
+		createPageButton(0); // First page
 
-        if (current > 3) paginationContainer.appendChild(document.createTextNode("..."));
+		if (current > 3) paginationContainer.appendChild(document.createTextNode("..."));
 
-        for (let i = Math.max(1, current - 2); i <= Math.min(totalPages - 2, current + 2); i++) {
-            createPageButton(i);
-        }
+		for (let i = Math.max(1, current - 2); i <= Math.min(totalPages - 2, current + 2); i++) {
+			createPageButton(i);
+		}
 
-        if (current < totalPages - 4) paginationContainer.appendChild(document.createTextNode("..."));
+		if (current < totalPages - 4) paginationContainer.appendChild(document.createTextNode("..."));
 
-        createPageButton(totalPages - 1); // Last page
-    }
+		createPageButton(totalPages - 1); // Last page
+	}
 
-    // Next button
-    const nextButton = document.createElement("button");
-    nextButton.textContent = "Next";
-    nextButton.className = current === totalPages - 1 ? "disabled" : "";
-    nextButton.disabled = current === totalPages - 1;
-    nextButton.addEventListener("click", () => fetchTasks(current + 1));
-    paginationContainer.appendChild(nextButton);
+	// Next button
+	const nextButton = document.createElement("button");
+	nextButton.textContent = "Next";
+	nextButton.className = current === totalPages - 1 ? "disabled" : "";
+	nextButton.disabled = current === totalPages - 1;
+	nextButton.addEventListener("click", () => fetchTasks(current + 1));
+	paginationContainer.appendChild(nextButton);
 }
 
 
@@ -426,52 +426,52 @@ function redirectToWhatsApp(mobileNumber, message) {
 
 //Message Update
 function confirmation(text, id, validateKey) {
-    const popup = document.getElementById("commentPopup");
+	const popup = document.getElementById("commentPopup");
 
-    if (!popup) {
-        console.error("Popup element not found!");
-        return;
-    }
+	if (!popup) {
+		console.error("Popup element not found!");
+		return;
+	}
 
-    popup.style.display = "flex";
+	popup.style.display = "flex";
 
-    const userComment = document.getElementById("userComment");
-    if (userComment) {
-        userComment.value = '';
-        userComment.value = text || '';
-    } else {
-        console.error("User comment textarea not found!");
-        return;
-    }
+	const userComment = document.getElementById("userComment");
+	if (userComment) {
+		userComment.value = '';
+		userComment.value = text || '';
+	} else {
+		console.error("User comment textarea not found!");
+		return;
+	}
 
-    const confrmLable = document.getElementById("confrmLable");
-    if (confrmLable) {
-        confrmLable.innerHTML = `Enter ${validateKey} :`;
-    } else {
-        console.error("Confirmation label not found!");
-        return;
-    }
+	const confrmLable = document.getElementById("confrmLable");
+	if (confrmLable) {
+		confrmLable.innerHTML = `Enter ${validateKey} :`;
+	} else {
+		console.error("Confirmation label not found!");
+		return;
+	}
 
-    const yesButton = document.getElementById("commentDelYes");
-    const noButton = document.getElementById("commentDelNo");
+	const yesButton = document.getElementById("commentDelYes");
+	const noButton = document.getElementById("commentDelNo");
 
-    if (yesButton && noButton) {
-        yesButton.replaceWith(yesButton.cloneNode(true));
-        noButton.replaceWith(noButton.cloneNode(true));
+	if (yesButton && noButton) {
+		yesButton.replaceWith(yesButton.cloneNode(true));
+		noButton.replaceWith(noButton.cloneNode(true));
 
-        document.getElementById("commentDelYes").addEventListener("click", function () {
-            const textData = document.getElementById("userComment").value;
-            updateCommentAndMessage(textData, id, validateKey);
-            popup.style.display = "none";
-        });
+		document.getElementById("commentDelYes").addEventListener("click", function() {
+			const textData = document.getElementById("userComment").value;
+			updateCommentAndMessage(textData, id, validateKey);
+			popup.style.display = "none";
+		});
 
-        document.getElementById("commentDelNo").addEventListener("click", function () {
-            if (userComment) userComment.value = '';
-            popup.style.display = "none";
-        });
-    } else {
-        console.error("Yes or No button not found!");
-    }
+		document.getElementById("commentDelNo").addEventListener("click", function() {
+			if (userComment) userComment.value = '';
+			popup.style.display = "none";
+		});
+	} else {
+		console.error("Yes or No button not found!");
+	}
 }
 
 
@@ -532,47 +532,47 @@ function submitForm() {
 
 
 function dateUpdate(currentDate, taskId, label) {
-  // Remove any previously added date input to avoid duplicates
-  const existingInput = document.getElementById("dynamicDateInput");
-  if (existingInput) {
-    existingInput.remove();
-  }
+	// Remove any previously added date input to avoid duplicates
+	const existingInput = document.getElementById("dynamicDateInput");
+	if (existingInput) {
+		existingInput.remove();
+	}
 
-  // Create a dynamic Flatpickr input field
-  const dateInput = document.createElement("input");
-  dateInput.type = "text"; // Flatpickr works with text input
-  dateInput.id = "dynamicDateInput";
-  dateInput.style.position = "absolute";
-  dateInput.style.zIndex = "9999"; // Ensure it's on top
-  dateInput.style.left = `${event.clientX}px`; // Position near the click
-  dateInput.style.top = `${event.clientY}px`; // Position near the click
+	// Create a dynamic Flatpickr input field
+	const dateInput = document.createElement("input");
+	dateInput.type = "text"; // Flatpickr works with text input
+	dateInput.id = "dynamicDateInput";
+	dateInput.style.position = "absolute";
+	dateInput.style.zIndex = "9999"; // Ensure it's on top
+	dateInput.style.left = `${event.clientX}px`; // Position near the click
+	dateInput.style.top = `${event.clientY}px`; // Position near the click
 
-  document.body.appendChild(dateInput); // Append the input to the document
+	document.body.appendChild(dateInput); // Append the input to the document
 
-  // Initialize Flatpickr with custom format
-  flatpickr(dateInput, {
-    dateFormat: "m/d/Y", // Set the format to mm/dd/yyyy
-    defaultDate: currentDate, // Pre-fill the current date if available
-    onClose: function (selectedDates, dateStr) {
-      if (dateStr) {
-        console.log(`Selected Date: ${dateStr}`);
-        console.log(`Task ID: ${taskId}`);
-        console.log(`Label: ${label}`);
-        
-        updateCommentAndMessage(dateStr, taskId, label);
+	// Initialize Flatpickr with custom format
+	flatpickr(dateInput, {
+		dateFormat: "m/d/Y", // Set the format to mm/dd/yyyy
+		defaultDate: currentDate, // Pre-fill the current date if available
+		onClose: function(selectedDates, dateStr) {
+			if (dateStr) {
+				console.log(`Selected Date: ${dateStr}`);
+				console.log(`Task ID: ${taskId}`);
+				console.log(`Label: ${label}`);
 
-        // Update the clicked cell with the new date
-        const cell = event.target;
-        cell.textContent = dateStr;
-      }
+				updateCommentAndMessage(dateStr, taskId, label);
 
-      // Remove the input element after selection
-      dateInput.remove();
-    },
-  });
+				// Update the clicked cell with the new date
+				const cell = event.target;
+				cell.textContent = dateStr;
+			}
 
-  // Automatically open the calendar
-  dateInput.focus();
+			// Remove the input element after selection
+			dateInput.remove();
+		},
+	});
+
+	// Automatically open the calendar
+	dateInput.focus();
 }
 
 
@@ -624,6 +624,8 @@ function datesFormat(datefrom) {
 				document.getElementById('filternewExpiryDate').value = selectedDate;
 			} else if (datefrom === "policyIssuedDate") {
 				document.getElementById('filterpolicyIssuedDate').value = selectedDate;
+			} else if (datefrom === "nextfollowUpdateTo") {
+				document.getElementById('filternextfollowUpdateTo').value = selectedDate;
 			}
 		}
 
@@ -638,39 +640,10 @@ function datesFormat(datefrom) {
 }
 
 async function fetchTasks(page = currentPage, size = currentSize) {
-	
-	const url = `/task/filtered?page=${page}&size=${size}`;
-	var userId = document.getElementById('userId').value;
-	var vehicleNumber = document.getElementById('filterVehicleNumber').value;
-	var partnerNumber = document.getElementById('filterPartnerNumber').value;
-	var agentName = document.getElementById('filteragentName').value;
-	var driverName = document.getElementById('filterDriverName').value;
-	var city = document.getElementById('filterCity').value;
-	var lastYearPolicyIssuedBy = document.getElementById('filterLastYearIssuedby').value;
-	var partnerRate = document.getElementById('filterPartnerRate').value;
-	var newExpiryDate = document.getElementById('filternewExpiryDate').value;
-	var policyIssuedDate = document.getElementById('filterpolicyIssuedDate').value;
-	var messageStatus = document.getElementById('filterMessageStatus').value;
-	var disposition = document.getElementById('filterDisposition').value;
-	var nextFollowUpDate = document.getElementById('filternextfollowUpdate').value;
-	var status = document.getElementById('filterStatus').value;
 
-	const filterDto = {
-		userId: userId,
-		vehicleNumber: vehicleNumber,
-		partnerNumber: partnerNumber,
-		agentName: agentName,
-		driverName: driverName,
-		city: city,
-		lastYearPolicyIssuedBy: lastYearPolicyIssuedBy,
-		partnerRate: partnerRate,
-		newExpiryDate: newExpiryDate,
-		policyIssuedDate: policyIssuedDate,
-		messageStatus: messageStatus,
-		disposition: disposition,
-		nextFollowUpDate: nextFollowUpDate,
-		status: status
-	};
+	var filterDto = requestBody();
+	const url = `/task/filtered?page=${page}&size=${size}`;
+
 	toggleLoader();
 	closeFilterPopup();
 
@@ -694,8 +667,102 @@ async function fetchTasks(page = currentPage, size = currentSize) {
 		console.log(data);
 		return data;
 	} catch (error) {
+		toggleLoader();
 		console.error("Error fetching filtered tasks:", error);
 	}
 }
 
 
+function downloadExcel() {
+
+	var filterDto = requestBody();
+
+	//toggleLoader();
+	fetch('/task/download-excel', {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify(filterDto)
+	})
+		.then(response => {
+			if (!response.ok) {
+				throw new Error("Failed to download the file.");
+			}
+			return response.blob();
+		})
+		.then(blob => {
+			const url = window.URL.createObjectURL(blob);
+			const a = document.createElement("a");
+			a.href = url;
+			a.download = "tasks.xlsx"; // Set the file name
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			window.URL.revokeObjectURL(url);
+			//toggleLoader();
+		})
+		.catch(error =>
+
+			console.error("Error downloading the Excel file:", error)
+		);
+}
+
+function requestBody() {
+	var userId = document.getElementById('userId').value;
+	var vehicleNumber = document.getElementById('filterVehicleNumber').value;
+	var partnerNumber = document.getElementById('filterPartnerNumber').value;
+	var agentName = document.getElementById('filteragentName').value;
+	var driverName = document.getElementById('filterDriverName').value;
+	var city = document.getElementById('filterCity').value;
+	var lastYearPolicyIssuedBy = document.getElementById('filterLastYearIssuedby').value;
+	var partnerRate = document.getElementById('filterPartnerRate').value;
+	var newExpiryDate = convertDateFormat(document.getElementById('filternewExpiryDate').value);
+	var policyIssuedDate = convertDateFormat(document.getElementById('filterpolicyIssuedDate').value);
+	var messageStatus = document.getElementById('filterMessageStatus').value;
+	var disposition = document.getElementById('filterDisposition').value;
+	var nextFollowUpDateFrom = convertDateFormat(document.getElementById('filternextfollowUpdate').value);
+	var nextFollowUpDateTo = convertDateFormat(document.getElementById('filternextfollowUpdateTo').value);
+	var status = document.getElementById('filterStatus').value;
+	debugger;
+	if (nextFollowUpDateFrom != "") {
+		if (nextFollowUpDateTo == "") {
+			alert("Both 'Next Follow-Up Date From' and 'Next Follow-Up Date To' must be filled.");
+			return;
+		}
+	}
+
+	if (nextFollowUpDateTo != "") {
+		if (nextFollowUpDateFrom == "") {
+			alert("Both 'Next Follow-Up Date From' and 'Next Follow-Up Date To' must be filled.");
+			return;
+		}
+	}
+
+	const filterDto = {
+		userId: userId,
+		vehicleNumber: vehicleNumber,
+		partnerNumber: partnerNumber,
+		agentName: agentName,
+		driverName: driverName,
+		city: city,
+		lastYearPolicyIssuedBy: lastYearPolicyIssuedBy,
+		partnerRate: partnerRate,
+		newExpiryDate: newExpiryDate,
+		policyIssuedDate: policyIssuedDate,
+		messageStatus: messageStatus,
+		disposition: disposition,
+		nextFollowUpDateFrom: nextFollowUpDateFrom,
+		nextFollowUpDateTo: nextFollowUpDateTo,
+		status: status
+	};
+
+	return filterDto;
+}
+
+function convertDateFormat(dateString) {
+	if (!dateString) return ""; // Handle empty or invalid input
+
+	const [year, month, day] = dateString.split("-");
+	return `${month}/${day}/${year}`;
+}

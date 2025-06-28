@@ -1,6 +1,7 @@
 package com.trueinsurre.controller;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,11 @@ import com.trueinsurre.dto.TaskAssignRequest;
 import com.trueinsurre.dto.TaskDto;
 import com.trueinsurre.modal.User;
 import com.trueinsurre.service.TaskService;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+
+import java.io.IOException;
 @RequestMapping("/task")
 @Controller
 public class TaskController {
@@ -60,194 +66,194 @@ public class TaskController {
 		return ResponseEntity.ok(taskService.saveCsvData(file, userId));
 	}
 	
-	@GetMapping("/all-active")
-	public ResponseEntity<Map<String, Object>> getAllActiveTask(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size) {
-
-		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeleted(false, false, false,
-				page, size);
-
-		Map<String, Object> response = new HashMap<>();
-		response.put("tasks", taskPage.getContent());
-		response.put("currentPage", taskPage.getNumber());
-		response.put("totalPages", taskPage.getTotalPages());
-		response.put("totalElements", taskPage.getTotalElements());
-
-		return ResponseEntity.ok(response);
-	}
-	
-	@GetMapping("/all")
-	public ResponseEntity<Map<String, Object>> getAllTasks(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size) {
-
-		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeleted(false, false, false,
-				page, size);
-
-		Map<String, Object> response = new HashMap<>();
-		response.put("tasks", taskPage.getContent());
-		response.put("currentPage", taskPage.getNumber());
-		response.put("totalPages", taskPage.getTotalPages());
-		response.put("totalElements", taskPage.getTotalElements());
-
-		return ResponseEntity.ok(response);
-	}
-	
-	@GetMapping("/by-status/{message}")
-	public ResponseEntity<Map<String, Object>> getAllTasksByStatus(@PathVariable String message,@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size) {
-
-		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndStatus(false, false, false, message,
-				page, size);
-
-		Map<String, Object> response = new HashMap<>();
-		response.put("tasks", taskPage.getContent());
-		response.put("currentPage", taskPage.getNumber());
-		response.put("totalPages", taskPage.getTotalPages());
-		response.put("totalElements", taskPage.getTotalElements());
-
-		return ResponseEntity.ok(response);
-	}
-	
-	@GetMapping("/by-disposition/{message}")
-	public ResponseEntity<Map<String, Object>> getAllTasksByDisposition(@PathVariable String message,@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size) {
-
-		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndDisposition(false, false, false, message,
-				page, size);
-
-		Map<String, Object> response = new HashMap<>();
-		response.put("tasks", taskPage.getContent());
-		response.put("currentPage", taskPage.getNumber());
-		response.put("totalPages", taskPage.getTotalPages());
-		response.put("totalElements", taskPage.getTotalElements());
-
-		return ResponseEntity.ok(response);
-	}
-	
-	@GetMapping("/by-status-disposition/{disposition}/{status}")
-	public ResponseEntity<Map<String, Object>> getAllTasksByAtatusAndDisposition(@PathVariable String disposition, @PathVariable String status,@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size) {
-
-		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndDispositionAndStatus(false, false, false, disposition, status,
-				page, size);
-
-		Map<String, Object> response = new HashMap<>();
-		response.put("tasks", taskPage.getContent());
-		response.put("currentPage", taskPage.getNumber());
-		response.put("totalPages", taskPage.getTotalPages());
-		response.put("totalElements", taskPage.getTotalElements());
-
-		return ResponseEntity.ok(response);
-	}
-	
-	@GetMapping("/by-status/{userId}/{message}")
-	public ResponseEntity<Map<String, Object>> getAllTasksByUserAndStatus(@PathVariable Long userId, @PathVariable String message,@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size) {
-
-		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndStatus(false, false, false, message,
-				page, size);
-
-		Map<String, Object> response = new HashMap<>();
-		response.put("tasks", taskPage.getContent());
-		response.put("currentPage", taskPage.getNumber());
-		response.put("totalPages", taskPage.getTotalPages());
-		response.put("totalElements", taskPage.getTotalElements());
-
-		return ResponseEntity.ok(response);
-	}
-	
-	@GetMapping("/by-disposition/{userId}/{message}")
-	public ResponseEntity<Map<String, Object>> getAllTasksByUserAndDisposition(@PathVariable Long userId, @PathVariable String message,@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size) {
-
-		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndDisposition(false, false, false, message,
-				page, size);
-
-		Map<String, Object> response = new HashMap<>();
-		response.put("tasks", taskPage.getContent());
-		response.put("currentPage", taskPage.getNumber());
-		response.put("totalPages", taskPage.getTotalPages());
-		response.put("totalElements", taskPage.getTotalElements());
-
-		return ResponseEntity.ok(response);
-	}
-	
-	@GetMapping("/by-status-disposition/{userId}/{disposition}/{status}")
-	public ResponseEntity<Map<String, Object>> getAllTasksByUserAndAtatusAndDisposition(@PathVariable Long userId, @PathVariable String disposition, @PathVariable String status,@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size) {
-
-		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndDispositionAndStatus(false, false, false, disposition, status,
-				page, size);
-
-		Map<String, Object> response = new HashMap<>();
-		response.put("tasks", taskPage.getContent());
-		response.put("currentPage", taskPage.getNumber());
-		response.put("totalPages", taskPage.getTotalPages());
-		response.put("totalElements", taskPage.getTotalElements());
-
-		return ResponseEntity.ok(response);
-	}
-	
-	@GetMapping("/all-completed")
-	public ResponseEntity<Map<String, Object>> getAllCompletedTask(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size) {
-
-		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeleted(false, true, false,
-				page, size);
-
-		Map<String, Object> response = new HashMap<>();
-		response.put("tasks", taskPage.getContent());
-		response.put("currentPage", taskPage.getNumber());
-		response.put("totalPages", taskPage.getTotalPages());
-		response.put("totalElements", taskPage.getTotalElements());
-
-		return ResponseEntity.ok(response);
-	}
-	
-	@GetMapping("/emp-all/{userId}")
-	public ResponseEntity<Map<String, Object>> getAllTaskByUser(@PathVariable Long userId,@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size) {
-
-		Page<TaskDto> taskPage = taskService.getAllTaskByUserAndByIsAssignANdByIsDeleted(userId, true, false, page, size);
-
-		Map<String, Object> response = new HashMap<>();
-		response.put("tasks", taskPage.getContent());
-		response.put("currentPage", taskPage.getNumber());
-		response.put("totalPages", taskPage.getTotalPages());
-		response.put("totalElements", taskPage.getTotalElements());
-
-		return ResponseEntity.ok(response);
-	}
-	
-	@GetMapping("/emp-active/{userId}")
-	public ResponseEntity<Map<String, Object>> getTaskByUser(@PathVariable Long userId,@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size) {
-
-		Page<TaskDto> taskPage = taskService.getAllTaskByUserAndByIsAssignAndByIsCompletedANdByIsDeleted(userId, true, false, false, page, size);
-
-		Map<String, Object> response = new HashMap<>();
-		response.put("tasks", taskPage.getContent());
-		response.put("currentPage", taskPage.getNumber());
-		response.put("totalPages", taskPage.getTotalPages());
-		response.put("totalElements", taskPage.getTotalElements());
-
-		return ResponseEntity.ok(response);
-	}
-	
-	@GetMapping("/emp-completed/{userId}")
-	public ResponseEntity<Map<String, Object>> getCompletedTaskByUser(@PathVariable Long userId,@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size) {
-
-		Page<TaskDto> taskPage = taskService.getAllTaskByUserAndByIsAssignAndByIsCompletedANdByIsDeleted(userId, true, true, false, page, size);
-
-		Map<String, Object> response = new HashMap<>();
-		response.put("tasks", taskPage.getContent());
-		response.put("currentPage", taskPage.getNumber());
-		response.put("totalPages", taskPage.getTotalPages());
-		response.put("totalElements", taskPage.getTotalElements());
-
-		return ResponseEntity.ok(response);
-	}
+//	@GetMapping("/all-active")
+//	public ResponseEntity<Map<String, Object>> getAllActiveTask(@RequestParam(defaultValue = "0") int page,
+//			@RequestParam(defaultValue = "10") int size) {
+//
+//		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeleted(false, false, false,
+//				page, size);
+//
+//		Map<String, Object> response = new HashMap<>();
+//		response.put("tasks", taskPage.getContent());
+//		response.put("currentPage", taskPage.getNumber());
+//		response.put("totalPages", taskPage.getTotalPages());
+//		response.put("totalElements", taskPage.getTotalElements());
+//
+//		return ResponseEntity.ok(response);
+//	}
+//	
+//	@GetMapping("/all")
+//	public ResponseEntity<Map<String, Object>> getAllTasks(@RequestParam(defaultValue = "0") int page,
+//			@RequestParam(defaultValue = "10") int size) {
+//
+//		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeleted(false, false, false,
+//				page, size);
+//
+//		Map<String, Object> response = new HashMap<>();
+//		response.put("tasks", taskPage.getContent());
+//		response.put("currentPage", taskPage.getNumber());
+//		response.put("totalPages", taskPage.getTotalPages());
+//		response.put("totalElements", taskPage.getTotalElements());
+//
+//		return ResponseEntity.ok(response);
+//	}
+//	
+//	@GetMapping("/by-status/{message}")
+//	public ResponseEntity<Map<String, Object>> getAllTasksByStatus(@PathVariable String message,@RequestParam(defaultValue = "0") int page,
+//			@RequestParam(defaultValue = "10") int size) {
+//
+//		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndStatus(false, false, false, message,
+//				page, size);
+//
+//		Map<String, Object> response = new HashMap<>();
+//		response.put("tasks", taskPage.getContent());
+//		response.put("currentPage", taskPage.getNumber());
+//		response.put("totalPages", taskPage.getTotalPages());
+//		response.put("totalElements", taskPage.getTotalElements());
+//
+//		return ResponseEntity.ok(response);
+//	}
+//	
+//	@GetMapping("/by-disposition/{message}")
+//	public ResponseEntity<Map<String, Object>> getAllTasksByDisposition(@PathVariable String message,@RequestParam(defaultValue = "0") int page,
+//			@RequestParam(defaultValue = "10") int size) {
+//
+//		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndDisposition(false, false, false, message,
+//				page, size);
+//
+//		Map<String, Object> response = new HashMap<>();
+//		response.put("tasks", taskPage.getContent());
+//		response.put("currentPage", taskPage.getNumber());
+//		response.put("totalPages", taskPage.getTotalPages());
+//		response.put("totalElements", taskPage.getTotalElements());
+//
+//		return ResponseEntity.ok(response);
+//	}
+//	
+//	@GetMapping("/by-status-disposition/{disposition}/{status}")
+//	public ResponseEntity<Map<String, Object>> getAllTasksByAtatusAndDisposition(@PathVariable String disposition, @PathVariable String status,@RequestParam(defaultValue = "0") int page,
+//			@RequestParam(defaultValue = "10") int size) {
+//
+//		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndDispositionAndStatus(false, false, false, disposition, status,
+//				page, size);
+//
+//		Map<String, Object> response = new HashMap<>();
+//		response.put("tasks", taskPage.getContent());
+//		response.put("currentPage", taskPage.getNumber());
+//		response.put("totalPages", taskPage.getTotalPages());
+//		response.put("totalElements", taskPage.getTotalElements());
+//
+//		return ResponseEntity.ok(response);
+//	}
+//	
+//	@GetMapping("/by-status/{userId}/{message}")
+//	public ResponseEntity<Map<String, Object>> getAllTasksByUserAndStatus(@PathVariable Long userId, @PathVariable String message,@RequestParam(defaultValue = "0") int page,
+//			@RequestParam(defaultValue = "10") int size) {
+//
+//		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndStatus(false, false, false, message,
+//				page, size);
+//
+//		Map<String, Object> response = new HashMap<>();
+//		response.put("tasks", taskPage.getContent());
+//		response.put("currentPage", taskPage.getNumber());
+//		response.put("totalPages", taskPage.getTotalPages());
+//		response.put("totalElements", taskPage.getTotalElements());
+//
+//		return ResponseEntity.ok(response);
+//	}
+//	
+//	@GetMapping("/by-disposition/{userId}/{message}")
+//	public ResponseEntity<Map<String, Object>> getAllTasksByUserAndDisposition(@PathVariable Long userId, @PathVariable String message,@RequestParam(defaultValue = "0") int page,
+//			@RequestParam(defaultValue = "10") int size) {
+//
+//		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndDisposition(false, false, false, message,
+//				page, size);
+//
+//		Map<String, Object> response = new HashMap<>();
+//		response.put("tasks", taskPage.getContent());
+//		response.put("currentPage", taskPage.getNumber());
+//		response.put("totalPages", taskPage.getTotalPages());
+//		response.put("totalElements", taskPage.getTotalElements());
+//
+//		return ResponseEntity.ok(response);
+//	}
+//	
+//	@GetMapping("/by-status-disposition/{userId}/{disposition}/{status}")
+//	public ResponseEntity<Map<String, Object>> getAllTasksByUserAndAtatusAndDisposition(@PathVariable Long userId, @PathVariable String disposition, @PathVariable String status,@RequestParam(defaultValue = "0") int page,
+//			@RequestParam(defaultValue = "10") int size) {
+//
+//		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeletedAndDispositionAndStatus(false, false, false, disposition, status,
+//				page, size);
+//
+//		Map<String, Object> response = new HashMap<>();
+//		response.put("tasks", taskPage.getContent());
+//		response.put("currentPage", taskPage.getNumber());
+//		response.put("totalPages", taskPage.getTotalPages());
+//		response.put("totalElements", taskPage.getTotalElements());
+//
+//		return ResponseEntity.ok(response);
+//	}
+//	
+//	@GetMapping("/all-completed")
+//	public ResponseEntity<Map<String, Object>> getAllCompletedTask(@RequestParam(defaultValue = "0") int page,
+//			@RequestParam(defaultValue = "10") int size) {
+//
+//		Page<TaskDto> taskPage = taskService.getAllTaskByIsAssignAndByIsCompletedANdByIsDeleted(false, true, false,
+//				page, size);
+//
+//		Map<String, Object> response = new HashMap<>();
+//		response.put("tasks", taskPage.getContent());
+//		response.put("currentPage", taskPage.getNumber());
+//		response.put("totalPages", taskPage.getTotalPages());
+//		response.put("totalElements", taskPage.getTotalElements());
+//
+//		return ResponseEntity.ok(response);
+//	}
+//	
+//	@GetMapping("/emp-all/{userId}")
+//	public ResponseEntity<Map<String, Object>> getAllTaskByUser(@PathVariable Long userId,@RequestParam(defaultValue = "0") int page,
+//			@RequestParam(defaultValue = "10") int size) {
+//
+//		Page<TaskDto> taskPage = taskService.getAllTaskByUserAndByIsAssignANdByIsDeleted(userId, true, false, page, size);
+//
+//		Map<String, Object> response = new HashMap<>();
+//		response.put("tasks", taskPage.getContent());
+//		response.put("currentPage", taskPage.getNumber());
+//		response.put("totalPages", taskPage.getTotalPages());
+//		response.put("totalElements", taskPage.getTotalElements());
+//
+//		return ResponseEntity.ok(response);
+//	}
+//	
+//	@GetMapping("/emp-active/{userId}")
+//	public ResponseEntity<Map<String, Object>> getTaskByUser(@PathVariable Long userId,@RequestParam(defaultValue = "0") int page,
+//			@RequestParam(defaultValue = "10") int size) {
+//
+//		Page<TaskDto> taskPage = taskService.getAllTaskByUserAndByIsAssignAndByIsCompletedANdByIsDeleted(userId, true, false, false, page, size);
+//
+//		Map<String, Object> response = new HashMap<>();
+//		response.put("tasks", taskPage.getContent());
+//		response.put("currentPage", taskPage.getNumber());
+//		response.put("totalPages", taskPage.getTotalPages());
+//		response.put("totalElements", taskPage.getTotalElements());
+//
+//		return ResponseEntity.ok(response);
+//	}
+//	
+//	@GetMapping("/emp-completed/{userId}")
+//	public ResponseEntity<Map<String, Object>> getCompletedTaskByUser(@PathVariable Long userId,@RequestParam(defaultValue = "0") int page,
+//			@RequestParam(defaultValue = "10") int size) {
+//
+//		Page<TaskDto> taskPage = taskService.getAllTaskByUserAndByIsAssignAndByIsCompletedANdByIsDeleted(userId, true, true, false, page, size);
+//
+//		Map<String, Object> response = new HashMap<>();
+//		response.put("tasks", taskPage.getContent());
+//		response.put("currentPage", taskPage.getNumber());
+//		response.put("totalPages", taskPage.getTotalPages());
+//		response.put("totalElements", taskPage.getTotalElements());
+//
+//		return ResponseEntity.ok(response);
+//	}
 	
 	@PostMapping("/assign")
 	public ResponseEntity<Responce> taskAssign(@RequestBody TaskAssignRequest request){
@@ -323,8 +329,24 @@ public class TaskController {
         response.put("currentPage", taskPage.getNumber());
         response.put("totalPages", taskPage.getTotalPages());
         response.put("totalElements", taskPage.getTotalElements());
-
         return ResponseEntity.ok(response);
+    }
+    
+    
+    @PostMapping("/download-excel")
+    public ResponseEntity<byte[]> downloadExcel(@RequestBody FilterDto filterDto) {
+        try {
+            byte[] excelBytes = taskService.generateExcel(filterDto);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=tasks.xlsx");
+            headers.add("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+            return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
+
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 	
 }

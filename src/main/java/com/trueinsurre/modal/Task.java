@@ -1,5 +1,6 @@
 package com.trueinsurre.modal;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,14 +29,15 @@ public class Task {
 	private String city;
 	private String lastYearPolicyIssuedBy;
 	private String partnerRate;
-	private String newExpiryDate;
 	private String message;
 	private String messageLink;
-	private String policyIssuedDate;
 	private String messageStatus;
 	private String disposition;
-	private String nextFollowUpDate;
 	private String comments;
+	
+	private LocalDate newExpiryDate;
+    private LocalDate policyIssuedDate;
+    private LocalDate nextFollowUpDate;
 
 	private boolean isAssign;
 	private boolean isDeleted;
@@ -53,8 +55,8 @@ public class Task {
 	}
 
 	public Task(Long id, String vehicleNumber, String partnerNumber, String agentName, String driverName, String city,
-			String lastYearPolicyIssuedBy, String partnerRate, String newExpiryDate, String message, String messageLink,
-			String policyIssuedDate, String messageStatus, String disposition, String nextFollowUpDate, String comments,
+			String lastYearPolicyIssuedBy, String partnerRate, LocalDate newExpiryDate, String message, String messageLink,
+			LocalDate policyIssuedDate, String messageStatus, String disposition, LocalDate nextFollowUpDate, String comments,
 			boolean isAssign, boolean isDeleted, boolean isCompleted, String status, Set<User> users) {
 		super();
 		this.id = id;
@@ -144,11 +146,11 @@ public class Task {
 		this.partnerRate = partnerRate;
 	}
 
-	public String getNewExpiryDate() {
+	public LocalDate getNewExpiryDate() {
 		return newExpiryDate;
 	}
 
-	public void setNewExpiryDate(String newExpiryDate) {
+	public void setNewExpiryDate(LocalDate newExpiryDate) {
 		this.newExpiryDate = newExpiryDate;
 	}
 
@@ -168,11 +170,11 @@ public class Task {
 		this.messageLink = messageLink;
 	}
 
-	public String getPolicyIssuedDate() {
+	public LocalDate getPolicyIssuedDate() {
 		return policyIssuedDate;
 	}
 
-	public void setPolicyIssuedDate(String policyIssuedDate) {
+	public void setPolicyIssuedDate(LocalDate policyIssuedDate) {
 		this.policyIssuedDate = policyIssuedDate;
 	}
 
@@ -192,11 +194,11 @@ public class Task {
 		this.disposition = disposition;
 	}
 
-	public String getNextFollowUpDate() {
+	public LocalDate getNextFollowUpDate() {
 		return nextFollowUpDate;
 	}
 
-	public void setNextFollowUpDate(String nextFollowUpDate) {
+	public void setNextFollowUpDate(LocalDate nextFollowUpDate) {
 		this.nextFollowUpDate = nextFollowUpDate;
 	}
 
