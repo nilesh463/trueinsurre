@@ -13,7 +13,7 @@ public class IndexCntroller {
 	
 	@GetMapping("/")
 	public ModelAndView indexPage(Model model) {
-		return new ModelAndView("index") ;
+		return new ModelAndView("user/login") ;
 	}
 
 }
