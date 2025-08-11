@@ -667,7 +667,7 @@ function getPaymentLink(mobileNumber, message) {
 	debugger;
 	// UPI and payment details
 	mobileNumber = "91" + mobileNumber;
-	const upiId = "1998nileshicici@icici";
+	const upiId = "";
 	const amount = "1";
 	const currency = "INR"; // Currency, default is INR
 	message = message || "Hi, please make a payment.";
@@ -678,11 +678,11 @@ function getPaymentLink(mobileNumber, message) {
 	}
 
 	// Construct the UPI payment link
-	const gpayLink = `upi://pay?pa=${upiId}&am=${amount}&cu=${currency}`;
-	const fullMessage = `${message}%0A%0AClick below to pay via Google Pay:%0A${gpayLink}`;
+	//const gpayLink = `upi://pay?pa=${upiId}&am=${amount}&cu=${currency}`;
+	//const fullMessage = `${message}%0A%0AClick below to pay via Google Pay:%0A${gpayLink}`;
 
 	// Construct the WhatsApp URL
-	const whatsappUrl = `https://wa.me/${mobileNumber}?text=${encodeURIComponent(fullMessage)}`;
+	const whatsappUrl = `https://wa.me/${mobileNumber}?text=${encodeURIComponent(message)}`;
 
 	// Open the WhatsApp URL in a new tab
 	window.open(whatsappUrl, '_blank');
